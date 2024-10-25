@@ -78,6 +78,11 @@ enum CookieSameSiteStatus {
   unspecified,
 }
 
+enum SelectionPattern {
+  phone,
+  email,
+}
+
 /// Translation options that map to the Gecko Translations Options.
 ///
 /// @property downloadModel If the necessary models should be downloaded on request. If false, then
@@ -986,6 +991,37 @@ class FindResultState {
   }
 }
 
+class CustomSelectionAction {
+  CustomSelectionAction({
+    required this.id,
+    required this.title,
+    this.pattern,
+  });
+
+  String id;
+
+  String title;
+
+  SelectionPattern? pattern;
+
+  Object encode() {
+    return <Object?>[
+      id,
+      title,
+      pattern,
+    ];
+  }
+
+  static CustomSelectionAction decode(Object result) {
+    result as List<Object?>;
+    return CustomSelectionAction(
+      id: result[0]! as String,
+      title: result[1]! as String,
+      pattern: result[2] as SelectionPattern?,
+    );
+  }
+}
+
 
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
@@ -1009,74 +1045,80 @@ class _PigeonCodec extends StandardMessageCodec {
     }    else if (value is CookieSameSiteStatus) {
       buffer.putUint8(133);
       writeValue(buffer, value.index);
-    }    else if (value is TranslationOptions) {
+    }    else if (value is SelectionPattern) {
       buffer.putUint8(134);
-      writeValue(buffer, value.encode());
-    }    else if (value is ReaderState) {
+      writeValue(buffer, value.index);
+    }    else if (value is TranslationOptions) {
       buffer.putUint8(135);
       writeValue(buffer, value.encode());
-    }    else if (value is LastMediaAccessState) {
+    }    else if (value is ReaderState) {
       buffer.putUint8(136);
       writeValue(buffer, value.encode());
-    }    else if (value is HistoryMetadataKey) {
+    }    else if (value is LastMediaAccessState) {
       buffer.putUint8(137);
       writeValue(buffer, value.encode());
-    }    else if (value is PackageCategoryValue) {
+    }    else if (value is HistoryMetadataKey) {
       buffer.putUint8(138);
       writeValue(buffer, value.encode());
-    }    else if (value is ExternalPackage) {
+    }    else if (value is PackageCategoryValue) {
       buffer.putUint8(139);
       writeValue(buffer, value.encode());
-    }    else if (value is LoadUrlFlagsValue) {
+    }    else if (value is ExternalPackage) {
       buffer.putUint8(140);
       writeValue(buffer, value.encode());
-    }    else if (value is SourceValue) {
+    }    else if (value is LoadUrlFlagsValue) {
       buffer.putUint8(141);
       writeValue(buffer, value.encode());
-    }    else if (value is TabState) {
+    }    else if (value is SourceValue) {
       buffer.putUint8(142);
       writeValue(buffer, value.encode());
-    }    else if (value is RecoverableTab) {
+    }    else if (value is TabState) {
       buffer.putUint8(143);
       writeValue(buffer, value.encode());
-    }    else if (value is RecoverableBrowserState) {
+    }    else if (value is RecoverableTab) {
       buffer.putUint8(144);
       writeValue(buffer, value.encode());
-    }    else if (value is IconRequest) {
+    }    else if (value is RecoverableBrowserState) {
       buffer.putUint8(145);
       writeValue(buffer, value.encode());
-    }    else if (value is ResourceSize) {
+    }    else if (value is IconRequest) {
       buffer.putUint8(146);
       writeValue(buffer, value.encode());
-    }    else if (value is Resource) {
+    }    else if (value is ResourceSize) {
       buffer.putUint8(147);
       writeValue(buffer, value.encode());
-    }    else if (value is IconResult) {
+    }    else if (value is Resource) {
       buffer.putUint8(148);
       writeValue(buffer, value.encode());
-    }    else if (value is CookiePartitionKey) {
+    }    else if (value is IconResult) {
       buffer.putUint8(149);
       writeValue(buffer, value.encode());
-    }    else if (value is Cookie) {
+    }    else if (value is CookiePartitionKey) {
       buffer.putUint8(150);
       writeValue(buffer, value.encode());
-    }    else if (value is HistoryItem) {
+    }    else if (value is Cookie) {
       buffer.putUint8(151);
       writeValue(buffer, value.encode());
-    }    else if (value is HistoryState) {
+    }    else if (value is HistoryItem) {
       buffer.putUint8(152);
       writeValue(buffer, value.encode());
-    }    else if (value is ReaderableState) {
+    }    else if (value is HistoryState) {
       buffer.putUint8(153);
       writeValue(buffer, value.encode());
-    }    else if (value is SecurityInfoState) {
+    }    else if (value is ReaderableState) {
       buffer.putUint8(154);
       writeValue(buffer, value.encode());
-    }    else if (value is TabContentState) {
+    }    else if (value is SecurityInfoState) {
       buffer.putUint8(155);
       writeValue(buffer, value.encode());
-    }    else if (value is FindResultState) {
+    }    else if (value is TabContentState) {
       buffer.putUint8(156);
+      writeValue(buffer, value.encode());
+    }    else if (value is FindResultState) {
+      buffer.putUint8(157);
+      writeValue(buffer, value.encode());
+    }    else if (value is CustomSelectionAction) {
+      buffer.putUint8(158);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -1102,51 +1144,56 @@ class _PigeonCodec extends StandardMessageCodec {
         final int? value = readValue(buffer) as int?;
         return value == null ? null : CookieSameSiteStatus.values[value];
       case 134: 
-        return TranslationOptions.decode(readValue(buffer)!);
+        final int? value = readValue(buffer) as int?;
+        return value == null ? null : SelectionPattern.values[value];
       case 135: 
-        return ReaderState.decode(readValue(buffer)!);
+        return TranslationOptions.decode(readValue(buffer)!);
       case 136: 
-        return LastMediaAccessState.decode(readValue(buffer)!);
+        return ReaderState.decode(readValue(buffer)!);
       case 137: 
-        return HistoryMetadataKey.decode(readValue(buffer)!);
+        return LastMediaAccessState.decode(readValue(buffer)!);
       case 138: 
-        return PackageCategoryValue.decode(readValue(buffer)!);
+        return HistoryMetadataKey.decode(readValue(buffer)!);
       case 139: 
-        return ExternalPackage.decode(readValue(buffer)!);
+        return PackageCategoryValue.decode(readValue(buffer)!);
       case 140: 
-        return LoadUrlFlagsValue.decode(readValue(buffer)!);
+        return ExternalPackage.decode(readValue(buffer)!);
       case 141: 
-        return SourceValue.decode(readValue(buffer)!);
+        return LoadUrlFlagsValue.decode(readValue(buffer)!);
       case 142: 
-        return TabState.decode(readValue(buffer)!);
+        return SourceValue.decode(readValue(buffer)!);
       case 143: 
-        return RecoverableTab.decode(readValue(buffer)!);
+        return TabState.decode(readValue(buffer)!);
       case 144: 
-        return RecoverableBrowserState.decode(readValue(buffer)!);
+        return RecoverableTab.decode(readValue(buffer)!);
       case 145: 
-        return IconRequest.decode(readValue(buffer)!);
+        return RecoverableBrowserState.decode(readValue(buffer)!);
       case 146: 
-        return ResourceSize.decode(readValue(buffer)!);
+        return IconRequest.decode(readValue(buffer)!);
       case 147: 
-        return Resource.decode(readValue(buffer)!);
+        return ResourceSize.decode(readValue(buffer)!);
       case 148: 
-        return IconResult.decode(readValue(buffer)!);
+        return Resource.decode(readValue(buffer)!);
       case 149: 
-        return CookiePartitionKey.decode(readValue(buffer)!);
+        return IconResult.decode(readValue(buffer)!);
       case 150: 
-        return Cookie.decode(readValue(buffer)!);
+        return CookiePartitionKey.decode(readValue(buffer)!);
       case 151: 
-        return HistoryItem.decode(readValue(buffer)!);
+        return Cookie.decode(readValue(buffer)!);
       case 152: 
-        return HistoryState.decode(readValue(buffer)!);
+        return HistoryItem.decode(readValue(buffer)!);
       case 153: 
-        return ReaderableState.decode(readValue(buffer)!);
+        return HistoryState.decode(readValue(buffer)!);
       case 154: 
-        return SecurityInfoState.decode(readValue(buffer)!);
+        return ReaderableState.decode(readValue(buffer)!);
       case 155: 
-        return TabContentState.decode(readValue(buffer)!);
+        return SecurityInfoState.decode(readValue(buffer)!);
       case 156: 
+        return TabContentState.decode(readValue(buffer)!);
+      case 157: 
         return FindResultState.decode(readValue(buffer)!);
+      case 158: 
+        return CustomSelectionAction.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
     }
@@ -2735,155 +2782,69 @@ abstract class ReaderViewController {
   }
 }
 
-abstract class SelectionAction {
+class GeckoSelectionActionController {
+  /// Constructor for [GeckoSelectionActionController].  The [binaryMessenger] named argument is
+  /// available for dependency injection.  If it is left null, the default
+  /// BinaryMessenger will be used which routes to the host platform.
+  GeckoSelectionActionController({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
+      : pigeonVar_binaryMessenger = binaryMessenger,
+        pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+  final BinaryMessenger? pigeonVar_binaryMessenger;
+
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
 
-  /// Gets Strings representing all possible selection actions.
-  ///
-  /// @returns String IDs for each action that could possibly be shown in the context menu. This
-  /// array must include all actions, available or not, and must not change over the class lifetime.
-  List<String> getAllActions();
+  final String pigeonVar_messageChannelSuffix;
 
-  /// Checks if an action can be shown on a new selection context menu.
-  ///
-  /// @returns whether or not the the custom action with the id of [id] is currently available
-  ///  which may be informed by [selectedText].
-  bool isActionAvailable(String id, String selectedText);
+  Future<void> setActions(List<CustomSelectionAction> actions) async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.flutter_mozilla_components.GeckoSelectionActionController.setActions$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[actions]) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+}
 
-  /// Gets a title to be shown in the selection context menu.
-  ///
-  /// @returns the text that should be shown on the action.
-  String? getActionTitle(String id);
+abstract class GeckoSelectionActionEvents {
+  static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
 
-  /// Should perform the action with the id of [id].
-  ///
-  /// @returns [true] if the action was consumed.
-  bool performAction(String id, String selectedText);
+  void performSelectionAction(String id, String selectedText);
 
-  /// Takes in a list of actions and sorts them.
-  ///
-  /// @returns the sorted list.
-  List<String> sortedActions(List<String> actions);
-
-  static void setUp(SelectionAction? api, {BinaryMessenger? binaryMessenger, String messageChannelSuffix = '',}) {
+  static void setUp(GeckoSelectionActionEvents? api, {BinaryMessenger? binaryMessenger, String messageChannelSuffix = '',}) {
     messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
     {
       final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_mozilla_components.SelectionAction.getAllActions$messageChannelSuffix', pigeonChannelCodec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        pigeonVar_channel.setMessageHandler(null);
-      } else {
-        pigeonVar_channel.setMessageHandler((Object? message) async {
-          try {
-            final List<String> output = api.getAllActions();
-            return wrapResponse(result: output);
-          } on PlatformException catch (e) {
-            return wrapResponse(error: e);
-          }          catch (e) {
-            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
-          }
-        });
-      }
-    }
-    {
-      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_mozilla_components.SelectionAction.isActionAvailable$messageChannelSuffix', pigeonChannelCodec,
+          'dev.flutter.pigeon.flutter_mozilla_components.GeckoSelectionActionEvents.performSelectionAction$messageChannelSuffix', pigeonChannelCodec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_mozilla_components.SelectionAction.isActionAvailable was null.');
+          'Argument for dev.flutter.pigeon.flutter_mozilla_components.GeckoSelectionActionEvents.performSelectionAction was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_id = (args[0] as String?);
           assert(arg_id != null,
-              'Argument for dev.flutter.pigeon.flutter_mozilla_components.SelectionAction.isActionAvailable was null, expected non-null String.');
+              'Argument for dev.flutter.pigeon.flutter_mozilla_components.GeckoSelectionActionEvents.performSelectionAction was null, expected non-null String.');
           final String? arg_selectedText = (args[1] as String?);
           assert(arg_selectedText != null,
-              'Argument for dev.flutter.pigeon.flutter_mozilla_components.SelectionAction.isActionAvailable was null, expected non-null String.');
+              'Argument for dev.flutter.pigeon.flutter_mozilla_components.GeckoSelectionActionEvents.performSelectionAction was null, expected non-null String.');
           try {
-            final bool output = api.isActionAvailable(arg_id!, arg_selectedText!);
-            return wrapResponse(result: output);
-          } on PlatformException catch (e) {
-            return wrapResponse(error: e);
-          }          catch (e) {
-            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
-          }
-        });
-      }
-    }
-    {
-      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_mozilla_components.SelectionAction.getActionTitle$messageChannelSuffix', pigeonChannelCodec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        pigeonVar_channel.setMessageHandler(null);
-      } else {
-        pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_mozilla_components.SelectionAction.getActionTitle was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final String? arg_id = (args[0] as String?);
-          assert(arg_id != null,
-              'Argument for dev.flutter.pigeon.flutter_mozilla_components.SelectionAction.getActionTitle was null, expected non-null String.');
-          try {
-            final String? output = api.getActionTitle(arg_id!);
-            return wrapResponse(result: output);
-          } on PlatformException catch (e) {
-            return wrapResponse(error: e);
-          }          catch (e) {
-            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
-          }
-        });
-      }
-    }
-    {
-      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_mozilla_components.SelectionAction.performAction$messageChannelSuffix', pigeonChannelCodec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        pigeonVar_channel.setMessageHandler(null);
-      } else {
-        pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_mozilla_components.SelectionAction.performAction was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final String? arg_id = (args[0] as String?);
-          assert(arg_id != null,
-              'Argument for dev.flutter.pigeon.flutter_mozilla_components.SelectionAction.performAction was null, expected non-null String.');
-          final String? arg_selectedText = (args[1] as String?);
-          assert(arg_selectedText != null,
-              'Argument for dev.flutter.pigeon.flutter_mozilla_components.SelectionAction.performAction was null, expected non-null String.');
-          try {
-            final bool output = api.performAction(arg_id!, arg_selectedText!);
-            return wrapResponse(result: output);
-          } on PlatformException catch (e) {
-            return wrapResponse(error: e);
-          }          catch (e) {
-            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
-          }
-        });
-      }
-    }
-    {
-      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_mozilla_components.SelectionAction.sortedActions$messageChannelSuffix', pigeonChannelCodec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        pigeonVar_channel.setMessageHandler(null);
-      } else {
-        pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_mozilla_components.SelectionAction.sortedActions was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final List<String>? arg_actions = (args[0] as List<Object?>?)?.cast<String>();
-          assert(arg_actions != null,
-              'Argument for dev.flutter.pigeon.flutter_mozilla_components.SelectionAction.sortedActions was null, expected non-null List<String>.');
-          try {
-            final List<String> output = api.sortedActions(arg_actions!);
-            return wrapResponse(result: output);
+            api.performSelectionAction(arg_id!, arg_selectedText!);
+            return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
           }          catch (e) {

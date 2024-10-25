@@ -469,6 +469,16 @@ class FindResultState {
   );
 }
 
+enum SelectionPattern { phone, email }
+
+class CustomSelectionAction {
+  final String id;
+  final String title;
+  final SelectionPattern? pattern;
+
+  CustomSelectionAction(this.id, this.title, this.pattern);
+}
+
 // /// Represents all the different supported types of data that can be found from long clicking
 // /// an element.
 // sealed class HitResult {
@@ -816,32 +826,12 @@ abstract class ReaderViewController {
   void appearanceButtonVisibility(bool visible);
 }
 
+@HostApi()
+abstract class GeckoSelectionActionController {
+  void setActions(List<CustomSelectionAction> actions);
+}
+
 @FlutterApi()
-abstract class SelectionAction {
-  /// Gets Strings representing all possible selection actions.
-  ///
-  /// @returns String IDs for each action that could possibly be shown in the context menu. This
-  /// array must include all actions, available or not, and must not change over the class lifetime.
-  List<String> getAllActions();
-
-  /// Checks if an action can be shown on a new selection context menu.
-  ///
-  /// @returns whether or not the the custom action with the id of [id] is currently available
-  ///  which may be informed by [selectedText].
-  bool isActionAvailable(String id, String selectedText);
-
-  /// Gets a title to be shown in the selection context menu.
-  ///
-  /// @returns the text that should be shown on the action.
-  String? getActionTitle(String id);
-
-  /// Should perform the action with the id of [id].
-  ///
-  /// @returns [true] if the action was consumed.
-  bool performAction(String id, String selectedText);
-
-  /// Takes in a list of actions and sorts them.
-  ///
-  /// @returns the sorted list.
-  List<String> sortedActions(List<String> actions);
+abstract class GeckoSelectionActionEvents {
+  void performSelectionAction(String id, String selectedText);
 }

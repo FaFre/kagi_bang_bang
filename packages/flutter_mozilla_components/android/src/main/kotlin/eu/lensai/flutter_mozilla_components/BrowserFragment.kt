@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import eu.lensai.flutter_mozilla_components.feature.DefaultSelectionActionDelegate
 import eu.lensai.flutter_mozilla_components.integration.ReaderViewIntegration
-import eu.lensai.flutter_mozilla_components.pigeons.SelectionAction
 import mozilla.components.browser.thumbnails.BrowserThumbnails
 import mozilla.components.concept.engine.EngineView
 import mozilla.components.feature.media.fullscreen.MediaSessionFullscreenFeature
@@ -31,9 +30,7 @@ class BrowserFragment(private val context: Context) : BaseBrowserFragment(), Use
 
     override fun createEngine(components: Components): EngineView {
         return components.engine.createView(context).apply {
-//            selectionActionDelegate = DefaultSelectionActionDelegate(
-//                components.selectionAction
-//            )
+           selectionActionDelegate = components.selectionAction
         }
     }
 

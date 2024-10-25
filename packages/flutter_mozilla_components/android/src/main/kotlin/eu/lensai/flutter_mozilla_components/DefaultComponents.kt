@@ -15,7 +15,6 @@ import eu.lensai.flutter_mozilla_components.pigeons.HistoryState
 import eu.lensai.flutter_mozilla_components.pigeons.ReaderViewController
 import eu.lensai.flutter_mozilla_components.pigeons.ReaderableState
 import eu.lensai.flutter_mozilla_components.pigeons.SecurityInfoState
-import eu.lensai.flutter_mozilla_components.pigeons.SelectionAction
 import eu.lensai.flutter_mozilla_components.pigeons.TabContentState
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
@@ -35,6 +34,7 @@ import mozilla.components.concept.engine.DefaultSettings
 import mozilla.components.concept.engine.Engine
 import mozilla.components.concept.engine.EngineView
 import mozilla.components.concept.engine.mediaquery.PreferredColorScheme
+import mozilla.components.concept.engine.selection.SelectionActionDelegate
 import mozilla.components.concept.fetch.Client
 import mozilla.components.feature.addons.AddonManager
 import mozilla.components.feature.addons.amo.AMOAddonsProvider
@@ -79,7 +79,7 @@ open class DefaultComponents(
     private val applicationContext: Context,
     val flutterEvents: GeckoStateEvents,
     val readerViewController: ReaderViewController,
-    val selectionAction: SelectionAction,
+    val selectionAction: SelectionActionDelegate,
 ) {
     companion object {
         const val SAMPLE_BROWSER_PREFERENCES = "sample_browser_preferences"

@@ -607,19 +607,26 @@ class BrowserScreen extends HookConsumerWidget {
                       SafeArea(
                         child: Stack(
                           children: [
-                            GeckoView(
-                              preInitializationStep: () async {
-                                await ref
-                                    .read(eventServiceProvider)
-                                    .viewReadyStateEvents
-                                    .firstWhere((state) => state == true)
-                                    .timeout(
-                                  const Duration(seconds: 3),
-                                  onTimeout: () {
-                                    logger.e(
-                                      'Browser fragement not reported ready, trying to intitialize anyways',
+                            Consumer(
+                              builder: (context, ref, child) {
+                                //Initialize dependencies
+                                ref.watch(selectionActionServiceProvider);
+
+                                return GeckoView(
+                                  preInitializationStep: () async {
+                                    await ref
+                                        .read(eventServiceProvider)
+                                        .viewReadyStateEvents
+                                        .firstWhere((state) => state == true)
+                                        .timeout(
+                                      const Duration(seconds: 3),
+                                      onTimeout: () {
+                                        logger.e(
+                                          'Browser fragement not reported ready, trying to intitialize anyways',
+                                        );
+                                        return true;
+                                      },
                                     );
-                                    return true;
                                   },
                                 );
                               },

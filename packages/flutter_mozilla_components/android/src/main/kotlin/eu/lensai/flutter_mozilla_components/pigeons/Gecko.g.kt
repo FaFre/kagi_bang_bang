@@ -132,6 +132,17 @@ enum class CookieSameSiteStatus(val raw: Int) {
   }
 }
 
+enum class SelectionPattern(val raw: Int) {
+  PHONE(0),
+  EMAIL(1);
+
+  companion object {
+    fun ofRaw(raw: Int): SelectionPattern? {
+      return values().firstOrNull { it.raw == raw }
+    }
+  }
+}
+
 /**
  * Translation options that map to the Gecko Translations Options.
  *
@@ -889,6 +900,30 @@ data class FindResultState (
     )
   }
 }
+
+/** Generated class from Pigeon that represents data sent in messages. */
+data class CustomSelectionAction (
+  val id: String,
+  val title: String,
+  val pattern: SelectionPattern? = null
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): CustomSelectionAction {
+      val id = pigeonVar_list[0] as String
+      val title = pigeonVar_list[1] as String
+      val pattern = pigeonVar_list[2] as SelectionPattern?
+      return CustomSelectionAction(id, title, pattern)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      id,
+      title,
+      pattern,
+    )
+  }
+}
 private open class GeckoPigeonCodec : StandardMessageCodec() {
   override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
     return when (type) {
@@ -918,118 +953,128 @@ private open class GeckoPigeonCodec : StandardMessageCodec() {
         }
       }
       134.toByte() -> {
-        return (readValue(buffer) as? List<Any?>)?.let {
-          TranslationOptions.fromList(it)
+        return (readValue(buffer) as Long?)?.let {
+          SelectionPattern.ofRaw(it.toInt())
         }
       }
       135.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          ReaderState.fromList(it)
+          TranslationOptions.fromList(it)
         }
       }
       136.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          LastMediaAccessState.fromList(it)
+          ReaderState.fromList(it)
         }
       }
       137.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          HistoryMetadataKey.fromList(it)
+          LastMediaAccessState.fromList(it)
         }
       }
       138.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          PackageCategoryValue.fromList(it)
+          HistoryMetadataKey.fromList(it)
         }
       }
       139.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          ExternalPackage.fromList(it)
+          PackageCategoryValue.fromList(it)
         }
       }
       140.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          LoadUrlFlagsValue.fromList(it)
+          ExternalPackage.fromList(it)
         }
       }
       141.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          SourceValue.fromList(it)
+          LoadUrlFlagsValue.fromList(it)
         }
       }
       142.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          TabState.fromList(it)
+          SourceValue.fromList(it)
         }
       }
       143.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          RecoverableTab.fromList(it)
+          TabState.fromList(it)
         }
       }
       144.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          RecoverableBrowserState.fromList(it)
+          RecoverableTab.fromList(it)
         }
       }
       145.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          IconRequest.fromList(it)
+          RecoverableBrowserState.fromList(it)
         }
       }
       146.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          ResourceSize.fromList(it)
+          IconRequest.fromList(it)
         }
       }
       147.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          Resource.fromList(it)
+          ResourceSize.fromList(it)
         }
       }
       148.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          IconResult.fromList(it)
+          Resource.fromList(it)
         }
       }
       149.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          CookiePartitionKey.fromList(it)
+          IconResult.fromList(it)
         }
       }
       150.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          Cookie.fromList(it)
+          CookiePartitionKey.fromList(it)
         }
       }
       151.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          HistoryItem.fromList(it)
+          Cookie.fromList(it)
         }
       }
       152.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          HistoryState.fromList(it)
+          HistoryItem.fromList(it)
         }
       }
       153.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          ReaderableState.fromList(it)
+          HistoryState.fromList(it)
         }
       }
       154.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          SecurityInfoState.fromList(it)
+          ReaderableState.fromList(it)
         }
       }
       155.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          TabContentState.fromList(it)
+          SecurityInfoState.fromList(it)
         }
       }
       156.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
+          TabContentState.fromList(it)
+        }
+      }
+      157.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
           FindResultState.fromList(it)
+        }
+      }
+      158.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          CustomSelectionAction.fromList(it)
         }
       }
       else -> super.readValueOfType(type, buffer)
@@ -1057,96 +1102,104 @@ private open class GeckoPigeonCodec : StandardMessageCodec() {
         stream.write(133)
         writeValue(stream, value.raw)
       }
-      is TranslationOptions -> {
+      is SelectionPattern -> {
         stream.write(134)
-        writeValue(stream, value.toList())
+        writeValue(stream, value.raw)
       }
-      is ReaderState -> {
+      is TranslationOptions -> {
         stream.write(135)
         writeValue(stream, value.toList())
       }
-      is LastMediaAccessState -> {
+      is ReaderState -> {
         stream.write(136)
         writeValue(stream, value.toList())
       }
-      is HistoryMetadataKey -> {
+      is LastMediaAccessState -> {
         stream.write(137)
         writeValue(stream, value.toList())
       }
-      is PackageCategoryValue -> {
+      is HistoryMetadataKey -> {
         stream.write(138)
         writeValue(stream, value.toList())
       }
-      is ExternalPackage -> {
+      is PackageCategoryValue -> {
         stream.write(139)
         writeValue(stream, value.toList())
       }
-      is LoadUrlFlagsValue -> {
+      is ExternalPackage -> {
         stream.write(140)
         writeValue(stream, value.toList())
       }
-      is SourceValue -> {
+      is LoadUrlFlagsValue -> {
         stream.write(141)
         writeValue(stream, value.toList())
       }
-      is TabState -> {
+      is SourceValue -> {
         stream.write(142)
         writeValue(stream, value.toList())
       }
-      is RecoverableTab -> {
+      is TabState -> {
         stream.write(143)
         writeValue(stream, value.toList())
       }
-      is RecoverableBrowserState -> {
+      is RecoverableTab -> {
         stream.write(144)
         writeValue(stream, value.toList())
       }
-      is IconRequest -> {
+      is RecoverableBrowserState -> {
         stream.write(145)
         writeValue(stream, value.toList())
       }
-      is ResourceSize -> {
+      is IconRequest -> {
         stream.write(146)
         writeValue(stream, value.toList())
       }
-      is Resource -> {
+      is ResourceSize -> {
         stream.write(147)
         writeValue(stream, value.toList())
       }
-      is IconResult -> {
+      is Resource -> {
         stream.write(148)
         writeValue(stream, value.toList())
       }
-      is CookiePartitionKey -> {
+      is IconResult -> {
         stream.write(149)
         writeValue(stream, value.toList())
       }
-      is Cookie -> {
+      is CookiePartitionKey -> {
         stream.write(150)
         writeValue(stream, value.toList())
       }
-      is HistoryItem -> {
+      is Cookie -> {
         stream.write(151)
         writeValue(stream, value.toList())
       }
-      is HistoryState -> {
+      is HistoryItem -> {
         stream.write(152)
         writeValue(stream, value.toList())
       }
-      is ReaderableState -> {
+      is HistoryState -> {
         stream.write(153)
         writeValue(stream, value.toList())
       }
-      is SecurityInfoState -> {
+      is ReaderableState -> {
         stream.write(154)
         writeValue(stream, value.toList())
       }
-      is TabContentState -> {
+      is SecurityInfoState -> {
         stream.write(155)
         writeValue(stream, value.toList())
       }
-      is FindResultState -> {
+      is TabContentState -> {
         stream.write(156)
+        writeValue(stream, value.toList())
+      }
+      is FindResultState -> {
+        stream.write(157)
+        writeValue(stream, value.toList())
+      }
+      is CustomSelectionAction -> {
+        stream.write(158)
         writeValue(stream, value.toList())
       }
       else -> super.writeValue(stream, value)
@@ -2454,133 +2507,59 @@ class ReaderViewController(private val binaryMessenger: BinaryMessenger, private
     }
   }
 }
-/** Generated class from Pigeon that represents Flutter messages that can be called from Kotlin. */
-class SelectionAction(private val binaryMessenger: BinaryMessenger, private val messageChannelSuffix: String = "") {
+/** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+interface GeckoSelectionActionController {
+  fun setActions(actions: List<CustomSelectionAction>)
+
   companion object {
-    /** The codec used by SelectionAction. */
+    /** The codec used by GeckoSelectionActionController. */
+    val codec: MessageCodec<Any?> by lazy {
+      GeckoPigeonCodec()
+    }
+    /** Sets up an instance of `GeckoSelectionActionController` to handle messages through the `binaryMessenger`. */
+    @JvmOverloads
+    fun setUp(binaryMessenger: BinaryMessenger, api: GeckoSelectionActionController?, messageChannelSuffix: String = "") {
+      val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.flutter_mozilla_components.GeckoSelectionActionController.setActions$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val actionsArg = args[0] as List<CustomSelectionAction>
+            val wrapped: List<Any?> = try {
+              api.setActions(actionsArg)
+              listOf(null)
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+    }
+  }
+}
+/** Generated class from Pigeon that represents Flutter messages that can be called from Kotlin. */
+class GeckoSelectionActionEvents(private val binaryMessenger: BinaryMessenger, private val messageChannelSuffix: String = "") {
+  companion object {
+    /** The codec used by GeckoSelectionActionEvents. */
     val codec: MessageCodec<Any?> by lazy {
       GeckoPigeonCodec()
     }
   }
-  /**
-   * Gets Strings representing all possible selection actions.
-   *
-   * @returns String IDs for each action that could possibly be shown in the context menu. This
-   * array must include all actions, available or not, and must not change over the class lifetime.
-   */
-  fun getAllActions(callback: (Result<List<String>>) -> Unit)
+  fun performSelectionAction(idArg: String, selectedTextArg: String, callback: (Result<Unit>) -> Unit)
 {
     val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
-    val channelName = "dev.flutter.pigeon.flutter_mozilla_components.SelectionAction.getAllActions$separatedMessageChannelSuffix"
-    val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(null) {
-      if (it is List<*>) {
-        if (it.size > 1) {
-          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
-        } else if (it[0] == null) {
-          callback(Result.failure(FlutterError("null-error", "Flutter api returned null value for non-null return value.", "")))
-        } else {
-          val output = it[0] as List<String>
-          callback(Result.success(output))
-        }
-      } else {
-        callback(Result.failure(createConnectionError(channelName)))
-      } 
-    }
-  }
-  /**
-   * Checks if an action can be shown on a new selection context menu.
-   *
-   * @returns whether or not the the custom action with the id of [id] is currently available
-   *  which may be informed by [selectedText].
-   */
-  fun isActionAvailable(idArg: String, selectedTextArg: String, callback: (Result<Boolean>) -> Unit)
-{
-    val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
-    val channelName = "dev.flutter.pigeon.flutter_mozilla_components.SelectionAction.isActionAvailable$separatedMessageChannelSuffix"
+    val channelName = "dev.flutter.pigeon.flutter_mozilla_components.GeckoSelectionActionEvents.performSelectionAction$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
     channel.send(listOf(idArg, selectedTextArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
-        } else if (it[0] == null) {
-          callback(Result.failure(FlutterError("null-error", "Flutter api returned null value for non-null return value.", "")))
         } else {
-          val output = it[0] as Boolean
-          callback(Result.success(output))
-        }
-      } else {
-        callback(Result.failure(createConnectionError(channelName)))
-      } 
-    }
-  }
-  /**
-   * Gets a title to be shown in the selection context menu.
-   *
-   * @returns the text that should be shown on the action.
-   */
-  fun getActionTitle(idArg: String, callback: (Result<String?>) -> Unit)
-{
-    val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
-    val channelName = "dev.flutter.pigeon.flutter_mozilla_components.SelectionAction.getActionTitle$separatedMessageChannelSuffix"
-    val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(listOf(idArg)) {
-      if (it is List<*>) {
-        if (it.size > 1) {
-          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
-        } else {
-          val output = it[0] as String?
-          callback(Result.success(output))
-        }
-      } else {
-        callback(Result.failure(createConnectionError(channelName)))
-      } 
-    }
-  }
-  /**
-   * Should perform the action with the id of [id].
-   *
-   * @returns [true] if the action was consumed.
-   */
-  fun performAction(idArg: String, selectedTextArg: String, callback: (Result<Boolean>) -> Unit)
-{
-    val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
-    val channelName = "dev.flutter.pigeon.flutter_mozilla_components.SelectionAction.performAction$separatedMessageChannelSuffix"
-    val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(listOf(idArg, selectedTextArg)) {
-      if (it is List<*>) {
-        if (it.size > 1) {
-          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
-        } else if (it[0] == null) {
-          callback(Result.failure(FlutterError("null-error", "Flutter api returned null value for non-null return value.", "")))
-        } else {
-          val output = it[0] as Boolean
-          callback(Result.success(output))
-        }
-      } else {
-        callback(Result.failure(createConnectionError(channelName)))
-      } 
-    }
-  }
-  /**
-   * Takes in a list of actions and sorts them.
-   *
-   * @returns the sorted list.
-   */
-  fun sortedActions(actionsArg: List<String>, callback: (Result<List<String>>) -> Unit)
-{
-    val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
-    val channelName = "dev.flutter.pigeon.flutter_mozilla_components.SelectionAction.sortedActions$separatedMessageChannelSuffix"
-    val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(listOf(actionsArg)) {
-      if (it is List<*>) {
-        if (it.size > 1) {
-          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
-        } else if (it[0] == null) {
-          callback(Result.failure(FlutterError("null-error", "Flutter api returned null value for non-null return value.", "")))
-        } else {
-          val output = it[0] as List<String>
-          callback(Result.success(output))
+          callback(Result.success(Unit))
         }
       } else {
         callback(Result.failure(createConnectionError(channelName)))

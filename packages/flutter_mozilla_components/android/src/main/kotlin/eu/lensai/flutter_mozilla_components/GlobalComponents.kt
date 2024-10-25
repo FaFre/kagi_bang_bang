@@ -3,11 +3,11 @@ package eu.lensai.flutter_mozilla_components
 import android.content.Context
 import eu.lensai.flutter_mozilla_components.pigeons.GeckoStateEvents
 import eu.lensai.flutter_mozilla_components.pigeons.ReaderViewController
-import eu.lensai.flutter_mozilla_components.pigeons.SelectionAction
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import mozilla.components.concept.engine.selection.SelectionActionDelegate
 import mozilla.components.feature.addons.update.GlobalAddonDependencyProvider
 import mozilla.components.support.base.facts.Facts
 import mozilla.components.support.base.facts.processor.LogFactProcessor
@@ -35,7 +35,7 @@ object GlobalComponents {
         applicationContext: Context,
         flutterEvents: GeckoStateEvents,
         readerViewController: ReaderViewController,
-        selectionAction: SelectionAction
+        selectionAction: SelectionActionDelegate
     ) {
         val newComponents = Components(
             applicationContext,
