@@ -3,14 +3,14 @@ version = "1.0-SNAPSHOT"
 
 buildscript {
     ext.kotlin_version = "1.9.22"
-    ext.mozillaComponentsVersion = '131.0.3'
+    ext.mozillaComponentsVersion = '133.0.20241024211615'
 
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:8.6.0")
+        classpath("com.android.tools.build:gradle:8.6.1")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
     }
 }
@@ -19,8 +19,25 @@ rootProject.allprojects {
     repositories {
         google()
         mavenCentral()
+
         maven {
-            url "https://maven.mozilla.org/maven2/"
+            name "Mozilla Nightly"
+            url "https://nightly.maven.mozilla.org/maven2"
+
+            content {
+                // Always fetch components from the snapshots repository
+                includeGroup "org.mozilla.components"
+            }
+        }
+
+        maven {
+            name "Mozilla"
+            url "https://maven.mozilla.org/maven2"
+
+            content {
+                // Never fetch components from here. We always want to use snapshots.
+                excludeGroup "org.mozilla.components"
+            }
         }
     }
 }
@@ -93,10 +110,10 @@ android {
         implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
         implementation 'com.google.android.material:material:1.12.0'
         //https://stackoverflow.com/questions/73782320/onbackinvokedcallback-is-not-enabled-for-the-application-in-set-androidenableo
-        implementation 'androidx.activity:activity:1.9.1'
+        implementation 'androidx.activity:activity:1.9.3'
 
         testImplementation("org.jetbrains.kotlin:kotlin-test")
-        testImplementation("org.mockito:mockito-core:5.0.0")
+        testImplementation("org.mockito:mockito-core:5.1.0")
     }
 
     testOptions {
