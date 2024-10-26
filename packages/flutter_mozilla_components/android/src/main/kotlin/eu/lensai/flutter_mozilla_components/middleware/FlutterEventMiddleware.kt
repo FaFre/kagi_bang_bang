@@ -14,6 +14,7 @@ import mozilla.components.browser.state.action.ContentAction
 import mozilla.components.browser.state.action.LastAccessAction
 import mozilla.components.browser.state.action.ReaderAction
 import mozilla.components.browser.state.action.TabListAction
+import mozilla.components.browser.state.action.WebExtensionAction
 import mozilla.components.browser.state.state.BrowserState
 import mozilla.components.feature.addons.logger
 import mozilla.components.lib.state.Middleware
@@ -65,8 +66,11 @@ class FlutterEventMiddleware(private val flutterEvents: GeckoStateEvents) : Midd
                     ) { _ -> }
                 }
             }
+            is WebExtensionAction.UpdatePromptRequestWebExtensionAction -> {
+                logger.debug("Event fired: " + action.javaClass.name)
+            }
             else -> {
-                //logger.debug("Event fired: " + action.javaClass.name)
+                logger.debug("Event fired: " + action.javaClass.name)
             }
         }
         next(action)

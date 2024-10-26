@@ -58,9 +58,13 @@ class Components(
 ) {
   private val runtime by lazy {
     // Allow for exfiltrating Gecko metrics through the Glean SDK.
-    val builder = GeckoRuntimeSettings.Builder().aboutConfigEnabled(true)
+    val builder = GeckoRuntimeSettings.Builder()
+      .aboutConfigEnabled(true)
+      .extensionsWebAPIEnabled(true)
+
     builder.experimentDelegate(NimbusExperimentDelegate())
     builder.crashHandler(CrashHandlerService::class.java)
+
     GeckoRuntime.create(applicationContext, builder.build())
   }
 

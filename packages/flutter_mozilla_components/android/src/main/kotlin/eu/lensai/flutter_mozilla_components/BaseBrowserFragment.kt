@@ -10,7 +10,10 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
+import eu.lensai.flutter_mozilla_components.addons.WebExtensionActionPopupActivity
+import eu.lensai.flutter_mozilla_components.addons.WebExtensionPromptFeature
 import eu.lensai.flutter_mozilla_components.databinding.FragmentBrowserBinding
+import mozilla.components.browser.state.state.WebExtensionState
 import mozilla.components.concept.engine.EngineView
 import mozilla.components.feature.app.links.AppLinksFeature
 import mozilla.components.feature.downloads.DownloadsFeature
@@ -29,6 +32,7 @@ import mozilla.components.support.base.log.logger.Logger
 import mozilla.components.support.ktx.android.arch.lifecycle.addObservers
 import mozilla.components.support.locale.ActivityContextWrapper
 import mozilla.components.support.utils.ext.requestInPlacePermissions
+import mozilla.components.support.webextensions.WebExtensionPopupObserver
 
 /**
  * Base fragment extended by [BrowserFragment] and [ExternalAppBrowserFragment].
@@ -41,8 +45,10 @@ abstract class BaseBrowserFragment : Fragment(), UserInteractionHandler, Activit
     private val downloadsFeature = ViewBoundFeatureWrapper<DownloadsFeature>()
     private val appLinksFeature = ViewBoundFeatureWrapper<AppLinksFeature>()
     private val promptFeature = ViewBoundFeatureWrapper<PromptFeature>()
+    private val webExtensionPromptFeature = ViewBoundFeatureWrapper<WebExtensionPromptFeature>()
     private val sitePermissionsFeature = ViewBoundFeatureWrapper<SitePermissionsFeature>()
     private val swipeRefreshFeature = ViewBoundFeatureWrapper<SwipeRefreshFeature>()
+
 
     protected val sessionId: String?
         get() = arguments?.getString(SESSION_ID_KEY)
@@ -215,18 +221,39 @@ abstract class BaseBrowserFragment : Fragment(), UserInteractionHandler, Activit
             view = binding.root,
         )
 
+        webExtensionPromptFeature.set(
+            feature = WebExtensionPromptFeature(
+                store = components.store,
+                context = requireContext(),
+                fragmentManager = parentFragmentManager,
+            ),
+            owner = this,
+            view = binding.root
+        )
+
         val secureWindowFeature = SecureWindowFeature(
             window = requireActivity().window,
             store = components.store,
             customTabId = sessionId,
         )
 
+        val webExtensionPopupObserver = WebExtensionPopupObserver(components.store, ::openPopup)
+
         // Observe the lifecycle for supported features
         lifecycle.addObservers(
             secureWindowFeature,
+            webExtensionPopupObserver,
         )
 
         return binding.root
+    }
+
+    private fun openPopup(webExtensionState: WebExtensionState) {
+        val intent = Intent(requireContext().applicationContext, WebExtensionActionPopupActivity::class.java)
+        intent.putExtra("web_extension_id", webExtensionState.id)
+        intent.putExtra("web_extension_name", webExtensionState.name)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
     }
 
     @CallSuper
