@@ -5,17 +5,35 @@ import eu.lensai.flutter_mozilla_components.pigeons.GeckoBrowserApi
 import mozilla.components.browser.state.action.SystemAction
 import mozilla.components.feature.addons.logger
 
+/**
+ * Implementation of GeckoBrowserApi that handles browser-related operations
+ * @param showFragmentCallback Callback function to show native fragment
+ */
 class GeckoBrowserApiImpl(private val showFragmentCallback: () -> Unit) : GeckoBrowserApi {
+    companion object {
+        private const val TAG = "GeckoBrowserApiImpl"
+    }
+
     override fun showNativeFragment() {
-        showFragmentCallback.invoke();
+        try {
+            showFragmentCallback()
+        } catch (e: Exception) {
+            logger.error("Failed to show native fragment", e)
+        }
     }
 
     override fun onTrimMemory(level: Long) {
-        logger.debug("onTrimMemory: $level")
+        requireNotNull(GlobalComponents.components) { "Components not initialized" }
 
-        val components = GlobalComponents.components!!
+        logger.debug("$TAG: onTrimMemory called with level: $level")
 
-        components.store.dispatch(SystemAction.LowMemoryAction(level.toInt()))
-        components.icons.onTrimMemory(level.toInt())
+        with(GlobalComponents.components!!) {
+            try {
+                core.store.dispatch(SystemAction.LowMemoryAction(level.toInt()))
+                core.icons.onTrimMemory(level.toInt())
+            } catch (e: Exception) {
+                logger.error("$TAG: Failed to handle memory trim", e)
+            }
+        }
     }
 }

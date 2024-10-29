@@ -7,6 +7,7 @@ import 'package:lensai/features/bangs/domain/repositories/data.dart';
 import 'package:lensai/features/geckoview/domain/providers/tab_list.dart';
 import 'package:lensai/features/geckoview/features/tabs/domain/providers.dart';
 import 'package:lensai/features/kagi/data/entities/modes.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'providers.g.dart';
@@ -28,7 +29,7 @@ class SelectedBangTrigger extends _$SelectedBangTrigger {
 }
 
 @Riverpod()
-Stream<BangData?> selectedBangData(SelectedBangDataRef ref, {String? domain}) {
+Stream<BangData?> selectedBangData(Ref ref, {String? domain}) {
   final repository = ref.watch(bangDataRepositoryProvider.notifier);
   final selectedBangTrigger =
       ref.watch(selectedBangTriggerProvider(domain: domain));
@@ -85,7 +86,7 @@ class ShowFindInPage extends _$ShowFindInPage {
 
 @Riverpod()
 List<String> availableTabIds(
-  AvailableTabIdsRef ref,
+  Ref ref,
   String? containerId,
 ) {
   final containerTabs = ref.watch(

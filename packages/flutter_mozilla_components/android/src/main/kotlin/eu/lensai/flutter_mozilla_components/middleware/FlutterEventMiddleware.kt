@@ -29,6 +29,10 @@ import kotlin.reflect.typeOf
  * the thumbnail to the disk cache.
  */
 class FlutterEventMiddleware(private val flutterEvents: GeckoStateEvents) : Middleware<BrowserState, BrowserAction> {
+    private val components by lazy {
+        requireNotNull(GlobalComponents.components) { "Components not initialized" }
+    }
+    
     @Suppress("ComplexMethod")
     override fun invoke(
         context: MiddlewareContext<BrowserState, BrowserAction>,
@@ -47,7 +51,7 @@ class FlutterEventMiddleware(private val flutterEvents: GeckoStateEvents) : Midd
             //UpdateReaderConnectRequiredAction seems to be the only event that is called predictable
             //after a hot reload
             is ReaderAction.UpdateReaderConnectRequiredAction -> {
-                if(!GlobalComponents.components!!.engineReportedInitialized) {
+                if(!components.engineReportedInitialized) {
                     runOnUiThread {
                         flutterEvents.onEngineReadyStateChange(
                             System.currentTimeMillis(),
@@ -55,7 +59,7 @@ class FlutterEventMiddleware(private val flutterEvents: GeckoStateEvents) : Midd
                         ) { _ -> }
                     }
 
-                    GlobalComponents.components!!.engineReportedInitialized = true
+                    components.engineReportedInitialized = true
                 }
             }
             is TabListAction.AddTabAction -> {
@@ -66,11 +70,8 @@ class FlutterEventMiddleware(private val flutterEvents: GeckoStateEvents) : Midd
                     ) { _ -> }
                 }
             }
-            is WebExtensionAction.UpdatePromptRequestWebExtensionAction -> {
-                logger.debug("Event fired: " + action.javaClass.name)
-            }
             else -> {
-                logger.debug("Event fired: " + action.javaClass.name)
+                //logger.debug("Event fired: " + action.javaClass.name)
             }
         }
         next(action)

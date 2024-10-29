@@ -8,6 +8,7 @@ import 'package:lensai/core/logger.dart';
 import 'package:lensai/data/models/received_parameter.dart';
 import 'package:lensai/features/kagi/data/entities/modes.dart';
 import 'package:mime/mime.dart' as mime;
+import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uri_to_file/uri_to_file.dart' as uri_to_file;
@@ -48,7 +49,7 @@ final _sharingIntentTransformer =
 );
 
 @Riverpod()
-Raw<Stream<ReceivedParameter>> sharingIntentStream(SharingIntentStreamRef ref) {
+Raw<Stream<ReceivedParameter>> sharingIntentStream(Ref ref) {
   final initialStream = FlutterSharingIntent.instance
       // ignore: discarded_futures
       .getInitialSharing()

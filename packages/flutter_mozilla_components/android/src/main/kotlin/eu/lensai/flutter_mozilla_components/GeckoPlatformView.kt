@@ -26,6 +26,10 @@ private class NativeFragmentView(
     containerId: Int,
     private val flutterEvents: GeckoStateEvents
 ) : PlatformView {
+    private val components by lazy {
+        requireNotNull(GlobalComponents.components) { "Components not initialized" }
+    }
+
     private val container: View
 
     init {
@@ -41,7 +45,7 @@ private class NativeFragmentView(
     override fun onFlutterViewAttached(flutterView: View) {
         super.onFlutterViewAttached(flutterView)
 
-        GlobalComponents.components!!.engineReportedInitialized = false;
+        components.engineReportedInitialized = false;
         flutterEvents.onViewReadyStateChange(System.currentTimeMillis(),true) { _ -> }
     }
 

@@ -4,11 +4,11 @@ import 'package:lensai/extensions/image.dart';
 
 class EquatableImage {
   final Image value;
-  final String? _imageHash;
+  final int? _imageHash;
 
   EquatableImage(
     this.value, {
-    required String? hash,
+    required int? hash,
   }) : _imageHash = hash;
 
   static Future<EquatableImage> calculate(Image image) async {

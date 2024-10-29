@@ -7,7 +7,7 @@ part of 'providers.dart';
 // **************************************************************************
 
 String _$chatSearchDatabaseHash() =>
-    r'd7d2ad34264201d9196b28140b9b0ce0be6b7e1c';
+    r'99700f1a2c25b24742c60fa8dd91fe744dcf21be';
 
 /// See also [chatSearchDatabase].
 @ProviderFor(chatSearchDatabase)
@@ -22,6 +22,8 @@ final chatSearchDatabaseProvider =
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef ChatSearchDatabaseRef = AutoDisposeProviderRef<ChatSearchDatabase>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

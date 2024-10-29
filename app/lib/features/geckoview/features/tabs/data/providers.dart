@@ -4,6 +4,7 @@ import 'package:lensai/data/database/functions/lexo_rank_functions.dart';
 import 'package:lensai/features/geckoview/features/tabs/data/database/database.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
@@ -12,7 +13,7 @@ import 'package:universal_io/io.dart';
 part 'providers.g.dart';
 
 @Riverpod(keepAlive: true)
-TabDatabase tabDatabase(TabDatabaseRef ref) {
+TabDatabase tabDatabase(Ref ref) {
   return TabDatabase(
     LazyDatabase(() async {
       // put the database file, called db.sqlite here, into the documents folder

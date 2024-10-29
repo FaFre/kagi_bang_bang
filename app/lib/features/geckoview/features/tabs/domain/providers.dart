@@ -5,13 +5,14 @@ import 'package:lensai/features/geckoview/features/tabs/data/models/container_da
 import 'package:lensai/features/geckoview/features/tabs/data/providers.dart';
 import 'package:lensai/features/geckoview/features/tabs/domain/repositories/container.dart';
 import 'package:lensai/features/geckoview/features/tabs/utils/color_palette.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'providers.g.dart';
 
 @Riverpod()
 Future<Color> unusedRandomContainerColor(
-  UnusedRandomContainerColorRef ref,
+  Ref ref,
 ) async {
   final repository = ref.watch(containerRepositoryProvider.notifier);
 
@@ -28,21 +29,21 @@ Future<Color> unusedRandomContainerColor(
 
 @Riverpod()
 Stream<List<ContainerDataWithCount>> containersWithCount(
-  ContainersWithCountRef ref,
+  Ref ref,
 ) {
   final db = ref.watch(tabDatabaseProvider);
   return db.containersWithCount().watch();
 }
 
 @Riverpod()
-Stream<String?> tabContainerId(TabContainerIdRef ref, String tabId) {
+Stream<String?> tabContainerId(Ref ref, String tabId) {
   final db = ref.watch(tabDatabaseProvider);
   return db.tabDao.tabContainerId(tabId).watchSingle();
 }
 
 @Riverpod()
 Stream<List<String>> containerTabIds(
-  ContainerTabIdsRef ref,
+  Ref ref,
   String? containerId,
 ) {
   final db = ref.watch(tabDatabaseProvider);

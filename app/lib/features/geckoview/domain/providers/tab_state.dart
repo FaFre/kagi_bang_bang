@@ -10,6 +10,7 @@ import 'package:lensai/features/geckoview/domain/entities/tab_state.dart';
 import 'package:lensai/features/geckoview/domain/providers.dart';
 import 'package:lensai/features/geckoview/domain/providers/selected_tab.dart';
 import 'package:lensai/features/geckoview/utils/image_helper.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:synchronized/synchronized.dart';
 
@@ -190,7 +191,7 @@ class TabStates extends _$TabStates {
 }
 
 @Riverpod()
-TabState? tabState(TabStateRef ref, String? tabId) {
+TabState? tabState(Ref ref, String? tabId) {
   if (tabId == null) {
     return null;
   }
@@ -201,7 +202,7 @@ TabState? tabState(TabStateRef ref, String? tabId) {
 }
 
 @Riverpod()
-TabState? selectedTabState(SelectedTabStateRef ref) {
+TabState? selectedTabState(Ref ref) {
   final tabId = ref.watch(selectedTabProvider);
   return ref.watch(tabStateProvider(tabId));
 }

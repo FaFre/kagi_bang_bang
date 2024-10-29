@@ -6,7 +6,7 @@ part of 'archive.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$readArchivedChatHash() => r'e7d646a0ea22fe24d96e97f86c1d46fe83818508';
+String _$readArchivedChatHash() => r'beeadc38cf71f7dfb77a33a1202c685543a72b24';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -142,6 +142,8 @@ class ReadArchivedChatProvider extends AutoDisposeFutureProvider<String> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin ReadArchivedChatRef on AutoDisposeFutureProviderRef<String> {
   /// The parameter `fileName` of this provider.
   String get fileName;
@@ -173,4 +175,4 @@ final chatArchiveRepositoryProvider = AutoDisposeStreamNotifierProvider<
 
 typedef _$ChatArchiveRepository = AutoDisposeStreamNotifier<List<ChatEntity>>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

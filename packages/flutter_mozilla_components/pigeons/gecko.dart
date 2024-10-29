@@ -479,6 +479,26 @@ class CustomSelectionAction {
   CustomSelectionAction(this.id, this.title, this.pattern);
 }
 
+enum WebExtensionActionType { browser, page }
+
+class WebExtensionData {
+  final String extensionId;
+  final String? title;
+  final bool? enabled;
+  final String? badgeText;
+  final int? badgeTextColor;
+  final int? badgeBackgroundColor;
+
+  WebExtensionData(
+    this.extensionId,
+    this.title,
+    this.enabled,
+    this.badgeText,
+    this.badgeTextColor,
+    this.badgeBackgroundColor,
+  );
+}
+
 // /// Represents all the different supported types of data that can be found from long clicking
 // /// an element.
 // sealed class HitResult {
@@ -637,7 +657,7 @@ abstract class GeckoSessionApi {
   });
 
   @async
-  Uint8List? requestScreenshot();
+  Uint8List? requestScreenshot(bool sendBack);
 }
 
 @HostApi()
@@ -834,4 +854,34 @@ abstract class GeckoSelectionActionController {
 @FlutterApi()
 abstract class GeckoSelectionActionEvents {
   void performSelectionAction(String id, String selectedText);
+}
+
+@HostApi()
+abstract class GeckoAddonsApi {
+  void startAddonManagerActivity();
+
+  void invokeAddonAction(String extensionId, WebExtensionActionType actionType);
+}
+
+@FlutterApi()
+abstract class GeckoAddonEvents {
+  void onUpsertWebExtensionAction(
+    int timestamp,
+    String extensionId,
+    WebExtensionActionType actionType,
+    WebExtensionData extensionData,
+  );
+
+  void onRemoveWebExtensionAction(
+    int timestamp,
+    String extensionId,
+    WebExtensionActionType actionType,
+  );
+
+  void onUpdateWebExtensionIcon(
+    int timestamp,
+    String extensionId,
+    WebExtensionActionType actionType,
+    Uint8List icon,
+  );
 }

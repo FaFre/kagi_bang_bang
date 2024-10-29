@@ -25,7 +25,9 @@ import eu.lensai.flutter_mozilla_components.R
  * An activity to show the pop up action of a web extension.
  */
 class WebExtensionActionPopupActivity : AppCompatActivity() {
-    private val components: Components by lazy { GlobalComponents.components!! }
+    private val components by lazy {
+        requireNotNull(GlobalComponents.components) { "Components not initialized" }
+    }
 
     private lateinit var webExtensionId: String
 
@@ -46,7 +48,7 @@ class WebExtensionActionPopupActivity : AppCompatActivity() {
 
     override fun onCreateView(parent: View?, name: String, context: Context, attrs: AttributeSet): View? =
         when (name) {
-            EngineView::class.java.name -> components.engine.createView(context, attrs).asView()
+            EngineView::class.java.name -> components.core.engine.createView(context, attrs).asView()
             else -> super.onCreateView(parent, name, context, attrs)
         }
 
@@ -54,7 +56,9 @@ class WebExtensionActionPopupActivity : AppCompatActivity() {
      * A fragment to show the web extension action popup with [EngineView].
      */
     class WebExtensionActionPopupFragment : Fragment(), EngineSession.Observer {
-        private val components: Components by lazy { GlobalComponents.components!! }
+        private val components by lazy {
+        requireNotNull(GlobalComponents.components) { "Components not initialized" }
+    }
 
         private var engineSession: EngineSession? = null
         private lateinit var webExtensionId: String
@@ -64,7 +68,7 @@ class WebExtensionActionPopupActivity : AppCompatActivity() {
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
             webExtensionId = requireNotNull(arguments?.getString("web_extension_id"))
-            engineSession = components.store.state.extensions[webExtensionId]?.popupSession
+            engineSession = components.core.store.state.extensions[webExtensionId]?.popupSession
 
             return inflater.inflate(R.layout.fragment_add_on_settings, container, false)
         }
@@ -77,7 +81,7 @@ class WebExtensionActionPopupActivity : AppCompatActivity() {
                 addonSettingsEngineView.render(session)
                 consumePopupSession()
             } else {
-                consumeFrom(components.store) { state ->
+                consumeFrom(components.core.store) { state ->
                     state.extensions[webExtensionId]?.let { extState ->
                         extState.popupSession?.let {
                             if (engineSession == null) {
@@ -108,7 +112,7 @@ class WebExtensionActionPopupActivity : AppCompatActivity() {
         }
 
         private fun consumePopupSession() {
-            components.store.dispatch(
+            components.core.store.dispatch(
                 WebExtensionAction.UpdatePopupSessionAction(webExtensionId, popupSession = null),
             )
         }

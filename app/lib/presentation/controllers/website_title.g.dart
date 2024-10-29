@@ -6,7 +6,7 @@ part of 'website_title.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$pageInfoHash() => r'66800fc7e4863750fc9a3717a25e94ee95ec52a3';
+String _$pageInfoHash() => r'f83bf4b19670abedf0fac5cfe59f190c37544123';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -141,6 +141,8 @@ class PageInfoProvider extends FutureProvider<WebPageInfo> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin PageInfoRef on FutureProviderRef<WebPageInfo> {
   /// The parameter `url` of this provider.
   Uri get url;
@@ -154,4 +156,4 @@ class _PageInfoProviderElement extends FutureProviderElement<WebPageInfo>
   Uri get url => (origin as PageInfoProvider).url;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

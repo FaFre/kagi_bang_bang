@@ -27,7 +27,9 @@ import mozilla.components.feature.addons.R as MozComp
  * An activity to show the details of a installed add-on.
  */
 class InstalledAddonDetailsActivity : AppCompatActivity() {
-    private val components: Components by lazy { GlobalComponents.components!! }
+    private val components by lazy {
+        requireNotNull(GlobalComponents.components) { "Components not initialized" }
+    }
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -46,7 +48,7 @@ class InstalledAddonDetailsActivity : AppCompatActivity() {
     private fun bindAddon(addon: Addon) {
         scope.launch {
             try {
-                val addons = components.addonManager.getAddons()
+                val addons = components.core.addonManager.getAddons()
                 scope.launch(Dispatchers.Main) {
                     addons.find { addon.id == it.id }.let {
                         if (it == null) {
@@ -89,7 +91,7 @@ class InstalledAddonDetailsActivity : AppCompatActivity() {
         switch.setState(addon.isEnabled())
         switch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                components.addonManager.enableAddon(
+                components.core.addonManager.enableAddon(
                     addon,
                     onSuccess = {
                         switch.setState(true)
@@ -108,7 +110,7 @@ class InstalledAddonDetailsActivity : AppCompatActivity() {
                     },
                 )
             } else {
-                components.addonManager.disableAddon(
+                components.core.addonManager.disableAddon(
                     addon,
                     onSuccess = {
                         switch.setState(false)
@@ -161,7 +163,7 @@ class InstalledAddonDetailsActivity : AppCompatActivity() {
         val switch = findViewById<SwitchCompat>(R.id.allow_in_private_browsing_switch)
         switch.isChecked = addon.isAllowedInPrivateBrowsing()
         switch.setOnCheckedChangeListener { _, isChecked ->
-            components.addonManager.setAddonAllowedInPrivateBrowsing(
+            components.core.addonManager.setAddonAllowedInPrivateBrowsing(
                 addon,
                 isChecked,
                 onSuccess = {
@@ -173,7 +175,7 @@ class InstalledAddonDetailsActivity : AppCompatActivity() {
 
     private fun bindRemoveButton(addon: Addon) {
         findViewById<View>(R.id.remove_add_on).setOnClickListener {
-            components.addonManager.uninstallAddon(
+            components.core.addonManager.uninstallAddon(
                 addon,
                 onSuccess = {
                     Toast.makeText(

@@ -7,7 +7,7 @@ part of 'providers.dart';
 // **************************************************************************
 
 String _$selectionActionServiceHash() =>
-    r'c150f6003dcea80b18fc063dd998ab45ce27d1a1';
+    r'b5bc6b2bc5496ae84d61a74cc6ff052b55d2a3d3';
 
 /// See also [selectionActionService].
 @ProviderFor(selectionActionService)
@@ -22,8 +22,10 @@ final selectionActionServiceProvider =
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef SelectionActionServiceRef = ProviderRef<GeckoSelectionActionService>;
-String _$eventServiceHash() => r'5aa357fdf0d217677a9a66ecb50417ac18929cad';
+String _$eventServiceHash() => r'166b01f636fbdd4355dbc55a18ca4f83e0006de8';
 
 /// See also [eventService].
 @ProviderFor(eventService)
@@ -36,9 +38,27 @@ final eventServiceProvider = Provider<GeckoEventService>.internal(
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef EventServiceRef = ProviderRef<GeckoEventService>;
+String _$addonServiceHash() => r'c7aca09b99c3810908176f3464f5f90a185aa5e7';
+
+/// See also [addonService].
+@ProviderFor(addonService)
+final addonServiceProvider = Provider<GeckoAddonService>.internal(
+  addonService,
+  name: r'addonServiceProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$addonServiceHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef AddonServiceRef = ProviderRef<GeckoAddonService>;
 String _$selectedTabSessionNotifierHash() =>
-    r'ea9959e871dd0c3a8b80152eafe726c925094106';
+    r'62fcd98a915566d55b5bcb297d87d675fe12786d';
 
 /// See also [selectedTabSessionNotifier].
 @ProviderFor(selectedTabSessionNotifier)
@@ -53,6 +73,8 @@ final selectedTabSessionNotifierProvider =
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef SelectedTabSessionNotifierRef = AutoDisposeProviderRef<Raw<TabSession>>;
 String _$engineReadyStateHash() => r'c682333e2e07cf0635aa7ae793a2088ca648c950';
 
@@ -71,4 +93,4 @@ final engineReadyStateProvider =
 
 typedef _$EngineReadyState = Notifier<bool>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

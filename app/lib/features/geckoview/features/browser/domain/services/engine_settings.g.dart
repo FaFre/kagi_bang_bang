@@ -7,7 +7,7 @@ part of 'engine_settings.dart';
 // **************************************************************************
 
 String _$engineSettingsServiceHash() =>
-    r'9d9abb3601a3782f1f3ef91e31049db40acbf64a';
+    r'051d7b6f65eb5dcb07405b4af1bdadd8dd74fdc0';
 
 /// See also [engineSettingsService].
 @ProviderFor(engineSettingsService)
@@ -22,6 +22,8 @@ final engineSettingsServiceProvider =
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef EngineSettingsServiceRef = ProviderRef<GeckoEngineSettingsService>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

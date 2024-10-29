@@ -7,7 +7,7 @@ part of 'selected_container.dart';
 // **************************************************************************
 
 String _$selectedContainerDataHash() =>
-    r'dc930d1bb47b3c7989c6c119b0459f37d687af84';
+    r'1ec86a82e1fc4823a867285f05036c903633a165';
 
 /// See also [selectedContainerData].
 @ProviderFor(selectedContainerData)
@@ -22,6 +22,8 @@ final selectedContainerDataProvider =
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef SelectedContainerDataRef = AutoDisposeStreamProviderRef<ContainerData?>;
 String _$selectedContainerHash() => r'e38e86db5bd0584af9561156c26ceaea3d23aebf';
 
@@ -40,4 +42,4 @@ final selectedContainerProvider =
 
 typedef _$SelectedContainer = Notifier<String?>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

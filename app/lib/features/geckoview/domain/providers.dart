@@ -5,6 +5,7 @@ import 'package:lensai/core/logger.dart';
 import 'package:lensai/features/bangs/domain/providers.dart';
 import 'package:lensai/features/geckoview/domain/providers/tab_session.dart';
 import 'package:lensai/features/geckoview/domain/repositories/tab.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -13,7 +14,7 @@ part 'providers.g.dart';
 
 @Riverpod(keepAlive: true)
 GeckoSelectionActionService selectionActionService(
-  SelectionActionServiceRef ref,
+  Ref ref,
 ) {
   final service = GeckoSelectionActionService.setUp();
 
@@ -74,8 +75,19 @@ GeckoSelectionActionService selectionActionService(
 }
 
 @Riverpod(keepAlive: true)
-GeckoEventService eventService(EventServiceRef ref) {
+GeckoEventService eventService(Ref ref) {
   final service = GeckoEventService.setUp();
+
+  ref.onDispose(() {
+    service.dispose();
+  });
+
+  return service;
+}
+
+@Riverpod(keepAlive: true)
+GeckoAddonService addonService(Ref ref) {
+  final service = GeckoAddonService.setUp();
 
   ref.onDispose(() {
     service.dispose();
@@ -120,6 +132,6 @@ class EngineReadyState extends _$EngineReadyState {
 }
 
 @Riverpod()
-Raw<TabSession> selectedTabSessionNotifier(SelectedTabSessionNotifierRef ref) {
+Raw<TabSession> selectedTabSessionNotifier(Ref ref) {
   return ref.watch(tabSessionProvider(null).notifier);
 }

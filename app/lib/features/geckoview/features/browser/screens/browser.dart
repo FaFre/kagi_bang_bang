@@ -6,18 +6,19 @@ import 'package:flutter_material_design_icons/flutter_material_design_icons.dart
 import 'package:flutter_mozilla_components/flutter_mozilla_components.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:lensai/core/logger.dart';
 import 'package:lensai/core/routing/routes.dart';
 import 'package:lensai/features/geckoview/domain/providers.dart';
 import 'package:lensai/features/geckoview/domain/providers/tab_list.dart';
 import 'package:lensai/features/geckoview/domain/providers/tab_session.dart';
 import 'package:lensai/features/geckoview/domain/providers/tab_state.dart';
+import 'package:lensai/features/geckoview/domain/providers/web_extensions_state.dart';
 import 'package:lensai/features/geckoview/domain/repositories/tab.dart';
 import 'package:lensai/features/geckoview/features/browser/domain/entities/sheet.dart';
 import 'package:lensai/features/geckoview/features/browser/domain/services/create_tab.dart';
 import 'package:lensai/features/geckoview/features/browser/domain/services/engine_settings.dart';
 import 'package:lensai/features/geckoview/features/browser/presentation/dialogs/web_page_dialog.dart';
 import 'package:lensai/features/geckoview/features/browser/presentation/widgets/app_bar_title.dart';
+import 'package:lensai/features/geckoview/features/browser/presentation/widgets/browser_view.dart';
 import 'package:lensai/features/geckoview/features/browser/presentation/widgets/sheets/create_tab.dart';
 import 'package:lensai/features/geckoview/features/browser/presentation/widgets/sheets/view_tabs.dart';
 import 'package:lensai/features/geckoview/features/browser/presentation/widgets/tabs_action_button.dart';
@@ -219,7 +220,8 @@ class BrowserScreen extends HookConsumerWidget {
                                     onPressed: () {
                                       ref
                                           .read(
-                                              createTabStreamProvider.notifier)
+                                            createTabStreamProvider.notifier,
+                                          )
                                           .createTab(
                                             CreateTabSheet(
                                               preferredTool: KagiTool.assistant,
@@ -278,7 +280,8 @@ class BrowserScreen extends HookConsumerWidget {
                             horizontal: 8.0,
                           ),
                           child: Icon(
-                              quickActionVoice ? Icons.mic : quickAction.icon),
+                            quickActionVoice ? Icons.mic : quickAction.icon,
+                          ),
                         ),
                       ),
                     TabsActionButton(
@@ -310,13 +313,60 @@ class BrowserScreen extends HookConsumerWidget {
                             },
                             child: const Padding(
                               padding: EdgeInsets.symmetric(
-                                  vertical: 15.0, horizontal: 8.0),
+                                vertical: 15.0,
+                                horizontal: 8.0,
+                              ),
                               child: Icon(Icons.more_vert),
                             ),
                           ),
                         );
                       },
                       menuChildren: [
+                        Consumer(
+                          builder: (context, childRef, child) {
+                            final pageExtensions = childRef.watch(
+                              webExtensionsStateProvider(
+                                WebExtensionActionType.page,
+                              ).select((value) => value.values.toList()),
+                            );
+
+                            return Wrap(
+                              alignment: WrapAlignment.center,
+                              children: [
+                                ...pageExtensions.map(
+                                  (extension) => IconButton(
+                                    onPressed: () async {
+                                      //Use parents .ref because after onPressed this consumer gets disposed already
+                                      await ref
+                                          .read(addonServiceProvider)
+                                          .invokeAddonAction(
+                                            extension.extensionId,
+                                            WebExtensionActionType.page,
+                                          );
+                                    },
+                                    icon: Badge(
+                                      isLabelVisible:
+                                          extension.badgeText?.isNotEmpty ??
+                                              false,
+                                      label: (extension.badgeText?.isNotEmpty ==
+                                              true)
+                                          ? Text(extension.badgeText!)
+                                          : null,
+                                      textColor: extension.badgeTextColor,
+                                      backgroundColor:
+                                          extension.badgeBackgroundColor,
+                                      child: RawImage(
+                                        image: extension.icon?.value,
+                                        width: 24,
+                                        height: 24,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
                         MenuItemButton(
                           onPressed: () async {
                             await context.push(AboutRoute().location);
@@ -332,6 +382,50 @@ class BrowserScreen extends HookConsumerWidget {
                           leadingIcon: const Icon(Icons.settings),
                           child: const Text('Settings'),
                         ),
+                        Consumer(
+                          builder: (context, childRef, child) {
+                            final browserExtensions = childRef.watch(
+                              webExtensionsStateProvider(
+                                WebExtensionActionType.browser,
+                              ).select((value) => value.values.toList()),
+                            );
+
+                            return SubmenuButton(
+                              menuChildren: [
+                                ...browserExtensions.map(
+                                  (extension) => MenuItemButton(
+                                    onPressed: () async {
+                                      //Use parents .ref because after onPressed this consumer gets disposed already
+                                      await ref
+                                          .read(addonServiceProvider)
+                                          .invokeAddonAction(
+                                            extension.extensionId,
+                                            WebExtensionActionType.browser,
+                                          );
+                                    },
+                                    leadingIcon: RawImage(
+                                      image: extension.icon?.value,
+                                      width: 24,
+                                      height: 24,
+                                    ),
+                                    child: Text(extension.title ?? ''),
+                                  ),
+                                ),
+                                MenuItemButton(
+                                  onPressed: () async {
+                                    await childRef
+                                        .read(addonServiceProvider)
+                                        .startAddonManagerActivity();
+                                  },
+                                  leadingIcon: const Icon(MdiIcons.puzzleEdit),
+                                  child: const Text('Addon Manager'),
+                                ),
+                              ],
+                              leadingIcon: const Icon(MdiIcons.puzzle),
+                              child: const Text('Addons'),
+                            );
+                          },
+                        ),
                         const Divider(),
                         MenuItemButton(
                           onPressed: () async {
@@ -340,53 +434,56 @@ class BrowserScreen extends HookConsumerWidget {
                           leadingIcon: const Icon(MdiIcons.exclamationThick),
                           child: const Text('Bangs'),
                         ),
-                        if (showEarlyAccessFeatures)
-                          MenuItemButton(
-                            onPressed: () async {
-                              await context
-                                  .push(ChatArchiveListRoute().location);
-                            },
-                            leadingIcon: const Icon(MdiIcons.archive),
-                            child: const Text('Chat Archive'),
-                          ),
-                        const Divider(),
-                        if (showEarlyAccessFeatures)
-                          MenuItemButton(
-                            onPressed: () {
-                              ref
-                                  .read(createTabStreamProvider.notifier)
-                                  .createTab(
-                                    CreateTabSheet(
-                                        preferredTool: KagiTool.assistant),
-                                  );
-                            },
-                            leadingIcon: Icon(KagiTool.assistant.icon),
-                            child: const Text('Assistant'),
-                          ),
-                        MenuItemButton(
-                          onPressed: () {
-                            ref
-                                .read(createTabStreamProvider.notifier)
-                                .createTab(
-                                  CreateTabSheet(
-                                      preferredTool: KagiTool.summarizer),
-                                );
-                          },
-                          leadingIcon: Icon(KagiTool.summarizer.icon),
-                          child: const Text('Summarizer'),
-                        ),
-                        MenuItemButton(
-                          onPressed: () {
-                            ref
-                                .read(createTabStreamProvider.notifier)
-                                .createTab(
-                                  CreateTabSheet(
-                                      preferredTool: KagiTool.search),
-                                );
-                          },
-                          leadingIcon: Icon(KagiTool.search.icon),
-                          child: const Text('Search'),
-                        ),
+                        // if (showEarlyAccessFeatures)
+                        //   MenuItemButton(
+                        //     onPressed: () async {
+                        //       await context
+                        //           .push(ChatArchiveListRoute().location);
+                        //     },
+                        //     leadingIcon: const Icon(MdiIcons.archive),
+                        //     child: const Text('Chat Archive'),
+                        //   ),
+                        // const Divider(),
+                        // if (showEarlyAccessFeatures)
+                        //   MenuItemButton(
+                        //     onPressed: () {
+                        //       ref
+                        //           .read(createTabStreamProvider.notifier)
+                        //           .createTab(
+                        //             CreateTabSheet(
+                        //               preferredTool: KagiTool.assistant,
+                        //             ),
+                        //           );
+                        //     },
+                        //     leadingIcon: Icon(KagiTool.assistant.icon),
+                        //     child: const Text('Assistant'),
+                        //   ),
+                        // MenuItemButton(
+                        //   onPressed: () {
+                        //     ref
+                        //         .read(createTabStreamProvider.notifier)
+                        //         .createTab(
+                        //           CreateTabSheet(
+                        //             preferredTool: KagiTool.summarizer,
+                        //           ),
+                        //         );
+                        //   },
+                        //   leadingIcon: Icon(KagiTool.summarizer.icon),
+                        //   child: const Text('Summarizer'),
+                        // ),
+                        // MenuItemButton(
+                        //   onPressed: () {
+                        //     ref
+                        //         .read(createTabStreamProvider.notifier)
+                        //         .createTab(
+                        //           CreateTabSheet(
+                        //             preferredTool: KagiTool.search,
+                        //           ),
+                        //         );
+                        //   },
+                        //   leadingIcon: Icon(KagiTool.search.icon),
+                        //   child: const Text('Search'),
+                        // ),
                         const Divider(),
                         if (selectedTabId != null)
                           MenuItemButton(
@@ -419,8 +516,10 @@ class BrowserScreen extends HookConsumerWidget {
                           MenuItemButton(
                             onPressed: () {
                               ref
-                                  .read(findInPageVisibilityControllerProvider
-                                      .notifier)
+                                  .read(
+                                    findInPageVisibilityControllerProvider
+                                        .notifier,
+                                  )
                                   .show();
                             },
                             leadingIcon: const Icon(Icons.search),
@@ -431,7 +530,8 @@ class BrowserScreen extends HookConsumerWidget {
                           MenuItemButton(
                             onPressed: () async {
                               final controller = ref.read(
-                                  tabSessionProvider(selectedTabId).notifier);
+                                tabSessionProvider(selectedTabId).notifier,
+                              );
 
                               await controller.reload();
                               menuController.close();
@@ -479,7 +579,9 @@ class BrowserScreen extends HookConsumerWidget {
                                           ),
                                   ),
                                   const SizedBox(
-                                      height: 48, child: VerticalDivider()),
+                                    height: 48,
+                                    child: VerticalDivider(),
+                                  ),
                                   Expanded(
                                     child: IconButton(
                                       onPressed: (history?.canGoForward == true)
@@ -607,30 +709,7 @@ class BrowserScreen extends HookConsumerWidget {
                       SafeArea(
                         child: Stack(
                           children: [
-                            Consumer(
-                              builder: (context, ref, child) {
-                                //Initialize dependencies
-                                ref.watch(selectionActionServiceProvider);
-
-                                return GeckoView(
-                                  preInitializationStep: () async {
-                                    await ref
-                                        .read(eventServiceProvider)
-                                        .viewReadyStateEvents
-                                        .firstWhere((state) => state == true)
-                                        .timeout(
-                                      const Duration(seconds: 3),
-                                      onTimeout: () {
-                                        logger.e(
-                                          'Browser fragement not reported ready, trying to intitialize anyways',
-                                        );
-                                        return true;
-                                      },
-                                    );
-                                  },
-                                );
-                              },
-                            ),
+                            const BrowserView(),
                             Positioned(
                               bottom: 0,
                               left: 0,

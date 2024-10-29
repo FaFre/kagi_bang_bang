@@ -41,7 +41,7 @@
         android:icon="@mipmap/launcher_icon"
         android:usesCleartextTraffic="true"
         android:enableOnBackInvokedCallback="true">
-        <activity android:name="eu.lensai.flutter_mozilla_components.NotificationActivity" android:theme="@style/Theme.AppCompat.Translucent" />
+        <activity android:name="eu.lensai.flutter_mozilla_components.activities.NotificationActivity" android:theme="@style/Theme.AppCompat.Translucent" />
         
         <activity
             android:name=".MainActivity"
@@ -85,6 +85,42 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:theme="@style/Theme.AppCompat.Light"
+            android:name="eu.lensai.flutter_mozilla_components.addons.AddonsActivity"
+            android:label="@string/mozac_feature_addons_addons"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:theme="@style/Theme.AppCompat.Light"
+            android:name="eu.lensai.flutter_mozilla_components.addons.AddonDetailsActivity"
+            android:exported="false"
+            android:label="@string/mozac_feature_addons_addons" />
+
+        <activity android:name="eu.lensai.flutter_mozilla_components.addons.InstalledAddonDetailsActivity"
+            android:label="@string/mozac_feature_addons_addons"
+            android:parentActivityName="eu.lensai.flutter_mozilla_components.addons.AddonsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light" />
+
+        <activity
+            android:name="eu.lensai.flutter_mozilla_components.addons.PermissionsDetailsActivity"
+            android:label="@string/mozac_feature_addons_addons"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light" />
+
+        <activity
+            android:name="eu.lensai.flutter_mozilla_components.addons.AddonSettingsActivity"
+            android:label="@string/mozac_feature_addons_addons"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light" />
+
+        <activity
+            android:name="eu.lensai.flutter_mozilla_components.addons.WebExtensionActionPopupActivity"
+            android:label="@string/mozac_feature_addons_addons"
+            android:theme="@style/Theme.AppCompat.Light"/>
+
         <receiver android:name="FullWidgetProvider" android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -113,10 +149,10 @@
         </receiver>
 
         <service
-            android:name="eu.lensai.flutter_mozilla_components.DownloadService"
+            android:name="eu.lensai.flutter_mozilla_components.services.DownloadService"
             android:foregroundServiceType="dataSync" />
 
-        <service android:name="eu.lensai.flutter_mozilla_components.MediaSessionService"
+        <service android:name="eu.lensai.flutter_mozilla_components.services.MediaSessionService"
             android:foregroundServiceType="mediaPlayback"
             android:exported="false" />
 

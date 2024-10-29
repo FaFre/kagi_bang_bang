@@ -6,7 +6,7 @@ part of 'tab_state.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$tabStateHash() => r'9fd7990804643fac180dd4fd50803bc7c9fa2827';
+String _$tabStateHash() => r'f57b2353acc99ca73670d504b45ea5ff19df38c7';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -141,6 +141,8 @@ class TabStateProvider extends AutoDisposeProvider<TabState?> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin TabStateRef on AutoDisposeProviderRef<TabState?> {
   /// The parameter `tabId` of this provider.
   String? get tabId;
@@ -154,7 +156,7 @@ class _TabStateProviderElement extends AutoDisposeProviderElement<TabState?>
   String? get tabId => (origin as TabStateProvider).tabId;
 }
 
-String _$selectedTabStateHash() => r'22172913554e14e67f692eff0777ea015175906e';
+String _$selectedTabStateHash() => r'dbd36af7af286bd9d079f30e8e11bbda23bf7728';
 
 /// See also [selectedTabState].
 @ProviderFor(selectedTabState)
@@ -168,6 +170,8 @@ final selectedTabStateProvider = AutoDisposeProvider<TabState?>.internal(
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef SelectedTabStateRef = AutoDisposeProviderRef<TabState?>;
 String _$tabStatesHash() => r'dcd293279a901eeaab7728979e39e5ca3bee8c66';
 
@@ -185,4 +189,4 @@ final tabStatesProvider =
 
 typedef _$TabStates = Notifier<Map<String, TabState>>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

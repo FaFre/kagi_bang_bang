@@ -1,14 +1,14 @@
 import 'dart:ui';
 
-import 'package:crypto/crypto.dart';
 import 'package:lensai/domain/entities/equatable_image.dart';
+import 'package:xxh3/xxh3.dart';
 
 extension ImageHash on Image {
-  Future<String?> calculateHash() async {
+  Future<int?> calculateHash() async {
     final bytes = await toByteData();
     if (bytes != null) {
-      final digest = sha1.convert(bytes.buffer.asUint8List());
-      return digest.toString();
+      final digest = xxh3(bytes.buffer.asUint8List());
+      return digest;
     }
 
     return null;

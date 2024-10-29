@@ -37,8 +37,8 @@ class TabSession extends _$TabSession {
     return _sessionService.exitFullscreen();
   }
 
-  Future<Uint8List?> requestScreenshot() {
-    return _sessionService.requestScreenshot();
+  Future<Uint8List?> requestScreenshot({bool requireImageResult = true}) {
+    return _sessionService.requestScreenshot(requireImageResult);
   }
 
   @override

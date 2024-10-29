@@ -30,7 +30,9 @@ import mozilla.components.feature.addons.R as MozComp
  * Fragment use for managing add-ons.
  */
 class AddonsFragment : Fragment(), AddonsManagerAdapterDelegate {
-    private val components: Components by lazy { GlobalComponents.components!! }
+    private val components by lazy {
+        requireNotNull(GlobalComponents.components) { "Components not initialized" }
+    }
 
     private val webExtensionPromptFeature = ViewBoundFeatureWrapper<WebExtensionPromptFeature>()
     private lateinit var recyclerView: RecyclerView
@@ -54,7 +56,7 @@ class AddonsFragment : Fragment(), AddonsManagerAdapterDelegate {
         bindRecyclerView(rootView)
         webExtensionPromptFeature.set(
             feature = WebExtensionPromptFeature(
-                store = components.store,
+                store = components.core.store,
                 context = requireContext(),
                 fragmentManager = parentFragmentManager,
             ),
@@ -78,13 +80,13 @@ class AddonsFragment : Fragment(), AddonsManagerAdapterDelegate {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         scope.launch {
             try {
-                addons = components.addonManager.getAddons()
+                addons = components.core.addonManager.getAddons()
 
                 scope.launch(Dispatchers.Main) {
                     adapter = AddonsManagerAdapter(
                         this@AddonsFragment,
                         addons,
-                        store = components.store,
+                        store = components.core.store,
                     )
                     recyclerView.adapter = adapter
                 }
@@ -122,7 +124,7 @@ class AddonsFragment : Fragment(), AddonsManagerAdapterDelegate {
     private val installAddon: ((Addon) -> Unit) = { addon ->
         addonProgressOverlay.visibility = View.VISIBLE
         isInstallationInProgress = true
-        components.addonManager.installAddon(
+        components.core.addonManager.installAddon(
             url = addon.downloadUrl,
             onSuccess = {
                 runIfFragmentIsAttached {

@@ -7,17 +7,19 @@ import mozilla.components.browser.state.state.BrowserState
 import mozilla.components.concept.engine.EngineSession
 
 class GeckoFindApiImpl : GeckoFindApi {
-    private val state: BrowserState by lazy { GlobalComponents.components!!.store.state }
+    private val components by lazy {
+        requireNotNull(GlobalComponents.components) { "Components not initialized" }
+    }
 
     private fun sessionByTabId(tabId: String?) : EngineSession? {
         val loadSessionId = tabId
-            ?: state.selectedTabId
+            ?: components.core.store.state.selectedTabId
 
         if (loadSessionId == null) {
             return null
         }
 
-        val tab = state.findTabOrCustomTab(loadSessionId)
+        val tab = components.core.store.state.findTabOrCustomTab(loadSessionId)
         return tab?.engineState?.engineSession
     }
 

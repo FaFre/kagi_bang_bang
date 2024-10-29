@@ -6,7 +6,7 @@ part of 'providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$routerHash() => r'4ad45f430b1f43e427e21122d16bd761ca04ae0e';
+String _$routerHash() => r'dcafae2924a2ad3d5d836c6756d2e4a4ead36b4e';
 
 /// See also [router].
 @ProviderFor(router)
@@ -19,6 +19,8 @@ final routerProvider = Provider<GoRouter>.internal(
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef RouterRef = ProviderRef<GoRouter>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

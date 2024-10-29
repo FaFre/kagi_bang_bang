@@ -13,6 +13,7 @@ part 'tab_list.g.dart';
 class TabList extends _$TabList {
   late TabDatabase _db;
 
+  @override
   List<String> build() {
     final eventService = ref.watch(eventServiceProvider);
 

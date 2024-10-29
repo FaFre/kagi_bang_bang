@@ -6,7 +6,7 @@ part of 'providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$bangDatabaseHash() => r'bbca2edf32faa378dcb6270b12019758d5156662';
+String _$bangDatabaseHash() => r'd7964e9cdbb6e60fb6d2a78f07bfd4fa34bcb236';
 
 /// See also [bangDatabase].
 @ProviderFor(bangDatabase)
@@ -19,6 +19,8 @@ final bangDatabaseProvider = Provider<BangDatabase>.internal(
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef BangDatabaseRef = ProviderRef<BangDatabase>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

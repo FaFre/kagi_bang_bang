@@ -21,13 +21,14 @@ import mozilla.components.feature.addons.ui.translateName
 import mozilla.components.support.utils.ext.getParcelableCompat
 import mozilla.components.support.utils.ext.getParcelableExtraCompat
 import eu.lensai.flutter_mozilla_components.R
-import mozilla.components.browser.state.store.BrowserStore
 
 /**
  * An activity to show the settings of an add-on.
  */
 class AddonSettingsActivity : AppCompatActivity() {
-    private val components: Components by lazy { GlobalComponents.components!! }
+    private val components by lazy {
+        requireNotNull(GlobalComponents.components) { "Components not initialized" }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +48,7 @@ class AddonSettingsActivity : AppCompatActivity() {
 
     override fun onCreateView(parent: View?, name: String, context: Context, attrs: AttributeSet): View? =
         when (name) {
-            EngineView::class.java.name -> components.engine.createView(context, attrs).asView()
+            EngineView::class.java.name -> components.core.engine.createView(context, attrs).asView()
             else -> super.onCreateView(parent, name, context, attrs)
         }
 
@@ -55,7 +56,9 @@ class AddonSettingsActivity : AppCompatActivity() {
      * A fragment to show the settings of an add-on with [EngineView].
      */
     class AddonSettingsFragment : Fragment() {
-        private val components: Components by lazy { GlobalComponents.components!! }
+        private val components by lazy {
+            requireNotNull(GlobalComponents.components) { "Components not initialized" }
+        }
 
         private lateinit var optionsPageUrl: String
         private lateinit var engineSession: EngineSession
@@ -68,7 +71,7 @@ class AddonSettingsActivity : AppCompatActivity() {
                 )?.installedState?.optionsPageUrl,
             )
 
-            engineSession = components.engine.createSession()
+            engineSession = components.core.engine.createSession()
 
             return inflater.inflate(R.layout.fragment_add_on_settings, container, false)
         }

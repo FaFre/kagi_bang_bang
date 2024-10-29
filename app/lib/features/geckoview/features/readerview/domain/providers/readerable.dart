@@ -1,10 +1,11 @@
 import 'package:flutter_mozilla_components/flutter_mozilla_components.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'readerable.g.dart';
 
 @Riverpod(keepAlive: true)
-GeckoReaderableService readerableService(ReaderableServiceRef ref) {
+GeckoReaderableService readerableService(Ref ref) {
   final service = GeckoReaderableService.setUp();
 
   ref.onDispose(() {
@@ -15,7 +16,7 @@ GeckoReaderableService readerableService(ReaderableServiceRef ref) {
 }
 
 @Riverpod()
-Stream<bool> appearanceButtonVisibility(AppearanceButtonVisibilityRef ref) {
+Stream<bool> appearanceButtonVisibility(Ref ref) {
   final service = ref.watch(readerableServiceProvider);
   return service.appearanceVisibility;
 }

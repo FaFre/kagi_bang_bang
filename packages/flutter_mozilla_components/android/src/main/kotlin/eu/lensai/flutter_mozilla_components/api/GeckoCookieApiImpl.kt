@@ -2,62 +2,94 @@ package eu.lensai.flutter_mozilla_components.api
 
 import eu.lensai.flutter_mozilla_components.feature.CookieManagerFeature
 import eu.lensai.flutter_mozilla_components.feature.ResultConsumer
-import eu.lensai.flutter_mozilla_components.pigeons.Cookie
-import eu.lensai.flutter_mozilla_components.pigeons.CookiePartitionKey
-import eu.lensai.flutter_mozilla_components.pigeons.CookieSameSiteStatus
-import eu.lensai.flutter_mozilla_components.pigeons.GeckoCookieApi
+import eu.lensai.flutter_mozilla_components.pigeons.*
 import org.json.JSONObject
 
 class GeckoCookieApiImpl : GeckoCookieApi {
-    private fun toValueOrNull(json: JSONObject, key: String): Any? {
-        if (!json.has(key)) {
-            throw RuntimeException("Invalid map key")
+    private companion object {
+        const val ERROR_INVALID_KEY = "Invalid map key"
+    }
+
+    private fun JSONObject.putNullable(key: String, value: Any?) {
+        put(key, value ?: JSONObject.NULL)
+    }
+
+    private fun JSONObject.getValueOrNull(key: String): Any? {
+        if (!has(key)) throw RuntimeException(ERROR_INVALID_KEY)
+        return if (!isNull(key)) get(key) else null
+    }
+
+    private fun CookiePartitionKey.toJSON() = JSONObject().apply {
+        put("topLevelSite", topLevelSite)
+    }
+
+    private fun cookiePartitionKeyFromJSON(json: JSONObject) = CookiePartitionKey(
+        topLevelSite = json.getString("topLevelSite")
+    )
+
+    private fun cookieFromJSON(json: JSONObject): Cookie {
+        val partitionKeyJson = json.getValueOrNull("partitionKey") as JSONObject?
+        val partitionKey = partitionKeyJson?.takeUnless { it.length() == 0 }?.let {
+            cookiePartitionKeyFromJSON(it)
         }
 
-        if (!json.isNull(key)) {
-            return json.get(key)
-        }
-
-        return null
-    }
-
-    private fun cookiePartitionKeyFromJSON(inputJSON: JSONObject): CookiePartitionKey {
-        return CookiePartitionKey(
-            topLevelSite = inputJSON.getString("topLevelSite")
-        )
-    }
-
-    private fun CookiePartitionKey.toJSON(): JSONObject {
-        val json = JSONObject()
-        json.put("topLevelSite", topLevelSite)
-        return json
-    }
-
-    private fun cookieFromJSON(inputJSON: JSONObject): Cookie {
-        val partitionKeyRaw = toValueOrNull(inputJSON, "partitionKey") as JSONObject?
-        val partitionKey = if (partitionKeyRaw == null || partitionKeyRaw.length() == 0) null
-                            else cookiePartitionKeyFromJSON(partitionKeyRaw)
-
-        return Cookie (
-            domain = inputJSON.getString("domain"),
-            expirationDate = (toValueOrNull(inputJSON, "expirationDate") as Int?)?.toLong(),
-            firstPartyDomain = inputJSON.getString("firstPartyDomain"),
-            hostOnly = inputJSON.getBoolean("hostOnly"),
-            httpOnly = inputJSON.getBoolean("httpOnly"),
-            name = inputJSON.getString("name"),
+        return Cookie(
+            domain = json.getString("domain"),
+            expirationDate = (json.getValueOrNull("expirationDate") as Int?)?.toLong(),
+            firstPartyDomain = json.getString("firstPartyDomain"),
+            hostOnly = json.getBoolean("hostOnly"),
+            httpOnly = json.getBoolean("httpOnly"),
+            name = json.getString("name"),
             partitionKey = partitionKey,
-            path = inputJSON.getString("path"),
-            secure = inputJSON.getBoolean("secure"),
-            session = inputJSON.getBoolean("session"),
-            sameSite = when(inputJSON.getString("sameSite")) {
-                "no_restriction" -> CookieSameSiteStatus.NO_RESTRICTION
-                "lax" -> CookieSameSiteStatus.LAX
-                "strict" -> CookieSameSiteStatus.STRICT
-                else -> CookieSameSiteStatus.UNSPECIFIED
-            },
-            storeId = inputJSON.getString("storeId"),
-            value = inputJSON.getString("value")
+            path = json.getString("path"),
+            secure = json.getBoolean("secure"),
+            session = json.getBoolean("session"),
+            sameSite = parseSameSiteStatus(json.getString("sameSite")),
+            storeId = json.getString("storeId"),
+            value = json.getString("value")
         )
+    }
+
+    private fun parseSameSiteStatus(status: String) = when(status) {
+        "no_restriction" -> CookieSameSiteStatus.NO_RESTRICTION
+        "lax" -> CookieSameSiteStatus.LAX
+        "strict" -> CookieSameSiteStatus.STRICT
+        else -> CookieSameSiteStatus.UNSPECIFIED
+    }
+
+    private fun sameSiteToString(status: CookieSameSiteStatus) = when(status) {
+        CookieSameSiteStatus.NO_RESTRICTION -> "no_restriction"
+        CookieSameSiteStatus.LAX -> "lax"
+        CookieSameSiteStatus.STRICT -> "strict"
+        CookieSameSiteStatus.UNSPECIFIED -> ""
+    }
+
+    private fun createBaseArgs(
+        firstPartyDomain: String?,
+        partitionKey: CookiePartitionKey?,
+        storeId: String?,
+        url: String
+    ) = JSONObject().apply {
+        putNullable("firstPartyDomain", firstPartyDomain)
+        putNullable("partitionKey", partitionKey?.toJSON())
+        putNullable("storeId", storeId)
+        put("url", url)
+    }
+
+    private fun handleRequest(
+        action: String,
+        args: JSONObject,
+        callback: (Result<Unit>) -> Unit
+    ) {
+        CookieManagerFeature.scheduleRequest(action, args, object : ResultConsumer<JSONObject> {
+            override fun success(result: JSONObject) {
+                callback(Result.success(Unit))
+            }
+
+            override fun error(errorCode: String, errorMessage: String?, errorDetails: Any?) {
+                callback(Result.failure(Exception("$errorCode $errorMessage $errorDetails")))
+            }
+        })
     }
 
     override fun getCookie(
@@ -68,30 +100,11 @@ class GeckoCookieApiImpl : GeckoCookieApi {
         url: String,
         callback: (Result<Cookie>) -> Unit
     ) {
-        val args = JSONObject()
-
-        if (firstPartyDomain == null) {
-            args.put("firstPartyDomain", JSONObject.NULL)
-        } else {
-            args.put("firstPartyDomain", firstPartyDomain)
-        }
-        args.put("name", name)
-
-        if (partitionKey == null) {
-            args.put("partitionKey", JSONObject.NULL)
-        } else {
-            args.put("partitionKey", partitionKey.toJSON())
+        val args = createBaseArgs(firstPartyDomain, partitionKey, storeId, url).apply {
+            put("name", name)
         }
 
-        if (storeId == null) {
-            args.put("storeId", JSONObject.NULL)
-        } else {
-            args.put("storeId", storeId)
-        }
-
-        args.put("url", url)
-
-        CookieManagerFeature.scheduleRequest("get", args, object: ResultConsumer<JSONObject> {
+        CookieManagerFeature.scheduleRequest("get", args, object : ResultConsumer<JSONObject> {
             override fun success(result: JSONObject) {
                 callback(Result.success(cookieFromJSON(result.getJSONObject("result"))))
             }
@@ -99,7 +112,6 @@ class GeckoCookieApiImpl : GeckoCookieApi {
             override fun error(errorCode: String, errorMessage: String?, errorDetails: Any?) {
                 callback(Result.failure(Exception("$errorCode $errorMessage $errorDetails")))
             }
-
         })
     }
 
@@ -112,53 +124,22 @@ class GeckoCookieApiImpl : GeckoCookieApi {
         url: String,
         callback: (Result<List<Cookie>>) -> Unit
     ) {
-        val args = JSONObject()
-
-        if (domain == null) {
-            args.put("domain", JSONObject.NULL)
-        } else {
-            args.put("domain", domain)
+        val args = createBaseArgs(firstPartyDomain, partitionKey, storeId, url).apply {
+            putNullable("domain", domain)
+            putNullable("name", name)
         }
 
-        if (firstPartyDomain == null) {
-            args.put("firstPartyDomain", JSONObject.NULL)
-        } else {
-            args.put("firstPartyDomain", firstPartyDomain)
-        }
-
-        args.put("name", name)
-
-        if (partitionKey == null) {
-            args.put("partitionKey", JSONObject.NULL)
-        } else {
-            args.put("partitionKey", partitionKey.toJSON())
-        }
-
-        if (storeId == null) {
-            args.put("storeId", JSONObject.NULL)
-        } else {
-            args.put("storeId", storeId)
-        }
-
-        args.put("url", url)
-
-        CookieManagerFeature.scheduleRequest("getAll", args, object: ResultConsumer<JSONObject> {
+        CookieManagerFeature.scheduleRequest("getAll", args, object : ResultConsumer<JSONObject> {
             override fun success(result: JSONObject) {
-                val jsonArray = result.getJSONArray("result")
-                val cookies: MutableList<Cookie> = mutableListOf()
-
-                repeat(jsonArray.length()) {
-                        index ->
-                    cookies.add(cookieFromJSON(jsonArray.getJSONObject(index)))
+                val cookies = result.getJSONArray("result").let { jsonArray ->
+                    List(jsonArray.length()) { cookieFromJSON(jsonArray.getJSONObject(it)) }
                 }
-
                 callback(Result.success(cookies))
             }
 
             override fun error(errorCode: String, errorMessage: String?, errorDetails: Any?) {
                 callback(Result.failure(Exception("$errorCode $errorMessage $errorDetails")))
             }
-
         })
     }
 
@@ -177,90 +158,18 @@ class GeckoCookieApiImpl : GeckoCookieApi {
         value: String?,
         callback: (Result<Unit>) -> Unit
     ) {
-        val args = JSONObject()
-
-        if (domain == null) {
-            args.put("domain", JSONObject.NULL)
-        } else {
-            args.put("domain", domain)
+        val args = createBaseArgs(firstPartyDomain, partitionKey, storeId, url).apply {
+            putNullable("domain", domain)
+            putNullable("expirationDate", expirationDate)
+            putNullable("httpOnly", httpOnly)
+            putNullable("name", name)
+            putNullable("path", path)
+            putNullable("sameSite", sameSite?.let { sameSiteToString(it) })
+            putNullable("secure", secure)
+            putNullable("value", value)
         }
 
-        if (expirationDate == null) {
-            args.put("expirationDate", JSONObject.NULL)
-        } else {
-            args.put("expirationDate", domain)
-        }
-
-        if (firstPartyDomain == null) {
-            args.put("firstPartyDomain", JSONObject.NULL)
-        } else {
-            args.put("firstPartyDomain", firstPartyDomain)
-        }
-
-        if (httpOnly == null) {
-            args.put("httpOnly", JSONObject.NULL)
-        } else {
-            args.put("httpOnly", httpOnly)
-        }
-
-        if (name == null) {
-            args.put("name", JSONObject.NULL)
-        } else {
-            args.put("name", name)
-        }
-
-        if (partitionKey == null) {
-            args.put("partitionKey", JSONObject.NULL)
-        } else {
-            args.put("partitionKey", partitionKey.toJSON())
-        }
-
-        if (path == null) {
-            args.put("path", JSONObject.NULL)
-        } else {
-            args.put("path", path)
-        }
-
-        if (sameSite == null) {
-            args.put("sameSite", JSONObject.NULL)
-        } else {
-            args.put("sameSite", when(sameSite) {
-                CookieSameSiteStatus.NO_RESTRICTION -> "no_restriction"
-                CookieSameSiteStatus.LAX -> "lax"
-                CookieSameSiteStatus.STRICT -> "strict"
-                CookieSameSiteStatus.UNSPECIFIED -> ""
-            })
-        }
-
-        if (secure == null) {
-            args.put("secure", JSONObject.NULL)
-        } else {
-            args.put("secure", secure)
-        }
-
-        if (storeId == null) {
-            args.put("storeId", JSONObject.NULL)
-        } else {
-            args.put("storeId", storeId)
-        }
-
-        args.put("url", url)
-
-        if (value == null) {
-            args.put("value", JSONObject.NULL)
-        } else {
-            args.put("value", value)
-        }
-
-        CookieManagerFeature.scheduleRequest("set", args, object: ResultConsumer<JSONObject> {
-            override fun success(result: JSONObject) {
-                callback(Result.success(Unit))
-            }
-
-            override fun error(errorCode: String, errorMessage: String?, errorDetails: Any?) {
-                callback(Result.failure(Exception("$errorCode $errorMessage $errorDetails")))
-            }
-        })
+        handleRequest("set", args, callback)
     }
 
     override fun removeCookie(
@@ -271,39 +180,10 @@ class GeckoCookieApiImpl : GeckoCookieApi {
         url: String,
         callback: (Result<Unit>) -> Unit
     ) {
-        val args = JSONObject()
-
-        if (firstPartyDomain == null) {
-            args.put("firstPartyDomain", JSONObject.NULL)
-        } else {
-            args.put("firstPartyDomain", firstPartyDomain)
+        val args = createBaseArgs(firstPartyDomain, partitionKey, storeId, url).apply {
+            put("name", name)
         }
 
-        args.put("name", name)
-
-        if (partitionKey == null) {
-            args.put("partitionKey", JSONObject.NULL)
-        } else {
-            args.put("partitionKey", partitionKey.toJSON())
-        }
-
-        if (storeId == null) {
-            args.put("storeId", JSONObject.NULL)
-        } else {
-            args.put("storeId", storeId)
-        }
-
-        args.put("url", url)
-
-        CookieManagerFeature.scheduleRequest("remove", args, object: ResultConsumer<JSONObject> {
-            override fun success(result: JSONObject) {
-                callback(Result.success(Unit))
-            }
-
-            override fun error(errorCode: String, errorMessage: String?, errorDetails: Any?) {
-                callback(Result.failure(Exception("$errorCode $errorMessage $errorDetails")))
-            }
-        })
+        handleRequest("remove", args, callback)
     }
-
 }

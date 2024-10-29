@@ -6,7 +6,7 @@ part of 'providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$bangDataHash() => r'd0e96885458be8893c6b19735b8792bdd1b9bcb8';
+String _$bangDataHash() => r'057a002de9789ab74c8f3b337a43faa26b788d8d';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -141,6 +141,8 @@ class BangDataProvider extends AutoDisposeStreamProvider<BangData?> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin BangDataRef on AutoDisposeStreamProviderRef<BangData?> {
   /// The parameter `trigger` of this provider.
   String? get trigger;
@@ -155,7 +157,7 @@ class _BangDataProviderElement
 }
 
 String _$kagiSearchBangDataHash() =>
-    r'4dbeaab0541d7c8214d097523d139eede2e3f975';
+    r'0bb5014a7af73ef6f5a36b0545d7a73e7ad0580a';
 
 /// See also [kagiSearchBangData].
 @ProviderFor(kagiSearchBangData)
@@ -169,8 +171,10 @@ final kagiSearchBangDataProvider = StreamProvider<BangData?>.internal(
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef KagiSearchBangDataRef = StreamProviderRef<BangData?>;
-String _$bangCategoriesHash() => r'dbc63b78208be90c2aa3c3d61b08f98818f4b89d';
+String _$bangCategoriesHash() => r'947fcfd2dffcc7f585c6ed7379d319f4fe72293a';
 
 /// See also [bangCategories].
 @ProviderFor(bangCategories)
@@ -185,9 +189,11 @@ final bangCategoriesProvider =
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef BangCategoriesRef
     = AutoDisposeStreamProviderRef<Map<String, List<String>>>;
-String _$bangDataListHash() => r'c4fbc1676be933b29ec88f503110c119fe8b6d86';
+String _$bangDataListHash() => r'cd034fdf046b156ac452edd0857ac054ab477917';
 
 /// See also [bangDataList].
 @ProviderFor(bangDataList)
@@ -317,6 +323,8 @@ class BangDataListProvider extends AutoDisposeStreamProvider<List<BangData>> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin BangDataListRef on AutoDisposeStreamProviderRef<List<BangData>> {
   /// The parameter `filter` of this provider.
   ({
@@ -342,7 +350,7 @@ class _BangDataListProviderElement
 }
 
 String _$frequentBangDataListHash() =>
-    r'adf8d0b72adfa8faffadd7f1a294ce3945e22fec';
+    r'27bc10ddf502266458af3910fff09bc8282a8e5c';
 
 /// See also [frequentBangDataList].
 @ProviderFor(frequentBangDataList)
@@ -357,9 +365,11 @@ final frequentBangDataListProvider =
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef FrequentBangDataListRef = AutoDisposeStreamProviderRef<List<BangData>>;
 String _$bangDataEnsureIconHash() =>
-    r'69b59b582a7b165b8076a1478d0d433ec0846ccb';
+    r'423b8e92fd89ec328c2fcc8f9e55365c30633fd2';
 
 /// See also [bangDataEnsureIcon].
 @ProviderFor(bangDataEnsureIcon)
@@ -474,6 +484,8 @@ class BangDataEnsureIconProvider extends AutoDisposeFutureProvider<BangData> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin BangDataEnsureIconRef on AutoDisposeFutureProviderRef<BangData> {
   /// The parameter `bang` of this provider.
   BangData get bang;
@@ -488,7 +500,7 @@ class _BangDataEnsureIconProviderElement
   BangData get bang => (origin as BangDataEnsureIconProvider).bang;
 }
 
-String _$lastSyncOfGroupHash() => r'4906dc24970eccda89d94697f98cf70e241ea4ec';
+String _$lastSyncOfGroupHash() => r'23d07f3132ba9bb35a31f74e3a69698d31d4c569';
 
 /// See also [lastSyncOfGroup].
 @ProviderFor(lastSyncOfGroup)
@@ -603,6 +615,8 @@ class LastSyncOfGroupProvider extends AutoDisposeStreamProvider<DateTime?> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin LastSyncOfGroupRef on AutoDisposeStreamProviderRef<DateTime?> {
   /// The parameter `group` of this provider.
   BangGroup get group;
@@ -617,7 +631,7 @@ class _LastSyncOfGroupProviderElement
   BangGroup get group => (origin as LastSyncOfGroupProvider).group;
 }
 
-String _$bangCountOfGroupHash() => r'10b363679230c0abf6a6ba7d0be2d0367a7ed215';
+String _$bangCountOfGroupHash() => r'211ffcd7f49b637a7953f913dc5eafda344423f3';
 
 /// See also [bangCountOfGroup].
 @ProviderFor(bangCountOfGroup)
@@ -732,6 +746,8 @@ class BangCountOfGroupProvider extends AutoDisposeStreamProvider<int> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin BangCountOfGroupRef on AutoDisposeStreamProviderRef<int> {
   /// The parameter `group` of this provider.
   BangGroup get group;
@@ -746,7 +762,7 @@ class _BangCountOfGroupProviderElement
 }
 
 String _$bangIconCacheSizeMegabytesHash() =>
-    r'2199439f1b8a2692607231836769a10a24405181';
+    r'e08bfdc7bb47a56c079464478f0b8b5516b2effe';
 
 /// See also [bangIconCacheSizeMegabytes].
 @ProviderFor(bangIconCacheSizeMegabytes)
@@ -761,6 +777,8 @@ final bangIconCacheSizeMegabytesProvider =
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef BangIconCacheSizeMegabytesRef = AutoDisposeStreamProviderRef<double>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:flutter_mozilla_components/src/extensions/subject.dart';
 import 'package:flutter_mozilla_components/src/pigeons/gecko.g.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -12,8 +13,6 @@ typedef ThumbnailEvent = ({String tabId, Uint8List? bytes});
 typedef FindResultsEvent = ({String tabId, List<FindResultState> results});
 
 class GeckoEventService extends GeckoStateEvents {
-  final _lastEventTimes = <Subject, Map<dynamic, int>>{};
-
   // Stream controllers
   final _viewStateSubject = BehaviorSubject.seeded(false);
   final _engineStateSubject = BehaviorSubject.seeded(false);
@@ -48,35 +47,20 @@ class GeckoEventService extends GeckoStateEvents {
 
   Stream<String> get tabAddedStream => _tabAddedSubject.stream;
 
-  void _addWhenMoreRecent<T>(
-    Subject<T> subject,
-    int timestamp,
-    dynamic identifier,
-    T value,
-  ) {
-    _lastEventTimes[subject] ??= {};
-
-    if ((_lastEventTimes[subject]?[identifier] ?? 0) < timestamp) {
-      _lastEventTimes[subject]![identifier] = timestamp;
-      subject.add(value);
-    }
-  }
-
   @override
   void onViewReadyStateChange(int timestamp, bool state) {
-    _addWhenMoreRecent(_viewStateSubject, timestamp, null, state);
+    _viewStateSubject.addWhenMoreRecent(timestamp, null, state);
   }
 
   @override
   void onEngineReadyStateChange(int timestamp, bool state) {
-    _addWhenMoreRecent(_engineStateSubject, timestamp, null, state);
+    _engineStateSubject.addWhenMoreRecent(timestamp, null, state);
   }
 
   // Overridden methods
   @override
   void onTabListChange(int timestamp, List<String?> tabIds) {
-    _addWhenMoreRecent(
-      _tabListSubject,
+    _tabListSubject.addWhenMoreRecent(
       timestamp,
       null,
       tabIds.nonNulls.toList(),
@@ -85,18 +69,17 @@ class GeckoEventService extends GeckoStateEvents {
 
   @override
   void onSelectedTabChange(int timestamp, String? id) {
-    _addWhenMoreRecent(_selectedTabSubject, timestamp, id, id);
+    _selectedTabSubject.addWhenMoreRecent(timestamp, id, id);
   }
 
   @override
   void onTabContentStateChange(int timestamp, TabContentState state) {
-    _addWhenMoreRecent(_tabContentSubject, timestamp, state.id, state);
+    _tabContentSubject.addWhenMoreRecent(timestamp, state.id, state);
   }
 
   @override
   void onHistoryStateChange(int timestamp, String id, HistoryState state) {
-    _addWhenMoreRecent(
-      _historySubject,
+    _historySubject.addWhenMoreRecent(
       timestamp,
       id,
       (tabId: id, history: state),
@@ -109,8 +92,7 @@ class GeckoEventService extends GeckoStateEvents {
     String id,
     ReaderableState state,
   ) {
-    _addWhenMoreRecent(
-      _readerableSubject,
+    _readerableSubject.addWhenMoreRecent(
       timestamp,
       id,
       (tabId: id, readerable: state),
@@ -123,8 +105,7 @@ class GeckoEventService extends GeckoStateEvents {
     String id,
     SecurityInfoState state,
   ) {
-    _addWhenMoreRecent(
-      _securityInfoSubject,
+    _securityInfoSubject.addWhenMoreRecent(
       timestamp,
       id,
       (tabId: id, securityInfo: state),
@@ -133,13 +114,12 @@ class GeckoEventService extends GeckoStateEvents {
 
   @override
   void onIconChange(int timestamp, String id, Uint8List? bytes) {
-    _addWhenMoreRecent(_iconSubject, timestamp, id, (tabId: id, bytes: bytes));
+    _iconSubject.addWhenMoreRecent(timestamp, id, (tabId: id, bytes: bytes));
   }
 
   @override
   void onThumbnailChange(int timestamp, String id, Uint8List? bytes) {
-    _addWhenMoreRecent(
-      _thumbnailSubject,
+    _thumbnailSubject.addWhenMoreRecent(
       timestamp,
       id,
       (tabId: id, bytes: bytes),
@@ -148,8 +128,7 @@ class GeckoEventService extends GeckoStateEvents {
 
   @override
   void onFindResults(int timestamp, String id, List<FindResultState?> results) {
-    _addWhenMoreRecent(
-      _findResultsSubject,
+    _findResultsSubject.addWhenMoreRecent(
       timestamp,
       id,
       (tabId: id, results: results.nonNulls.toList()),
@@ -158,8 +137,7 @@ class GeckoEventService extends GeckoStateEvents {
 
   @override
   void onTabAdded(int timestamp, String tabId) {
-    _addWhenMoreRecent(
-      _tabAddedSubject,
+    _tabAddedSubject.addWhenMoreRecent(
       timestamp,
       null,
       tabId,

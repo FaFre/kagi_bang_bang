@@ -1,6 +1,7 @@
 package eu.lensai.flutter_mozilla_components
 
 import android.content.Context
+import eu.lensai.flutter_mozilla_components.pigeons.GeckoAddonEvents
 import eu.lensai.flutter_mozilla_components.pigeons.GeckoStateEvents
 import eu.lensai.flutter_mozilla_components.pigeons.ReaderViewController
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -11,7 +12,9 @@ import mozilla.components.concept.engine.selection.SelectionActionDelegate
 import mozilla.components.feature.addons.update.GlobalAddonDependencyProvider
 import mozilla.components.support.base.facts.Facts
 import mozilla.components.support.base.facts.processor.LogFactProcessor
+import mozilla.components.support.base.log.Log
 import mozilla.components.support.base.log.logger.Logger
+import mozilla.components.support.base.log.sink.AndroidLogSink
 import mozilla.components.support.webextensions.WebExtensionSupport
 import java.util.concurrent.TimeUnit
 
@@ -23,65 +26,78 @@ object GlobalComponents {
 
     @DelicateCoroutinesApi
     private fun restoreBrowserState(newComponents: Components) = GlobalScope.launch(Dispatchers.Main) {
-        newComponents.tabsUseCases.restore(newComponents.sessionStorage)
+        newComponents.useCases.tabsUseCases.restore(newComponents.core.sessionStorage)
 
-        newComponents.sessionStorage.autoSave(newComponents.store)
+        newComponents.core.sessionStorage.autoSave(newComponents.core.store)
             .periodicallyInForeground(interval = 30, unit = TimeUnit.SECONDS)
             .whenGoingToBackground()
             .whenSessionsChange()
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun setUp(
         applicationContext: Context,
         flutterEvents: GeckoStateEvents,
         readerViewController: ReaderViewController,
-        selectionAction: SelectionActionDelegate
+        selectionAction: SelectionActionDelegate,
+        addonEvents: GeckoAddonEvents
     ) {
+        Logger.debug("Creating new components")
+
         val newComponents = Components(
             applicationContext,
             flutterEvents,
             readerViewController,
-            selectionAction
+            selectionAction,
+            addonEvents,
         )
 
-        newComponents.crashReporter.install(applicationContext)
-        Facts.registerProcessor(LogFactProcessor())
+        //newComponents.crashReporter.install(applicationContext)
 
-        newComponents.engine.warmUp()
+        //Facts.registerProcessor(LogFactProcessor())
+
+        //RustHttpConfig.setClient(lazy { newComponents.core.client })
+
+        newComponents.core.engine.warmUp()
 
         restoreBrowserState(newComponents)
-        newComponents.downloadsUseCases.restoreDownloads()
+
+        //newComponents.useCases.downloadsUseCases.restoreDownloads()
 
         try {
             GlobalAddonDependencyProvider.initialize(
-                newComponents.addonManager,
-                newComponents.addonUpdater,
+                newComponents.core.addonManager,
+                newComponents.core.addonUpdater,
             )
 
             WebExtensionSupport.initialize(
-                newComponents.engine,
-                newComponents.store,
+                newComponents.core.engine,
+                newComponents.core.store,
                 onNewTabOverride = {
                         _, engineSession, url ->
-                    newComponents.tabsUseCases.addTab(url, selectTab = true, engineSession = engineSession)
+                    newComponents.useCases.tabsUseCases.addTab(url, selectTab = true, engineSession = engineSession)
                 },
                 onCloseTabOverride = {
                         _, sessionId ->
-                    newComponents.tabsUseCases.removeTab(sessionId)
+                    newComponents.useCases.tabsUseCases.removeTab(sessionId)
                 },
                 onSelectTabOverride = {
                         _, sessionId ->
-                    newComponents.tabsUseCases.selectTab(sessionId)
+                    newComponents.useCases.tabsUseCases.selectTab(sessionId)
                 },
-                onUpdatePermissionRequest = newComponents.addonUpdater::onUpdatePermissionRequest,
+                onUpdatePermissionRequest = newComponents.core.addonUpdater::onUpdatePermissionRequest,
                 onExtensionsLoaded = { extensions ->
-                    newComponents.addonUpdater.registerForFutureUpdates(extensions)
-                    newComponents.supportedAddonsChecker.registerForChecks()
+                    newComponents.core.addonUpdater.registerForFutureUpdates(extensions)
+                    newComponents.core.supportedAddonsChecker.registerForChecks()
                 },
             )
         } catch (e: UnsupportedOperationException) {
             // Web extension support is only available for engine gecko
             Logger.error("Failed to initialize web extension support", e)
+        }
+
+        GlobalScope.launch(Dispatchers.IO) {
+            newComponents.core.fileUploadsDirCleaner.cleanUploadsDirectory()
         }
 
         _components = newComponents

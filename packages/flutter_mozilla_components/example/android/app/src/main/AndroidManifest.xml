@@ -41,7 +41,7 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">
-        <activity android:name="eu.lensai.flutter_mozilla_components.NotificationActivity" android:theme="@style/Theme.AppCompat.Translucent" />
+        <activity android:name="eu.lensai.flutter_mozilla_components.activities.NotificationActivity" android:theme="@style/Theme.AppCompat.Translucent" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -102,10 +102,10 @@
             android:theme="@style/Theme.AppCompat.Light"/>
 
         <service
-            android:name="eu.lensai.flutter_mozilla_components.DownloadService"
+            android:name="eu.lensai.flutter_mozilla_components.services.DownloadService"
             android:foregroundServiceType="dataSync" />
 
-        <service android:name="eu.lensai.flutter_mozilla_components.MediaSessionService"
+        <service android:name="eu.lensai.flutter_mozilla_components.services.MediaSessionService"
             android:foregroundServiceType="mediaPlayback"
             android:exported="false" />
 

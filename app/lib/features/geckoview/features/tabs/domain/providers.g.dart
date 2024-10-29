@@ -7,7 +7,7 @@ part of 'providers.dart';
 // **************************************************************************
 
 String _$unusedRandomContainerColorHash() =>
-    r'129cefaefa895012a6d7b35da69773e28e3289cc';
+    r'913499b3de281ea0020db97ed67121652f53ec08';
 
 /// See also [unusedRandomContainerColor].
 @ProviderFor(unusedRandomContainerColor)
@@ -22,9 +22,11 @@ final unusedRandomContainerColorProvider =
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef UnusedRandomContainerColorRef = AutoDisposeFutureProviderRef<Color>;
 String _$containersWithCountHash() =>
-    r'e1bab28091dd1b9ecfd7d76e6393f459604c803a';
+    r'ee0734e4b71472b79636816616a158f54fa6bc23';
 
 /// See also [containersWithCount].
 @ProviderFor(containersWithCount)
@@ -39,9 +41,11 @@ final containersWithCountProvider =
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef ContainersWithCountRef
     = AutoDisposeStreamProviderRef<List<ContainerDataWithCount>>;
-String _$tabContainerIdHash() => r'8adbfdc2ef46219569073fe9e58967f4935a45e5';
+String _$tabContainerIdHash() => r'726ddd000d23935a2c8ae39c7957412fab16016d';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -177,6 +181,8 @@ class TabContainerIdProvider extends AutoDisposeStreamProvider<String?> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin TabContainerIdRef on AutoDisposeStreamProviderRef<String?> {
   /// The parameter `tabId` of this provider.
   String get tabId;
@@ -190,7 +196,7 @@ class _TabContainerIdProviderElement
   String get tabId => (origin as TabContainerIdProvider).tabId;
 }
 
-String _$containerTabIdsHash() => r'79e9bccfb17cf3ce802638c8b806c5a76fa8f732';
+String _$containerTabIdsHash() => r'7545a6c500b1832bf81c0838e257dfe5e051463d';
 
 /// See also [containerTabIds].
 @ProviderFor(containerTabIds)
@@ -305,6 +311,8 @@ class ContainerTabIdsProvider extends AutoDisposeStreamProvider<List<String>> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin ContainerTabIdsRef on AutoDisposeStreamProviderRef<List<String>> {
   /// The parameter `containerId` of this provider.
   String? get containerId;
@@ -319,4 +327,4 @@ class _ContainerTabIdsProviderElement
   String? get containerId => (origin as ContainerTabIdsProvider).containerId;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

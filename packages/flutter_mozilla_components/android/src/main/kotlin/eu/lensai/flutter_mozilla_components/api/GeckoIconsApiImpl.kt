@@ -7,47 +7,63 @@ import kotlinx.coroutines.*
 import mozilla.components.browser.icons.BrowserIcons
 import mozilla.components.browser.icons.Icon
 import mozilla.components.concept.engine.manifest.Size as HtmlSize
+import mozilla.components.feature.addons.logger
 
-typealias MozillaIconRequest = mozilla.components.browser.icons.IconRequest
-typealias MozillaIconSize = mozilla.components.browser.icons.IconRequest.Size
-typealias MozillaIconResource = mozilla.components.browser.icons.IconRequest.Resource
-typealias MozillaIconResourceType = mozilla.components.browser.icons.IconRequest.Resource.Type
+private typealias MozillaIconRequest = mozilla.components.browser.icons.IconRequest
+private typealias MozillaIconSize = mozilla.components.browser.icons.IconRequest.Size
+private typealias MozillaIconResource = mozilla.components.browser.icons.IconRequest.Resource
+private typealias MozillaIconResourceType = mozilla.components.browser.icons.IconRequest.Resource.Type
 
-class GeckoIconsApiImpl() : GeckoIconsApi {
-    private val icons: BrowserIcons by lazy { GlobalComponents.components!!.icons }
+/**
+ * Implementation of GeckoIconsApi that handles icon loading and processing
+ */
+class GeckoIconsApiImpl : GeckoIconsApi {
+    companion object {
+        private const val TAG = "GeckoIconsApi"
+        private val coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    }
+
+    private val components by lazy {
+        requireNotNull(GlobalComponents.components) { "Components not initialized" }
+    }
 
     override fun loadIcon(request: IconRequest, callback: (Result<IconResult>) -> Unit) {
-        CoroutineScope(Dispatchers.Default).launch {
-            runCatching {
-                loadIconAsync(request.toMozillaIconRequest())
-            }.fold(
-                onSuccess = { result ->
-                    withContext(Dispatchers.Main) {
-                        callback(Result.success(result))
-                    }
-                },
-                onFailure = { error ->
-                    withContext(Dispatchers.Main) {
-                        callback(Result.failure(error))
-                    }
+        coroutineScope.launch {
+            try {
+                val mozillaRequest = request.toMozillaIconRequest()
+                logger.debug("$TAG: Loading icon for URL: ${request.url}")
+
+                val result = loadIconAsync(mozillaRequest)
+                withContext(Dispatchers.Main) {
+                    callback(Result.success(result))
                 }
-            )
+            } catch (e: Exception) {
+                logger.error("$TAG: Failed to load icon", e)
+                withContext(Dispatchers.Main) {
+                    callback(Result.failure(e))
+                }
+            }
         }
     }
 
     private suspend fun loadIconAsync(request: MozillaIconRequest): IconResult {
-        val result = icons.loadIcon(request).await()
-        val imageBytes = result.bitmap.toWebPBytes()
-        return IconResult(
-            image = imageBytes,
-            maskable = result.maskable,
-            color = result.color?.toLong(),
-            source = result.source.toApiSource()
-        )
+        return try {
+            val result = components.core.icons.loadIcon(request).await()
+            val imageBytes = result.bitmap.toWebPBytes()
+            IconResult(
+                image = imageBytes,
+                maskable = result.maskable,
+                color = result.color?.toLong(),
+                source = result.source.toApiSource()
+            )
+        } catch (e: Exception) {
+            logger.error("$TAG: Error in loadIconAsync", e)
+            throw e
+        }
     }
 
-    private fun IconRequest.toMozillaIconRequest(): MozillaIconRequest =
-        MozillaIconRequest(
+    private fun IconRequest.toMozillaIconRequest(): MozillaIconRequest {
+        return MozillaIconRequest(
             url = url,
             size = size.toMozillaSize(),
             color = color?.toInt(),
@@ -55,6 +71,7 @@ class GeckoIconsApiImpl() : GeckoIconsApi {
             isPrivate = isPrivate,
             resources = resources.filterNotNull().map { it.toMozillaResource() }
         )
+    }
 
     private fun IconSize.toMozillaSize(): MozillaIconSize = when (this) {
         IconSize.DEFAULT_SIZE -> MozillaIconSize.DEFAULT
@@ -62,14 +79,17 @@ class GeckoIconsApiImpl() : GeckoIconsApi {
         IconSize.LAUNCHER_ADAPTIVE -> MozillaIconSize.LAUNCHER_ADAPTIVE
     }
 
-    private fun Resource.toMozillaResource(): MozillaIconResource =
-        MozillaIconResource(
+    private fun Resource.toMozillaResource(): MozillaIconResource {
+        return MozillaIconResource(
             url = url,
             mimeType = mimeType,
             maskable = maskable,
             type = type.toMozillaType(),
-            sizes = sizes.filterNotNull().map { HtmlSize(it.height.toInt(), it.width.toInt()) }
+            sizes = sizes.filterNotNull().map {
+                HtmlSize(it.height.toInt(), it.width.toInt())
+            }
         )
+    }
 
     private fun IconType.toMozillaType(): MozillaIconResourceType = when (this) {
         IconType.FAVICON -> MozillaIconResourceType.FAVICON

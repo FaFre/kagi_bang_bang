@@ -2,6 +2,7 @@
 export 'src/data/models/load_url_flags.dart';
 export 'src/data/models/source.dart';
 export 'src/domain/entities/default_selection_actions.dart';
+export 'src/domain/services/gecko_addon.dart';
 export 'src/domain/services/gecko_cookie.dart';
 export 'src/domain/services/gecko_engine_settings.dart';
 export 'src/domain/services/gecko_event.dart';
@@ -21,4 +22,6 @@ export 'src/pigeons/gecko.g.dart'
         Resource,
         ResourceSize,
         SecurityInfoState,
-        TabContentState;
+        TabContentState,
+        WebExtensionActionType,
+        WebExtensionData;

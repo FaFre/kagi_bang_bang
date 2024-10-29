@@ -6,7 +6,7 @@ part of 'providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$selectedBangDataHash() => r'40dd3c51694394909fe83659ff3e19d51a06ec55';
+String _$selectedBangDataHash() => r'd43e679c40d35c4f4c692ee286dc21789d7287dd';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -142,6 +142,8 @@ class SelectedBangDataProvider extends AutoDisposeStreamProvider<BangData?> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin SelectedBangDataRef on AutoDisposeStreamProviderRef<BangData?> {
   /// The parameter `domain` of this provider.
   String? get domain;
@@ -156,7 +158,7 @@ class _SelectedBangDataProviderElement
   String? get domain => (origin as SelectedBangDataProvider).domain;
 }
 
-String _$availableTabIdsHash() => r'427ea2e58c6bc27e2f16cffb850dc6621875e247';
+String _$availableTabIdsHash() => r'646d42c747d815496849c7342903caf48258a8ab';
 
 /// See also [availableTabIds].
 @ProviderFor(availableTabIds)
@@ -271,6 +273,8 @@ class AvailableTabIdsProvider extends AutoDisposeProvider<List<String>> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin AvailableTabIdsRef on AutoDisposeProviderRef<List<String>> {
   /// The parameter `containerId` of this provider.
   String? get containerId;
@@ -413,6 +417,8 @@ class SelectedBangTriggerProvider
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin SelectedBangTriggerRef on NotifierProviderRef<String?> {
   /// The parameter `domain` of this provider.
   String? get domain;
@@ -493,4 +499,4 @@ final showFindInPageProvider = NotifierProvider<ShowFindInPage, bool>.internal(
 
 typedef _$ShowFindInPage = Notifier<bool>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

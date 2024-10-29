@@ -120,12 +120,12 @@ class GeckoSessionService {
     return _api.purgeHistory();
   }
 
-  Future<Uint8List?> requestScreenshot() {
+  Future<Uint8List?> requestScreenshot(bool sendBack) {
     if (tabId != null) {
       throw Exception('Screenshot only allowed for selected (visible) tab.');
     }
 
-    return _api.requestScreenshot();
+    return _api.requestScreenshot(sendBack);
   }
 
   Future<void> updateLastAccess({

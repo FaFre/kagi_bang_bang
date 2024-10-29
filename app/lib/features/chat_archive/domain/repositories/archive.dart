@@ -3,6 +3,7 @@ import 'package:lensai/features/chat_archive/data/services/file.dart';
 import 'package:lensai/features/chat_archive/domain/entities/chat_entity.dart';
 import 'package:lensai/features/kagi/data/services/chat.dart';
 import 'package:path/path.dart' as path;
+import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -62,10 +63,7 @@ class ChatArchiveRepository extends _$ChatArchiveRepository {
 }
 
 @Riverpod()
-Future<String> readArchivedChat(
-  ReadArchivedChatRef ref,
-  String fileName,
-) async {
+Future<String> readArchivedChat(Ref ref, String fileName) async {
   final result =
       await ref.read(chatArchiveRepositoryProvider.notifier).readChat(fileName);
 

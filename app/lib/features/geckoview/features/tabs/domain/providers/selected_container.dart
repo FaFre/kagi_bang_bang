@@ -1,5 +1,6 @@
 import 'package:lensai/features/geckoview/features/tabs/data/models/container_data.dart';
 import 'package:lensai/features/geckoview/features/tabs/data/providers.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'selected_container.g.dart';
@@ -29,7 +30,7 @@ class SelectedContainer extends _$SelectedContainer {
 }
 
 @Riverpod()
-Stream<ContainerData?> selectedContainerData(SelectedContainerDataRef ref) {
+Stream<ContainerData?> selectedContainerData(Ref ref) {
   final db = ref.watch(tabDatabaseProvider);
   final selectedContainer = ref.watch(selectedContainerProvider);
 

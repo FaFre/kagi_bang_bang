@@ -1,15 +1,18 @@
-package eu.lensai.flutter_mozilla_components
+package eu.lensai.flutter_mozilla_components.interceptor
 
 
 import android.content.Context
-import android.content.Intent
-import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import eu.lensai.flutter_mozilla_components.GlobalComponents
 import mozilla.components.browser.errorpages.ErrorPages
 import mozilla.components.browser.errorpages.ErrorType
 import mozilla.components.concept.engine.EngineSession
 import mozilla.components.concept.engine.request.RequestInterceptor
 
 class AppRequestInterceptor(private val context: Context) : RequestInterceptor {
+    private val components by lazy {
+        requireNotNull(GlobalComponents.components) { "Components not initialized" }
+    }
+
     override fun onLoadRequest(
         engineSession: EngineSession,
         uri: String,
@@ -20,7 +23,6 @@ class AppRequestInterceptor(private val context: Context) : RequestInterceptor {
         isDirectNavigation: Boolean,
         isSubframeRequest: Boolean,
     ): RequestInterceptor.InterceptionResponse? {
-        val components = GlobalComponents.components!!
 
         return when (uri) {
 //            "about:privatebrowsing" -> {
@@ -37,7 +39,7 @@ class AppRequestInterceptor(private val context: Context) : RequestInterceptor {
 //            }
 
             else -> {
-                 components.appLinksInterceptor.onLoadRequest(
+                 components.services.appLinksInterceptor.onLoadRequest(
                     engineSession,
                     uri,
                     lastUri,

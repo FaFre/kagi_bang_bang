@@ -37,7 +37,6 @@ class Settings with FastEquatable {
     bool? incognitoMode,
     bool? enableJavascript,
     bool? launchUrlExternal,
-    bool? enableContentBlocking,
     bool? blockHttpProtocol,
     ThemeMode? themeMode,
     this.quickAction,

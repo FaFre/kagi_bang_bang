@@ -6,7 +6,7 @@ part of 'tab_session.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$tabSessionHash() => r'29b20f40af01e599ef80e198aec5f093d74efc6a';
+String _$tabSessionHash() => r'42b44a4d47b9a551d002fdbc6337c14b2c327dde';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -155,6 +155,8 @@ class TabSessionProvider
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin TabSessionRef on AutoDisposeNotifierProviderRef<void> {
   /// The parameter `tabId` of this provider.
   String? get tabId;
@@ -169,4 +171,4 @@ class _TabSessionProviderElement
   String? get tabId => (origin as TabSessionProvider).tabId;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
