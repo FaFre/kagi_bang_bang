@@ -3,11 +3,14 @@ package eu.lensai.flutter_mozilla_components
 import android.content.Context
 import eu.lensai.flutter_mozilla_components.pigeons.GeckoAddonEvents
 import eu.lensai.flutter_mozilla_components.pigeons.GeckoStateEvents
+import eu.lensai.flutter_mozilla_components.pigeons.GeckoSuggestionEvents
+import eu.lensai.flutter_mozilla_components.pigeons.GeckoTabContentEvents
 import eu.lensai.flutter_mozilla_components.pigeons.ReaderViewController
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import mozilla.components.browser.storage.sync.GlobalPlacesDependencyProvider
 import mozilla.components.concept.engine.selection.SelectionActionDelegate
 import mozilla.components.feature.addons.update.GlobalAddonDependencyProvider
 import mozilla.components.support.base.facts.Facts
@@ -40,7 +43,8 @@ object GlobalComponents {
         flutterEvents: GeckoStateEvents,
         readerViewController: ReaderViewController,
         selectionAction: SelectionActionDelegate,
-        addonEvents: GeckoAddonEvents
+        addonEvents: GeckoAddonEvents,
+        tabContentEvents: GeckoTabContentEvents
     ) {
         Logger.debug("Creating new components")
 
@@ -50,6 +54,7 @@ object GlobalComponents {
             readerViewController,
             selectionAction,
             addonEvents,
+            tabContentEvents
         )
 
         //newComponents.crashReporter.install(applicationContext)
@@ -65,6 +70,8 @@ object GlobalComponents {
         //newComponents.useCases.downloadsUseCases.restoreDownloads()
 
         try {
+            GlobalPlacesDependencyProvider.initialize(newComponents.core.historyStorage)
+
             GlobalAddonDependencyProvider.initialize(
                 newComponents.core.addonManager,
                 newComponents.core.addonUpdater,

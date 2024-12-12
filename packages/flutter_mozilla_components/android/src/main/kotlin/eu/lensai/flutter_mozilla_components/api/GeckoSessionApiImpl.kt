@@ -22,7 +22,6 @@ import eu.lensai.flutter_mozilla_components.pigeons.TranslationOptions as Pigeon
 class GeckoSessionApiImpl : GeckoSessionApi {
     companion object {
         private const val TAG = "GeckoSessionApi"
-        private val coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     }
 
     private val components by lazy {

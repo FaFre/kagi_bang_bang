@@ -67,7 +67,31 @@ class _SliverHeaderDelagate extends SliverPersistentHeaderDelegate {
                     ),
                   ],
                 ),
-                ContainerChips(),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: Consumer(
+                    builder: (context, ref, child) {
+                      final selectedContainer = ref.watch(
+                        selectedContainerDataProvider
+                            .select((value) => value.valueOrNull),
+                      );
+
+                      return ContainerChips(
+                        selectedContainer: selectedContainer,
+                        onSelected: (container) {
+                          ref
+                              .read(selectedContainerProvider.notifier)
+                              .setContainerId(container.id);
+                        },
+                        onDeleted: (container) async {
+                          ref
+                              .read(selectedContainerProvider.notifier)
+                              .clearContainer();
+                        },
+                      );
+                    },
+                  ),
+                ),
                 const SizedBox(height: 8),
               ],
             ),

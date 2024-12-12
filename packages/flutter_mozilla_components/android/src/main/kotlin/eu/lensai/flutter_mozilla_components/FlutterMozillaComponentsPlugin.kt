@@ -12,6 +12,7 @@ import eu.lensai.flutter_mozilla_components.api.GeckoFindApiImpl
 import eu.lensai.flutter_mozilla_components.api.GeckoIconsApiImpl
 import eu.lensai.flutter_mozilla_components.api.GeckoSelectionActionControllerImpl
 import eu.lensai.flutter_mozilla_components.api.GeckoSessionApiImpl
+import eu.lensai.flutter_mozilla_components.api.GeckoSuggestionApiImpl
 import eu.lensai.flutter_mozilla_components.api.GeckoTabsApiImpl
 import eu.lensai.flutter_mozilla_components.feature.DefaultSelectionActionDelegate
 import eu.lensai.flutter_mozilla_components.pigeons.GeckoAddonEvents
@@ -25,6 +26,9 @@ import eu.lensai.flutter_mozilla_components.pigeons.GeckoSelectionActionControll
 import eu.lensai.flutter_mozilla_components.pigeons.GeckoSelectionActionEvents
 import eu.lensai.flutter_mozilla_components.pigeons.GeckoSessionApi
 import eu.lensai.flutter_mozilla_components.pigeons.GeckoStateEvents
+import eu.lensai.flutter_mozilla_components.pigeons.GeckoSuggestionApi
+import eu.lensai.flutter_mozilla_components.pigeons.GeckoSuggestionEvents
+import eu.lensai.flutter_mozilla_components.pigeons.GeckoTabContentEvents
 import eu.lensai.flutter_mozilla_components.pigeons.GeckoTabsApi
 import eu.lensai.flutter_mozilla_components.pigeons.ReaderViewController
 import eu.lensai.flutter_mozilla_components.pigeons.ReaderViewEvents
@@ -63,13 +67,18 @@ class FlutterMozillaComponentsPlugin: FlutterPlugin, ActivityAware {
       ReaderViewController(_flutterPluginBinding.binaryMessenger)
 
     val addonEvents = GeckoAddonEvents(_flutterPluginBinding.binaryMessenger)
+    val tabContentEvents = GeckoTabContentEvents(_flutterPluginBinding.binaryMessenger)
+
+    val suggestionEvents = GeckoSuggestionEvents(_flutterPluginBinding.binaryMessenger)
+    GeckoSuggestionApi.setUp(_flutterPluginBinding.binaryMessenger, GeckoSuggestionApiImpl(suggestionEvents))
 
     GlobalComponents.setUp(
       flutterPluginBinding.applicationContext,
       _flutterEvents,
       readerViewController,
       selectionActionDelegate,
-      addonEvents
+      addonEvents,
+      tabContentEvents,
     )
 
     GeckoBrowserApi.setUp(_flutterPluginBinding.binaryMessenger, GeckoBrowserApiImpl {
@@ -104,7 +113,7 @@ class FlutterMozillaComponentsPlugin: FlutterPlugin, ActivityAware {
     }
 
     // Replace this with your actual Fragment
-    val nativeFragment = BrowserFragment.create(activity!!)
+    val nativeFragment = BrowserFragment.create()
 
     val fm = (activity as FragmentActivity).supportFragmentManager
     fm.beginTransaction()

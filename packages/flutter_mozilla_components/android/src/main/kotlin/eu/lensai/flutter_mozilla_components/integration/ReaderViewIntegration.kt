@@ -30,12 +30,12 @@ class ReaderViewIntegration(
             if (enabled) {
                 feature.showReaderView()
 
-                readerViewController.appearanceButtonVisibility(true) { _ -> };
+                readerViewController.appearanceButtonVisibility(System.currentTimeMillis(),true) { _ -> };
             } else {
                 feature.hideReaderView()
                 feature.hideControls()
 
-                readerViewController.appearanceButtonVisibility(false) { _ -> };
+                readerViewController.appearanceButtonVisibility(System.currentTimeMillis(),false) { _ -> };
             }
         }
 

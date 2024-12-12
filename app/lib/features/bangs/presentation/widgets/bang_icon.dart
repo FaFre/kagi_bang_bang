@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lensai/features/bangs/data/models/bang_data.dart';
-import 'package:lensai/features/bangs/domain/providers.dart';
+import 'package:lensai/features/bangs/domain/providers/bangs.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class BangIcon extends HookConsumerWidget {

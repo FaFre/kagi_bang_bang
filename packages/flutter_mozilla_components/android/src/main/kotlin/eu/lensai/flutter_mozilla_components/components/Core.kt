@@ -20,6 +20,7 @@ import mozilla.components.browser.session.storage.SessionStorage
 import mozilla.components.browser.state.engine.EngineMiddleware
 import mozilla.components.browser.state.engine.middleware.SessionPrioritizationMiddleware
 import mozilla.components.browser.state.store.BrowserStore
+import mozilla.components.browser.storage.sync.PlacesHistoryStorage
 import mozilla.components.browser.thumbnails.ThumbnailsMiddleware
 import mozilla.components.browser.thumbnails.storage.ThumbnailStorage
 import mozilla.components.concept.engine.DefaultSettings
@@ -35,6 +36,7 @@ import mozilla.components.feature.media.MediaSessionFeature
 import mozilla.components.feature.media.middleware.RecordingDevicesMiddleware
 import mozilla.components.feature.prompts.file.FileUploadsDirCleaner
 import mozilla.components.feature.readerview.ReaderViewMiddleware
+import mozilla.components.feature.session.HistoryDelegate
 import mozilla.components.feature.session.middleware.LastAccessMiddleware
 import mozilla.components.feature.sitepermissions.OnDiskSitePermissionsStorage
 import mozilla.components.feature.webnotifications.WebNotificationFeature
@@ -51,12 +53,13 @@ class Core(private val context: Context,
         PreferenceManager.getDefaultSharedPreferences(context)
     }
 
-    val engineSettings by lazy {
+    private val engineSettings by lazy {
         DefaultSettings().apply {
             //historyTrackingDelegate = HistoryDelegate(lazyHistoryStorage)
             requestInterceptor = AppRequestInterceptor(context)
             remoteDebuggingEnabled = prefs.getBoolean(context.getPreferenceKey(R.string.pref_key_remote_debugging), false)
             testingModeEnabled = prefs.getBoolean(context.getPreferenceKey(R.string.pref_key_testing_mode), false)
+            historyTrackingDelegate = HistoryDelegate(lazyHistoryStorage)
             trackingProtectionPolicy = createTrackingProtectionPolicy(prefs)
             httpsOnlyMode = Engine.HttpsOnlyMode.ENABLED
             globalPrivacyControlEnabled = prefs.getBoolean(
@@ -158,6 +161,17 @@ class Core(private val context: Context,
     val sessionStorage: SessionStorage by lazy {
         SessionStorage(context, engine)
     }
+
+    /**
+     * The storage component to persist browsing history (with the exception of
+     * private sessions).
+     */
+    val lazyHistoryStorage = lazy { PlacesHistoryStorage(context) }
+
+    /**
+     * A convenience accessor to the [PlacesHistoryStorage].
+     */
+    val historyStorage by lazy { lazyHistoryStorage.value }
 
     /**
      * Constructs a [TrackingProtectionPolicy] based on current preferences.

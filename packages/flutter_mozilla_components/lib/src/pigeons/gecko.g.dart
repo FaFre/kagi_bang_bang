@@ -88,6 +88,12 @@ enum WebExtensionActionType {
   page,
 }
 
+enum GeckoSuggestionType {
+  session,
+  clipboard,
+  history,
+}
+
 /// Translation options that map to the Gecko Translations Options.
 ///
 /// @property downloadModel If the necessary models should be downloaded on request. If false, then
@@ -1073,6 +1079,98 @@ class WebExtensionData {
   }
 }
 
+class GeckoSuggestion {
+  GeckoSuggestion({
+    required this.id,
+    required this.type,
+    required this.score,
+    this.title,
+    this.description,
+    this.editSuggestion,
+    this.icon,
+  });
+
+  String id;
+
+  GeckoSuggestionType type;
+
+  int score;
+
+  String? title;
+
+  String? description;
+
+  String? editSuggestion;
+
+  Uint8List? icon;
+
+  Object encode() {
+    return <Object?>[
+      id,
+      type,
+      score,
+      title,
+      description,
+      editSuggestion,
+      icon,
+    ];
+  }
+
+  static GeckoSuggestion decode(Object result) {
+    result as List<Object?>;
+    return GeckoSuggestion(
+      id: result[0]! as String,
+      type: result[1]! as GeckoSuggestionType,
+      score: result[2]! as int,
+      title: result[3] as String?,
+      description: result[4] as String?,
+      editSuggestion: result[5] as String?,
+      icon: result[6] as Uint8List?,
+    );
+  }
+}
+
+class TabContent {
+  TabContent({
+    required this.tabId,
+    this.fullContentMarkdown,
+    this.fullContentPlain,
+    this.extractedContentMarkdown,
+    this.extractedContentPlain,
+  });
+
+  String tabId;
+
+  String? fullContentMarkdown;
+
+  String? fullContentPlain;
+
+  String? extractedContentMarkdown;
+
+  String? extractedContentPlain;
+
+  Object encode() {
+    return <Object?>[
+      tabId,
+      fullContentMarkdown,
+      fullContentPlain,
+      extractedContentMarkdown,
+      extractedContentPlain,
+    ];
+  }
+
+  static TabContent decode(Object result) {
+    result as List<Object?>;
+    return TabContent(
+      tabId: result[0]! as String,
+      fullContentMarkdown: result[1] as String?,
+      fullContentPlain: result[2] as String?,
+      extractedContentMarkdown: result[3] as String?,
+      extractedContentPlain: result[4] as String?,
+    );
+  }
+}
+
 
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
@@ -1102,80 +1200,89 @@ class _PigeonCodec extends StandardMessageCodec {
     }    else if (value is WebExtensionActionType) {
       buffer.putUint8(135);
       writeValue(buffer, value.index);
-    }    else if (value is TranslationOptions) {
+    }    else if (value is GeckoSuggestionType) {
       buffer.putUint8(136);
-      writeValue(buffer, value.encode());
-    }    else if (value is ReaderState) {
+      writeValue(buffer, value.index);
+    }    else if (value is TranslationOptions) {
       buffer.putUint8(137);
       writeValue(buffer, value.encode());
-    }    else if (value is LastMediaAccessState) {
+    }    else if (value is ReaderState) {
       buffer.putUint8(138);
       writeValue(buffer, value.encode());
-    }    else if (value is HistoryMetadataKey) {
+    }    else if (value is LastMediaAccessState) {
       buffer.putUint8(139);
       writeValue(buffer, value.encode());
-    }    else if (value is PackageCategoryValue) {
+    }    else if (value is HistoryMetadataKey) {
       buffer.putUint8(140);
       writeValue(buffer, value.encode());
-    }    else if (value is ExternalPackage) {
+    }    else if (value is PackageCategoryValue) {
       buffer.putUint8(141);
       writeValue(buffer, value.encode());
-    }    else if (value is LoadUrlFlagsValue) {
+    }    else if (value is ExternalPackage) {
       buffer.putUint8(142);
       writeValue(buffer, value.encode());
-    }    else if (value is SourceValue) {
+    }    else if (value is LoadUrlFlagsValue) {
       buffer.putUint8(143);
       writeValue(buffer, value.encode());
-    }    else if (value is TabState) {
+    }    else if (value is SourceValue) {
       buffer.putUint8(144);
       writeValue(buffer, value.encode());
-    }    else if (value is RecoverableTab) {
+    }    else if (value is TabState) {
       buffer.putUint8(145);
       writeValue(buffer, value.encode());
-    }    else if (value is RecoverableBrowserState) {
+    }    else if (value is RecoverableTab) {
       buffer.putUint8(146);
       writeValue(buffer, value.encode());
-    }    else if (value is IconRequest) {
+    }    else if (value is RecoverableBrowserState) {
       buffer.putUint8(147);
       writeValue(buffer, value.encode());
-    }    else if (value is ResourceSize) {
+    }    else if (value is IconRequest) {
       buffer.putUint8(148);
       writeValue(buffer, value.encode());
-    }    else if (value is Resource) {
+    }    else if (value is ResourceSize) {
       buffer.putUint8(149);
       writeValue(buffer, value.encode());
-    }    else if (value is IconResult) {
+    }    else if (value is Resource) {
       buffer.putUint8(150);
       writeValue(buffer, value.encode());
-    }    else if (value is CookiePartitionKey) {
+    }    else if (value is IconResult) {
       buffer.putUint8(151);
       writeValue(buffer, value.encode());
-    }    else if (value is Cookie) {
+    }    else if (value is CookiePartitionKey) {
       buffer.putUint8(152);
       writeValue(buffer, value.encode());
-    }    else if (value is HistoryItem) {
+    }    else if (value is Cookie) {
       buffer.putUint8(153);
       writeValue(buffer, value.encode());
-    }    else if (value is HistoryState) {
+    }    else if (value is HistoryItem) {
       buffer.putUint8(154);
       writeValue(buffer, value.encode());
-    }    else if (value is ReaderableState) {
+    }    else if (value is HistoryState) {
       buffer.putUint8(155);
       writeValue(buffer, value.encode());
-    }    else if (value is SecurityInfoState) {
+    }    else if (value is ReaderableState) {
       buffer.putUint8(156);
       writeValue(buffer, value.encode());
-    }    else if (value is TabContentState) {
+    }    else if (value is SecurityInfoState) {
       buffer.putUint8(157);
       writeValue(buffer, value.encode());
-    }    else if (value is FindResultState) {
+    }    else if (value is TabContentState) {
       buffer.putUint8(158);
       writeValue(buffer, value.encode());
-    }    else if (value is CustomSelectionAction) {
+    }    else if (value is FindResultState) {
       buffer.putUint8(159);
       writeValue(buffer, value.encode());
-    }    else if (value is WebExtensionData) {
+    }    else if (value is CustomSelectionAction) {
       buffer.putUint8(160);
+      writeValue(buffer, value.encode());
+    }    else if (value is WebExtensionData) {
+      buffer.putUint8(161);
+      writeValue(buffer, value.encode());
+    }    else if (value is GeckoSuggestion) {
+      buffer.putUint8(162);
+      writeValue(buffer, value.encode());
+    }    else if (value is TabContent) {
+      buffer.putUint8(163);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -1207,55 +1314,62 @@ class _PigeonCodec extends StandardMessageCodec {
         final int? value = readValue(buffer) as int?;
         return value == null ? null : WebExtensionActionType.values[value];
       case 136: 
-        return TranslationOptions.decode(readValue(buffer)!);
+        final int? value = readValue(buffer) as int?;
+        return value == null ? null : GeckoSuggestionType.values[value];
       case 137: 
-        return ReaderState.decode(readValue(buffer)!);
+        return TranslationOptions.decode(readValue(buffer)!);
       case 138: 
-        return LastMediaAccessState.decode(readValue(buffer)!);
+        return ReaderState.decode(readValue(buffer)!);
       case 139: 
-        return HistoryMetadataKey.decode(readValue(buffer)!);
+        return LastMediaAccessState.decode(readValue(buffer)!);
       case 140: 
-        return PackageCategoryValue.decode(readValue(buffer)!);
+        return HistoryMetadataKey.decode(readValue(buffer)!);
       case 141: 
-        return ExternalPackage.decode(readValue(buffer)!);
+        return PackageCategoryValue.decode(readValue(buffer)!);
       case 142: 
-        return LoadUrlFlagsValue.decode(readValue(buffer)!);
+        return ExternalPackage.decode(readValue(buffer)!);
       case 143: 
-        return SourceValue.decode(readValue(buffer)!);
+        return LoadUrlFlagsValue.decode(readValue(buffer)!);
       case 144: 
-        return TabState.decode(readValue(buffer)!);
+        return SourceValue.decode(readValue(buffer)!);
       case 145: 
-        return RecoverableTab.decode(readValue(buffer)!);
+        return TabState.decode(readValue(buffer)!);
       case 146: 
-        return RecoverableBrowserState.decode(readValue(buffer)!);
+        return RecoverableTab.decode(readValue(buffer)!);
       case 147: 
-        return IconRequest.decode(readValue(buffer)!);
+        return RecoverableBrowserState.decode(readValue(buffer)!);
       case 148: 
-        return ResourceSize.decode(readValue(buffer)!);
+        return IconRequest.decode(readValue(buffer)!);
       case 149: 
-        return Resource.decode(readValue(buffer)!);
+        return ResourceSize.decode(readValue(buffer)!);
       case 150: 
-        return IconResult.decode(readValue(buffer)!);
+        return Resource.decode(readValue(buffer)!);
       case 151: 
-        return CookiePartitionKey.decode(readValue(buffer)!);
+        return IconResult.decode(readValue(buffer)!);
       case 152: 
-        return Cookie.decode(readValue(buffer)!);
+        return CookiePartitionKey.decode(readValue(buffer)!);
       case 153: 
-        return HistoryItem.decode(readValue(buffer)!);
+        return Cookie.decode(readValue(buffer)!);
       case 154: 
-        return HistoryState.decode(readValue(buffer)!);
+        return HistoryItem.decode(readValue(buffer)!);
       case 155: 
-        return ReaderableState.decode(readValue(buffer)!);
+        return HistoryState.decode(readValue(buffer)!);
       case 156: 
-        return SecurityInfoState.decode(readValue(buffer)!);
+        return ReaderableState.decode(readValue(buffer)!);
       case 157: 
-        return TabContentState.decode(readValue(buffer)!);
+        return SecurityInfoState.decode(readValue(buffer)!);
       case 158: 
-        return FindResultState.decode(readValue(buffer)!);
+        return TabContentState.decode(readValue(buffer)!);
       case 159: 
-        return CustomSelectionAction.decode(readValue(buffer)!);
+        return FindResultState.decode(readValue(buffer)!);
       case 160: 
+        return CustomSelectionAction.decode(readValue(buffer)!);
+      case 161: 
         return WebExtensionData.decode(readValue(buffer)!);
+      case 162: 
+        return GeckoSuggestion.decode(readValue(buffer)!);
+      case 163: 
+        return TabContent.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
     }
@@ -2812,7 +2926,7 @@ class ReaderViewEvents {
 abstract class ReaderViewController {
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
 
-  void appearanceButtonVisibility(bool visible);
+  void appearanceButtonVisibility(int timestamp, bool visible);
 
   static void setUp(ReaderViewController? api, {BinaryMessenger? binaryMessenger, String messageChannelSuffix = '',}) {
     messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
@@ -2827,11 +2941,14 @@ abstract class ReaderViewController {
           assert(message != null,
           'Argument for dev.flutter.pigeon.flutter_mozilla_components.ReaderViewController.appearanceButtonVisibility was null.');
           final List<Object?> args = (message as List<Object?>?)!;
-          final bool? arg_visible = (args[0] as bool?);
+          final int? arg_timestamp = (args[0] as int?);
+          assert(arg_timestamp != null,
+              'Argument for dev.flutter.pigeon.flutter_mozilla_components.ReaderViewController.appearanceButtonVisibility was null, expected non-null int.');
+          final bool? arg_visible = (args[1] as bool?);
           assert(arg_visible != null,
               'Argument for dev.flutter.pigeon.flutter_mozilla_components.ReaderViewController.appearanceButtonVisibility was null, expected non-null bool.');
           try {
-            api.appearanceButtonVisibility(arg_visible!);
+            api.appearanceButtonVisibility(arg_timestamp!, arg_visible!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -3077,6 +3194,121 @@ abstract class GeckoAddonEvents {
               'Argument for dev.flutter.pigeon.flutter_mozilla_components.GeckoAddonEvents.onUpdateWebExtensionIcon was null, expected non-null Uint8List.');
           try {
             api.onUpdateWebExtensionIcon(arg_timestamp!, arg_extensionId!, arg_actionType!, arg_icon!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+  }
+}
+
+class GeckoSuggestionApi {
+  /// Constructor for [GeckoSuggestionApi].  The [binaryMessenger] named argument is
+  /// available for dependency injection.  If it is left null, the default
+  /// BinaryMessenger will be used which routes to the host platform.
+  GeckoSuggestionApi({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
+      : pigeonVar_binaryMessenger = binaryMessenger,
+        pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+  final BinaryMessenger? pigeonVar_binaryMessenger;
+
+  static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
+
+  final String pigeonVar_messageChannelSuffix;
+
+  Future<void> onInputChanged(String text, List<GeckoSuggestionType> providers) async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.flutter_mozilla_components.GeckoSuggestionApi.onInputChanged$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[text, providers]) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+}
+
+abstract class GeckoSuggestionEvents {
+  static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
+
+  void onSuggestionResult(int timestamp, GeckoSuggestionType suggestionType, List<GeckoSuggestion> suggestions);
+
+  static void setUp(GeckoSuggestionEvents? api, {BinaryMessenger? binaryMessenger, String messageChannelSuffix = '',}) {
+    messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+    {
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.flutter_mozilla_components.GeckoSuggestionEvents.onSuggestionResult$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        pigeonVar_channel.setMessageHandler(null);
+      } else {
+        pigeonVar_channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.flutter_mozilla_components.GeckoSuggestionEvents.onSuggestionResult was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_timestamp = (args[0] as int?);
+          assert(arg_timestamp != null,
+              'Argument for dev.flutter.pigeon.flutter_mozilla_components.GeckoSuggestionEvents.onSuggestionResult was null, expected non-null int.');
+          final GeckoSuggestionType? arg_suggestionType = (args[1] as GeckoSuggestionType?);
+          assert(arg_suggestionType != null,
+              'Argument for dev.flutter.pigeon.flutter_mozilla_components.GeckoSuggestionEvents.onSuggestionResult was null, expected non-null GeckoSuggestionType.');
+          final List<GeckoSuggestion>? arg_suggestions = (args[2] as List<Object?>?)?.cast<GeckoSuggestion>();
+          assert(arg_suggestions != null,
+              'Argument for dev.flutter.pigeon.flutter_mozilla_components.GeckoSuggestionEvents.onSuggestionResult was null, expected non-null List<GeckoSuggestion>.');
+          try {
+            api.onSuggestionResult(arg_timestamp!, arg_suggestionType!, arg_suggestions!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+  }
+}
+
+abstract class GeckoTabContentEvents {
+  static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
+
+  void onContentUpdate(int timestamp, TabContent content);
+
+  static void setUp(GeckoTabContentEvents? api, {BinaryMessenger? binaryMessenger, String messageChannelSuffix = '',}) {
+    messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+    {
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.flutter_mozilla_components.GeckoTabContentEvents.onContentUpdate$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        pigeonVar_channel.setMessageHandler(null);
+      } else {
+        pigeonVar_channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.flutter_mozilla_components.GeckoTabContentEvents.onContentUpdate was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_timestamp = (args[0] as int?);
+          assert(arg_timestamp != null,
+              'Argument for dev.flutter.pigeon.flutter_mozilla_components.GeckoTabContentEvents.onContentUpdate was null, expected non-null int.');
+          final TabContent? arg_content = (args[1] as TabContent?);
+          assert(arg_content != null,
+              'Argument for dev.flutter.pigeon.flutter_mozilla_components.GeckoTabContentEvents.onContentUpdate was null, expected non-null TabContent.');
+          try {
+            api.onContentUpdate(arg_timestamp!, arg_content!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);

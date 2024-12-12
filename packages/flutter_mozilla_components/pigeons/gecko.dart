@@ -499,6 +499,44 @@ class WebExtensionData {
   );
 }
 
+enum GeckoSuggestionType { session, clipboard, history }
+
+class GeckoSuggestion {
+  final String id;
+  final GeckoSuggestionType type;
+  final int score;
+  final String? title;
+  final String? description;
+  final String? editSuggestion;
+  final Uint8List? icon;
+
+  GeckoSuggestion(
+    this.id,
+    this.type,
+    this.score,
+    this.title,
+    this.description,
+    this.editSuggestion,
+    this.icon,
+  );
+}
+
+class TabContent {
+  final String tabId;
+  final String? fullContentMarkdown;
+  final String? fullContentPlain;
+  final String? extractedContentMarkdown;
+  final String? extractedContentPlain;
+
+  TabContent(
+    this.tabId,
+    this.fullContentMarkdown,
+    this.fullContentPlain,
+    this.extractedContentMarkdown,
+    this.extractedContentPlain,
+  );
+}
+
 // /// Represents all the different supported types of data that can be found from long clicking
 // /// an element.
 // sealed class HitResult {
@@ -843,7 +881,7 @@ abstract class ReaderViewEvents {
 
 @FlutterApi()
 abstract class ReaderViewController {
-  void appearanceButtonVisibility(bool visible);
+  void appearanceButtonVisibility(int timestamp, bool visible);
 }
 
 @HostApi()
@@ -883,5 +921,27 @@ abstract class GeckoAddonEvents {
     String extensionId,
     WebExtensionActionType actionType,
     Uint8List icon,
+  );
+}
+
+@HostApi()
+abstract class GeckoSuggestionApi {
+  void onInputChanged(String text, List<GeckoSuggestionType> providers);
+}
+
+@FlutterApi()
+abstract class GeckoSuggestionEvents {
+  void onSuggestionResult(
+    int timestamp,
+    GeckoSuggestionType suggestionType,
+    List<GeckoSuggestion> suggestions,
+  );
+}
+
+@FlutterApi()
+abstract class GeckoTabContentEvents {
+  void onContentUpdate(
+    int timestamp,
+    TabContent content,
   );
 }

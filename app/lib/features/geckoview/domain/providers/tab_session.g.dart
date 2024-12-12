@@ -6,7 +6,7 @@ part of 'tab_session.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$tabSessionHash() => r'42b44a4d47b9a551d002fdbc6337c14b2c327dde';
+String _$tabSessionHash() => r'e4fbbcd430037cc01adb799783fb7974a11a27bf';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -32,9 +32,9 @@ class _SystemHash {
 abstract class _$TabSession extends BuildlessAutoDisposeNotifier<void> {
   late final String? tabId;
 
-  void build(
-    String? tabId,
-  );
+  void build({
+    required String? tabId,
+  });
 }
 
 /// See also [TabSession].
@@ -47,11 +47,11 @@ class TabSessionFamily extends Family<void> {
   const TabSessionFamily();
 
   /// See also [TabSession].
-  TabSessionProvider call(
-    String? tabId,
-  ) {
+  TabSessionProvider call({
+    required String? tabId,
+  }) {
     return TabSessionProvider(
-      tabId,
+      tabId: tabId,
     );
   }
 
@@ -60,7 +60,7 @@ class TabSessionFamily extends Family<void> {
     covariant TabSessionProvider provider,
   ) {
     return call(
-      provider.tabId,
+      tabId: provider.tabId,
     );
   }
 
@@ -83,9 +83,9 @@ class TabSessionFamily extends Family<void> {
 class TabSessionProvider
     extends AutoDisposeNotifierProviderImpl<TabSession, void> {
   /// See also [TabSession].
-  TabSessionProvider(
-    String? tabId,
-  ) : this._internal(
+  TabSessionProvider({
+    required String? tabId,
+  }) : this._internal(
           () => TabSession()..tabId = tabId,
           from: tabSessionProvider,
           name: r'tabSessionProvider',
@@ -116,7 +116,7 @@ class TabSessionProvider
     covariant TabSession notifier,
   ) {
     return notifier.build(
-      tabId,
+      tabId: tabId,
     );
   }
 

@@ -45,7 +45,8 @@ final containersWithCountProvider =
 // ignore: unused_element
 typedef ContainersWithCountRef
     = AutoDisposeStreamProviderRef<List<ContainerDataWithCount>>;
-String _$tabContainerIdHash() => r'726ddd000d23935a2c8ae39c7957412fab16016d';
+String _$filteredContainersWithCountHash() =>
+    r'3a7284df29182a32f9b7831867a3a0b3e171b382';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -67,6 +68,145 @@ class _SystemHash {
     return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
   }
 }
+
+/// See also [filteredContainersWithCount].
+@ProviderFor(filteredContainersWithCount)
+const filteredContainersWithCountProvider = FilteredContainersWithCountFamily();
+
+/// See also [filteredContainersWithCount].
+class FilteredContainersWithCountFamily
+    extends Family<AsyncValue<List<ContainerDataWithCount>>> {
+  /// See also [filteredContainersWithCount].
+  const FilteredContainersWithCountFamily();
+
+  /// See also [filteredContainersWithCount].
+  FilteredContainersWithCountProvider call(
+    String? searchText,
+  ) {
+    return FilteredContainersWithCountProvider(
+      searchText,
+    );
+  }
+
+  @override
+  FilteredContainersWithCountProvider getProviderOverride(
+    covariant FilteredContainersWithCountProvider provider,
+  ) {
+    return call(
+      provider.searchText,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'filteredContainersWithCountProvider';
+}
+
+/// See also [filteredContainersWithCount].
+class FilteredContainersWithCountProvider
+    extends AutoDisposeProvider<AsyncValue<List<ContainerDataWithCount>>> {
+  /// See also [filteredContainersWithCount].
+  FilteredContainersWithCountProvider(
+    String? searchText,
+  ) : this._internal(
+          (ref) => filteredContainersWithCount(
+            ref as FilteredContainersWithCountRef,
+            searchText,
+          ),
+          from: filteredContainersWithCountProvider,
+          name: r'filteredContainersWithCountProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$filteredContainersWithCountHash,
+          dependencies: FilteredContainersWithCountFamily._dependencies,
+          allTransitiveDependencies:
+              FilteredContainersWithCountFamily._allTransitiveDependencies,
+          searchText: searchText,
+        );
+
+  FilteredContainersWithCountProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.searchText,
+  }) : super.internal();
+
+  final String? searchText;
+
+  @override
+  Override overrideWith(
+    AsyncValue<List<ContainerDataWithCount>> Function(
+            FilteredContainersWithCountRef provider)
+        create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: FilteredContainersWithCountProvider._internal(
+        (ref) => create(ref as FilteredContainersWithCountRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        searchText: searchText,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeProviderElement<AsyncValue<List<ContainerDataWithCount>>>
+      createElement() {
+    return _FilteredContainersWithCountProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is FilteredContainersWithCountProvider &&
+        other.searchText == searchText;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, searchText.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin FilteredContainersWithCountRef
+    on AutoDisposeProviderRef<AsyncValue<List<ContainerDataWithCount>>> {
+  /// The parameter `searchText` of this provider.
+  String? get searchText;
+}
+
+class _FilteredContainersWithCountProviderElement
+    extends AutoDisposeProviderElement<AsyncValue<List<ContainerDataWithCount>>>
+    with FilteredContainersWithCountRef {
+  _FilteredContainersWithCountProviderElement(super.provider);
+
+  @override
+  String? get searchText =>
+      (origin as FilteredContainersWithCountProvider).searchText;
+}
+
+String _$tabContainerIdHash() => r'726ddd000d23935a2c8ae39c7957412fab16016d';
 
 /// See also [tabContainerId].
 @ProviderFor(tabContainerId)

@@ -3,7 +3,7 @@ version = "1.0-SNAPSHOT"
 
 buildscript {
     ext.kotlin_version = "1.9.22"
-    ext.mozillaComponentsVersion = '133.0.20241024211615'
+    ext.mozillaComponentsVersion = '134.0.20241030214633'
 
     repositories {
         google()
@@ -74,48 +74,6 @@ android {
         viewBinding true
     }
 
-    dependencies {
-        implementation "org.mozilla.components:support-utils:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:support-ktx:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:support-webextensions:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:support-locale:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:lib-fetch-httpurlconnection:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:lib-crash:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:lib-publicsuffixlist:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:lib-dataprotect:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:concept-engine:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:concept-fetch:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:browser-engine-gecko:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:browser-state:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:browser-session-storage:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:browser-icons:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:browser-thumbnails:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:feature-addons:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:feature-app-links:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:feature-autofill:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:feature-downloads:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:feature-media:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:feature-tabs:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:feature-prompts:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:feature-session:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:feature-readerview:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:feature-privatemode:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:feature-sitepermissions:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:feature-webcompat:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:feature-webnotifications:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:service-digitalassetlinks:$mozillaComponentsVersion"
-        implementation "org.mozilla.components:ui-widgets:$mozillaComponentsVersion"
-
-        implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
-        implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-        implementation 'com.google.android.material:material:1.12.0'
-        //https://stackoverflow.com/questions/73782320/onbackinvokedcallback-is-not-enabled-for-the-application-in-set-androidenableo
-        implementation 'androidx.activity:activity:1.9.3'
-
-        testImplementation("org.jetbrains.kotlin:kotlin-test")
-        testImplementation("org.mockito:mockito-core:5.1.0")
-    }
-
     testOptions {
         unitTests.all {
             useJUnitPlatform()
@@ -129,6 +87,66 @@ android {
     }
 }
 
+configurations.configureEach {
+    exclude group: "org.mozilla.telemetry", module: "glean-native"
+}
+
+// Select the Glean from GeckoView.
+// `service-sync-logins` requires Glean, which pulls in glean-native,
+// but that's also provided by geckoview-omni, so now we need to select which one to use.
+project.configurations.configureEach {
+    resolutionStrategy.capabilitiesResolution.withCapability("org.mozilla.telemetry:glean-native") {
+        def toBeSelected = candidates.find { it.id instanceof ModuleComponentIdentifier && it.id.module.contains('geckoview') }
+        if (toBeSelected != null) {
+            select(toBeSelected)
+        }
+        because 'use GeckoView Glean instead of standalone Glean'
+    }
+}
+
 dependencies {
+    implementation "org.mozilla.components:support-utils:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:support-ktx:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:support-webextensions:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:support-locale:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:lib-fetch-httpurlconnection:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:lib-crash:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:lib-publicsuffixlist:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:lib-dataprotect:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:concept-engine:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:concept-fetch:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:concept-toolbar:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:concept-awesomebar:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:browser-engine-gecko:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:browser-state:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:browser-session-storage:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:browser-storage-sync:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:browser-icons:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:browser-thumbnails:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:feature-addons:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:feature-app-links:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:feature-autofill:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:feature-awesomebar:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:feature-downloads:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:feature-media:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:feature-tabs:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:feature-prompts:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:feature-session:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:feature-readerview:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:feature-privatemode:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:feature-sitepermissions:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:feature-webcompat:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:feature-webnotifications:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:service-digitalassetlinks:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:ui-widgets:$mozillaComponentsVersion"
+
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.preference:preference-ktx:1.2.1'
+    implementation 'com.google.android.material:material:1.12.0'
+    //https://stackoverflow.com/questions/73782320/onbackinvokedcallback-is-not-enabled-for-the-application-in-set-androidenableo
+    implementation 'androidx.activity:activity-ktx:1.9.3'
+
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation("org.mockito:mockito-core:5.2.0")
 }

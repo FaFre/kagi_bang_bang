@@ -1,6 +1,7 @@
 import 'package:lensai/data/database/converters/color.dart';
 import 'package:lensai/data/database/converters/icon_data.dart';
 import 'package:lensai/features/geckoview/features/tabs/data/models/container_data.dart';
+import 'package:lensai/features/geckoview/features/tabs/data/models/tab_query_result.dart';
 
 CREATE TABLE container (
   id TEXT PRIMARY KEY NOT NULL,
@@ -14,8 +15,44 @@ CREATE TABLE tab (
   id TEXT PRIMARY KEY NOT NULL,
   container_id TEXT REFERENCES container (id) ON DELETE CASCADE,
   order_key TEXT NOT NULL,
+  url TEXT,
+  title TEXT,
+  extracted_content_markdown TEXT,
+  extracted_content_plain TEXT,
+  full_content_markdown TEXT,
+  full_content_plain TEXT,
   timestamp DATETIME NOT NULL
 );
+
+CREATE VIRTUAL TABLE tab_fts 
+  USING fts5(
+    title,
+    url,
+    extracted_content_plain,
+    full_content_plain,
+    content=tab,
+    tokenize="trigram"
+  );
+
+-- Triggers to keep the FTS index up to date.
+CREATE TRIGGER tab_after_insert AFTER INSERT ON tab BEGIN
+  INSERT INTO 
+    tab_fts(rowid, title, url, extracted_content_plain, full_content_plain) 
+    VALUES (new.rowid, new.title, new.url, new.extracted_content_plain, new.full_content_plain);
+END;
+CREATE TRIGGER tab_after_delete AFTER DELETE ON tab BEGIN
+  INSERT INTO 
+    tab_fts(tab_fts, rowid, title, url, extracted_content_plain, full_content_plain) 
+    VALUES('delete', old.rowid, old.title, old.url, old.extracted_content_plain, old.full_content_plain);
+END;
+CREATE TRIGGER tab_after_update AFTER UPDATE ON tab BEGIN
+  INSERT INTO 
+    tab_fts(tab_fts, rowid, title, url, extracted_content_plain, full_content_plain) 
+    VALUES('delete', old.rowid, old.title, old.url, old.extracted_content_plain, old.full_content_plain);
+  INSERT INTO 
+    tab_fts(rowid, title, url, extracted_content_plain, full_content_plain) 
+    VALUES (new.rowid, new.title, new.url, new.extracted_content_plain, new.full_content_plain);
+END;
 
 containersWithCount WITH ContainerDataWithCount:
   SELECT 
@@ -67,3 +104,52 @@ orderKeyAfterTab(:tab_id AS TEXT, :container_id AS TEXT OR NULL):
   SELECT lexo_rank_reorder_after(order_key, next_order_key)
   FROM ordered_table
   WHERE id = :tab_id;
+
+queryTabsBasic WITH TabQueryResult:
+  WITH weights AS (
+    SELECT 
+      -- Customize these weights (higher = more important)
+      10.0 as title_weight,       -- Title matches are most important
+      5.0 as url_weight           -- URL matches are quite important
+  )
+  SELECT 
+    t.id,
+    highlight(tab_fts, 0, :beforeMatch, :afterMatch) AS title,
+    highlight(tab_fts, 1, :beforeMatch, :afterMatch) AS url,
+    bm25(tab_fts, weights.title_weight, weights.url_weight) AS weighted_rank
+  FROM tab_fts fts
+  INNER JOIN
+    tab t ON t.rowid = fts.rowid 
+  CROSS JOIN weights
+  WHERE 
+  	fts.title LIKE :query OR
+  	fts.url LIKE :query
+  ORDER BY 
+  	weighted_rank ASC,
+  	t.timestamp DESC;
+
+queryTabsFullContent WITH TabQueryResult:
+  WITH weights AS (
+  SELECT 
+    -- Customize these weights (higher = more important)
+    10.0 as title_weight,     -- Title matches are most important
+    5.0 as url_weight,        -- URL matches are quite important
+    3.0 as extracted_weight,  -- Extracted content matches
+    1.0 as full_weight       -- Full content matches less important
+  )
+  SELECT 
+      highlight(tab_fts, 0, :beforeMatch, :afterMatch) AS title,
+      highlight(tab_fts, 1, :beforeMatch, :afterMatch) AS url,
+      snippet(tab_fts, 2, :beforeMatch, :afterMatch, :ellipsis, :snippetLength) AS extracted_content,
+      snippet(tab_fts, 3, :beforeMatch, :afterMatch, :ellipsis, :snippetLength) AS full_content,
+      (
+        bm25(tab_fts, weights.title_weight, weights.url_weight, 
+            weights.extracted_weight, weights.full_weight)
+      ) AS weighted_rank
+    FROM tab_fts(:query) fts
+    INNER JOIN
+      tab t ON t.rowid = fts.rowid
+    CROSS JOIN weights
+    ORDER BY 
+      weighted_rank ASC,
+      t.timestamp DESC;

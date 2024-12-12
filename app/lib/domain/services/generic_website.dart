@@ -10,8 +10,8 @@ import 'package:http/http.dart' as http;
 import 'package:lensai/core/http_error_handler.dart';
 import 'package:lensai/data/models/web_page_info.dart';
 import 'package:lensai/features/geckoview/domain/entities/browser_icon.dart';
+import 'package:lensai/utils/lru_cache.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:universal_io/io.dart';
 
 part 'generic_website.g.dart';
 
@@ -56,11 +56,11 @@ class GenericWebsiteService extends _$GenericWebsiteService {
 
   late http.Client _client;
 
-  final Map<String, bool> _httpsCache;
+  final LRUCache<String, BrowserIcon> _iconCache;
 
   GenericWebsiteService()
-      : _httpsCache = {},
-        _iconsService = GeckoIconService();
+      : _iconsService = GeckoIconService(),
+        _iconCache = LRUCache(50);
 
   @override
   void build() {
@@ -207,49 +207,59 @@ class GenericWebsiteService extends _$GenericWebsiteService {
     required Uri url,
     List<Resource> resources = const [],
   }) async {
-    final result = await _iconsService.loadIcon(url: url, resources: resources);
-    return BrowserIcon.fromBytes(
-      result.image,
-      dominantColor: (result.color != null) ? Color(result.color!) : null,
-      source: result.source,
-    );
-  }
+    final cached = _iconCache.get(url.host);
+    if (cached == null) {
+      final result =
+          await _iconsService.loadIcon(url: url, resources: resources);
 
-  Future<Uri?> tryUpgradeToHttps(Uri httpUri) async {
-    if (httpUri.isScheme('https')) {
-      return httpUri;
-    } else if (httpUri.isScheme('http')) {
-      final cached = _httpsCache[httpUri.host];
-      if (cached != null) {
-        return cached ? httpUri.replace(scheme: 'https') : null;
-      }
-
-      var sslAvailable = false;
-
-      try {
-        final context = SecurityContext.defaultContext;
-
-        final socket = await SecureSocket.connect(
-          httpUri.host,
-          443,
-          context: context,
-          timeout: const Duration(seconds: 3),
-        );
-
-        await socket.close();
-
-        sslAvailable = true;
-      } catch (_) {
-        sslAvailable = false;
-      }
-
-      _httpsCache[httpUri.host] = sslAvailable;
-
-      if (sslAvailable) {
-        return httpUri.replace(scheme: 'https');
-      }
+      return _iconCache.set(
+        url.host,
+        await BrowserIcon.fromBytes(
+          result.image,
+          dominantColor: (result.color != null) ? Color(result.color!) : null,
+          source: result.source,
+        ),
+      );
     }
 
-    return null;
+    return cached;
   }
+
+  // Future<Uri?> tryUpgradeToHttps(Uri httpUri) async {
+  //   if (httpUri.isScheme('https')) {
+  //     return httpUri;
+  //   } else if (httpUri.isScheme('http')) {
+  //     final cached = _httpsCache[httpUri.host];
+  //     if (cached != null) {
+  //       return cached ? httpUri.replace(scheme: 'https') : null;
+  //     }
+
+  //     var sslAvailable = false;
+
+  //     try {
+  //       final context = SecurityContext.defaultContext;
+
+  //       final socket = await SecureSocket.connect(
+  //         httpUri.host,
+  //         443,
+  //         context: context,
+  //         timeout: const Duration(seconds: 3),
+  //       );
+
+  //       await socket.close();
+
+  //       sslAvailable = true;
+  //     } catch (_) {
+  //       sslAvailable = false;
+  //     }
+
+  //     _httpsCache[httpUri.host] = sslAvailable;
+
+  //     if (sslAvailable) {
+  //       return httpUri.replace(scheme: 'https');
+  //     }
+  //   }
+
+  //   return null;
+  // }
 }

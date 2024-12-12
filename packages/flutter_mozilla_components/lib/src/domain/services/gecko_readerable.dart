@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_mozilla_components/src/extensions/subject.dart';
 import 'package:flutter_mozilla_components/src/pigeons/gecko.g.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -8,7 +9,6 @@ class GeckoReaderableService extends ReaderViewController {
   final ReaderViewEvents _events;
 
   final _appearanceVisibility = BehaviorSubject<bool>();
-  final _readerVisibility = BehaviorSubject<bool>();
 
   Stream<bool> get appearanceVisibility => _appearanceVisibility.stream;
 
@@ -21,8 +21,8 @@ class GeckoReaderableService extends ReaderViewController {
   }
 
   @override
-  void appearanceButtonVisibility(bool visible) {
-    _appearanceVisibility.add(visible);
+  void appearanceButtonVisibility(int timestamp, bool visible) {
+    _appearanceVisibility.addWhenMoreRecent(timestamp, null, visible);
   }
 
   GeckoReaderableService.setUp({
@@ -43,6 +43,5 @@ class GeckoReaderableService extends ReaderViewController {
 
   void dispose() {
     unawaited(_appearanceVisibility.close());
-    unawaited(_readerVisibility.close());
   }
 }

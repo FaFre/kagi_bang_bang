@@ -39,7 +39,7 @@ class SearchDao extends DatabaseAccessor<ChatSearchDatabase>
     required String searchString,
   }) {
     return db.chatQuery(
-      query: db.buildQuery(searchString),
+      query: db.buildFtsQuery(searchString),
       snippetLength: snippetLength,
       beforeMatch: matchPrefix,
       afterMatch: matchSuffix,

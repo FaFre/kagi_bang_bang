@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lensai/features/bangs/data/models/bang.dart';
-import 'package:lensai/features/bangs/domain/providers.dart';
+import 'package:lensai/features/bangs/domain/providers/bangs.dart';
 import 'package:lensai/features/bangs/domain/repositories/sync.dart';
 import 'package:lensai/features/settings/presentation/widgets/custom_list_tile.dart';
 import 'package:lensai/features/settings/presentation/widgets/sync_details_table.dart';

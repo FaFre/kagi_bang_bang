@@ -7,7 +7,7 @@ import 'package:flutter_material_design_icons/flutter_material_design_icons.dart
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lensai/data/models/web_page_info.dart';
 import 'package:lensai/features/bangs/data/models/bang_data.dart';
-import 'package:lensai/features/bangs/domain/providers.dart';
+import 'package:lensai/features/bangs/domain/providers/bangs.dart';
 import 'package:lensai/features/bangs/presentation/widgets/site_search.dart';
 import 'package:lensai/features/geckoview/domain/providers.dart';
 import 'package:lensai/features/geckoview/domain/providers/tab_session.dart';
@@ -92,7 +92,7 @@ class WebPageDialog extends HookConsumerWidget {
                         onPressed: () async {
                           if (formKey.currentState?.validate() ?? false) {
                             await ref
-                                .read(tabSessionProvider(null).notifier)
+                                .read(tabSessionProvider(tabId: null).notifier)
                                 .loadUrl(
                                   url: uri_parser.tryParseUrl(
                                     urlTextController.text,

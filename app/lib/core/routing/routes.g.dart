@@ -23,12 +23,17 @@ RouteBase get $browserRoute => GoRouteData.$route(
           factory: $AboutRouteExtension._fromState,
         ),
         GoRouteData.$route(
+          path: 'search/:searchText',
+          name: 'SearchRoute',
+          factory: $SearchRouteExtension._fromState,
+        ),
+        GoRouteData.$route(
           path: 'bangs',
           name: 'BangRoute',
           factory: $BangCategoriesRouteExtension._fromState,
           routes: [
             GoRouteData.$route(
-              path: 'search',
+              path: 'search/:searchText',
               name: 'BangSearchRoute',
               factory: $BangSearchRouteExtension._fromState,
             ),
@@ -88,6 +93,26 @@ extension $AboutRouteExtension on AboutRoute {
   void replace(BuildContext context) => context.replace(location);
 }
 
+extension $SearchRouteExtension on SearchRoute {
+  static SearchRoute _fromState(GoRouterState state) => SearchRoute(
+        searchText:
+            state.pathParameters['searchText']! ?? SearchRoute.emptySearchText,
+      );
+
+  String get location => GoRouteData.$location(
+        '/search/${Uri.encodeComponent(searchText)}',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
 extension $BangCategoriesRouteExtension on BangCategoriesRoute {
   static BangCategoriesRoute _fromState(GoRouterState state) =>
       BangCategoriesRoute();
@@ -107,10 +132,13 @@ extension $BangCategoriesRouteExtension on BangCategoriesRoute {
 }
 
 extension $BangSearchRouteExtension on BangSearchRoute {
-  static BangSearchRoute _fromState(GoRouterState state) => BangSearchRoute();
+  static BangSearchRoute _fromState(GoRouterState state) => BangSearchRoute(
+        searchText: state.pathParameters['searchText']! ??
+            BangSearchRoute.emptySearchText,
+      );
 
   String get location => GoRouteData.$location(
-        '/bangs/search',
+        '/bangs/search/${Uri.encodeComponent(searchText)}',
       );
 
   void go(BuildContext context) => context.go(location);

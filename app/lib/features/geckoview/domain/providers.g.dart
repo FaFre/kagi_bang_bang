@@ -7,7 +7,7 @@ part of 'providers.dart';
 // **************************************************************************
 
 String _$selectionActionServiceHash() =>
-    r'b5bc6b2bc5496ae84d61a74cc6ff052b55d2a3d3';
+    r'd0c04262171976c21441297706273417e3d79b67';
 
 /// See also [selectionActionService].
 @ProviderFor(selectionActionService)
@@ -57,8 +57,25 @@ final addonServiceProvider = Provider<GeckoAddonService>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AddonServiceRef = ProviderRef<GeckoAddonService>;
+String _$tabContentServiceHash() => r'd9a991add907ecc138c62790883e59d8e9aa9266';
+
+/// See also [tabContentService].
+@ProviderFor(tabContentService)
+final tabContentServiceProvider = Provider<GeckoTabContentService>.internal(
+  tabContentService,
+  name: r'tabContentServiceProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$tabContentServiceHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef TabContentServiceRef = ProviderRef<GeckoTabContentService>;
 String _$selectedTabSessionNotifierHash() =>
-    r'62fcd98a915566d55b5bcb297d87d675fe12786d';
+    r'aef19991d5b05a2bb28e8a6ccb57dc75c2f3148f';
 
 /// See also [selectedTabSessionNotifier].
 @ProviderFor(selectedTabSessionNotifier)

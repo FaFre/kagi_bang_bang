@@ -7,7 +7,7 @@ part of 'autosuggest.dart';
 // **************************************************************************
 
 String _$kagiAutosuggestServiceHash() =>
-    r'843b0d84b1dde2d903412a123c8c10d26e8036fd';
+    r'e1cb4ef730bcf5c4bf4c77617bb12a22228af576';
 
 /// See also [KagiAutosuggestService].
 @ProviderFor(KagiAutosuggestService)

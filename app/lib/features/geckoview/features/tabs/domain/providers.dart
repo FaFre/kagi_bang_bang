@@ -5,6 +5,7 @@ import 'package:lensai/features/geckoview/features/tabs/data/models/container_da
 import 'package:lensai/features/geckoview/features/tabs/data/providers.dart';
 import 'package:lensai/features/geckoview/features/tabs/domain/repositories/container.dart';
 import 'package:lensai/features/geckoview/features/tabs/utils/color_palette.dart';
+import 'package:lensai/features/search/util/tokenized_filter.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -33,6 +34,28 @@ Stream<List<ContainerDataWithCount>> containersWithCount(
 ) {
   final db = ref.watch(tabDatabaseProvider);
   return db.containersWithCount().watch();
+}
+
+@Riverpod()
+AsyncValue<List<ContainerDataWithCount>> filteredContainersWithCount(
+  Ref ref,
+  String? searchText,
+) {
+  return ref.watch(
+    containersWithCountProvider.select((value) {
+      if (searchText?.isEmpty ?? true) {
+        return value;
+      }
+
+      return value.whenData(
+        (cb) => TokenizedFilter(
+          items: cb,
+          toString: (item) => item.name,
+          query: searchText!,
+        ).filtered,
+      );
+    }),
+  );
 }
 
 @Riverpod()

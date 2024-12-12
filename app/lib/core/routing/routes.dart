@@ -8,8 +8,9 @@ import 'package:lensai/features/bangs/presentation/screens/search.dart';
 import 'package:lensai/features/chat_archive/presentation/screens/detail.dart';
 import 'package:lensai/features/chat_archive/presentation/screens/list.dart';
 import 'package:lensai/features/chat_archive/presentation/screens/search.dart';
-import 'package:lensai/features/geckoview/features/browser/screens/browser.dart';
+import 'package:lensai/features/geckoview/features/browser/presentation/screens/browser.dart';
 import 'package:lensai/features/geckoview/features/tabs/presentation/screens/container_list.dart';
+import 'package:lensai/features/search/presentation/screens/search.dart';
 import 'package:lensai/features/settings/presentation/screens/settings.dart';
 
 part 'routes.g.dart';
@@ -22,13 +23,17 @@ part 'routes.g.dart';
       name: 'AboutRoute',
       path: 'about',
     ),
+    TypedGoRoute<SearchRoute>(
+      name: 'SearchRoute',
+      path: 'search/:searchText',
+    ),
     TypedGoRoute<BangCategoriesRoute>(
       name: 'BangRoute',
       path: 'bangs',
       routes: [
         TypedGoRoute<BangSearchRoute>(
           name: 'BangSearchRoute',
-          path: 'search',
+          path: 'search/:searchText',
         ),
         TypedGoRoute<BangCategoryRoute>(
           name: 'BangCategoryRoute',
@@ -59,6 +64,24 @@ class AboutRoute extends GoRouteData {
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
     return DialogPage(builder: (_) => const AboutDialogScreen());
+  }
+}
+
+class SearchRoute extends GoRouteData {
+  static const String emptySearchText = ' ';
+
+  //This should be nullable but isnt allowed by go_router
+  final String searchText;
+
+  const SearchRoute({this.searchText = SearchRoute.emptySearchText});
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return SearchScreen(
+      initialSearchText: (searchText.isEmpty || searchText == emptySearchText)
+          ? null
+          : searchText,
+    );
   }
 }
 
@@ -96,9 +119,20 @@ class BangSubCategoryRoute extends GoRouteData {
 }
 
 class BangSearchRoute extends GoRouteData {
+  static const String emptySearchText = ' ';
+
+  //This should be nullable but isnt allowed by go_router
+  final String searchText;
+
+  const BangSearchRoute({this.searchText = BangSearchRoute.emptySearchText});
+
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const BangSearchScreen();
+    return BangSearchScreen(
+      initialSearchText: (searchText.isEmpty || searchText == emptySearchText)
+          ? null
+          : searchText,
+    );
   }
 }
 

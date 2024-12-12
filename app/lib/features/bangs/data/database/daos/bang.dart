@@ -91,7 +91,7 @@ class BangDao extends DatabaseAccessor<BangDatabase> with _$BangDaoMixin {
   }
 
   Selectable<BangData> queryBangs(String searchString) {
-    return db.bangQuery(query: db.buildQuery(searchString));
+    return db.bangQuery(query: db.buildFtsQuery(searchString));
   }
 
   // Future<int> upsertBangIcon(String trigger, BrowserIcon icon) async {

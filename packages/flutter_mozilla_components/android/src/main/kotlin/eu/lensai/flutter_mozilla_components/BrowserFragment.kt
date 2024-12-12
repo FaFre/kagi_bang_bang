@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import eu.lensai.flutter_mozilla_components.addons.WebExtensionActionPopupActivity
+import eu.lensai.flutter_mozilla_components.feature.ReadabilityExtractFeature
 import eu.lensai.flutter_mozilla_components.feature.WebExtensionToolbarFeature
 import eu.lensai.flutter_mozilla_components.integration.ReaderViewIntegration
 import mozilla.components.browser.state.state.WebExtensionState
@@ -19,15 +20,16 @@ import mozilla.components.support.webextensions.WebExtensionPopupObserver
 /**
  * Fragment used for browsing the web within the main app.
  */
-class BrowserFragment(private val context: Context) : BaseBrowserFragment(), UserInteractionHandler {
+class BrowserFragment() : BaseBrowserFragment(), UserInteractionHandler {
     private val windowFeature = ViewBoundFeatureWrapper<WindowFeature>()
     private val thumbnailsFeature = ViewBoundFeatureWrapper<BrowserThumbnails>()
     private val readerViewFeature = ViewBoundFeatureWrapper<ReaderViewIntegration>()
+    private val readabilityExtractFeature = ViewBoundFeatureWrapper<ReadabilityExtractFeature>()
     private val webExtensionPopupObserver = ViewBoundFeatureWrapper<WebExtensionPopupObserver>()
     private val webExtToolbarFeature = ViewBoundFeatureWrapper<WebExtensionToolbarFeature>()
 
     override fun createEngine(components: Components): EngineView {
-        return components.core.engine.createView(context).apply {
+        return components.core.engine.createView(requireContext()).apply {
            selectionActionDelegate = components.selectionAction
         }
     }
@@ -45,6 +47,12 @@ class BrowserFragment(private val context: Context) : BaseBrowserFragment(), Use
                 components.events.readerViewEvents,
                 components.readerViewController,
             ),
+            owner = this,
+            view = view,
+        )
+
+        readabilityExtractFeature.set(
+            feature = components.features.readabilityExtractFeature,
             owner = this,
             view = view,
         )
@@ -72,6 +80,8 @@ class BrowserFragment(private val context: Context) : BaseBrowserFragment(), Use
             owner = this,
             view = view,
         )
+
+        components.core.historyStorage.registerStorageMaintenanceWorker()
     }
 
     private fun openPopup(webExtensionState: WebExtensionState) {
@@ -86,7 +96,7 @@ class BrowserFragment(private val context: Context) : BaseBrowserFragment(), Use
         readerViewFeature.onBackPressed() || super.onBackPressed()
 
     companion object {
-        fun create(context: Context, sessionId: String? = null) = BrowserFragment(context).apply {
+        fun create(sessionId: String? = null) = BrowserFragment().apply {
             arguments = Bundle().apply {
                 putSessionId(sessionId)
             }

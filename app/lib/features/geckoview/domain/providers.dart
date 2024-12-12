@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_mozilla_components/flutter_mozilla_components.dart';
 import 'package:lensai/core/logger.dart';
-import 'package:lensai/features/bangs/domain/providers.dart';
+import 'package:lensai/features/bangs/domain/providers/bangs.dart';
 import 'package:lensai/features/geckoview/domain/providers/tab_session.dart';
 import 'package:lensai/features/geckoview/domain/repositories/tab.dart';
 import 'package:riverpod/riverpod.dart';
@@ -22,7 +22,7 @@ GeckoSelectionActionService selectionActionService(
     service.setActions([
       SearchAction((text) async {
         final defaultSearchBang =
-            await ref.read(kagiSearchBangDataProvider.future);
+            await ref.read(defaultSearchBangDataProvider.future);
 
         if (defaultSearchBang != null) {
           await ref
@@ -34,7 +34,7 @@ GeckoSelectionActionService selectionActionService(
       }),
       PrivateSearchAction((text) async {
         final defaultSearchBang =
-            await ref.read(kagiSearchBangDataProvider.future);
+            await ref.read(defaultSearchBangDataProvider.future);
 
         if (defaultSearchBang != null) {
           await ref.read(tabRepositoryProvider.notifier).addTab(
@@ -97,6 +97,17 @@ GeckoAddonService addonService(Ref ref) {
 }
 
 @Riverpod(keepAlive: true)
+GeckoTabContentService tabContentService(Ref ref) {
+  final service = GeckoTabContentService.setUp();
+
+  ref.onDispose(() {
+    service.dispose();
+  });
+
+  return service;
+}
+
+@Riverpod(keepAlive: true)
 class EngineReadyState extends _$EngineReadyState {
   @override
   bool build() {
@@ -133,5 +144,5 @@ class EngineReadyState extends _$EngineReadyState {
 
 @Riverpod()
 Raw<TabSession> selectedTabSessionNotifier(Ref ref) {
-  return ref.watch(tabSessionProvider(null).notifier);
+  return ref.watch(tabSessionProvider(tabId: null).notifier);
 }

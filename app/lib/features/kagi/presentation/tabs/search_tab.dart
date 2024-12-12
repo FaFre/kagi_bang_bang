@@ -4,7 +4,7 @@ import 'package:flutter_material_design_icons/flutter_material_design_icons.dart
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lensai/core/routing/routes.dart';
-import 'package:lensai/features/bangs/domain/providers.dart';
+import 'package:lensai/features/bangs/domain/providers/bangs.dart';
 import 'package:lensai/features/bangs/domain/repositories/data.dart';
 import 'package:lensai/features/bangs/presentation/widgets/bang_icon.dart';
 import 'package:lensai/features/bangs/presentation/widgets/search_field.dart';
@@ -32,8 +32,8 @@ class SearchTab extends HookConsumerWidget {
 
     final selectedBang = ref
         .watch(selectedBangDataProvider().select((value) => value.valueOrNull));
-    final defaultSearchBang = ref
-        .watch(kagiSearchBangDataProvider.select((value) => value.valueOrNull));
+    final defaultSearchBang = ref.watch(
+        defaultSearchBangDataProvider.select((value) => value.valueOrNull));
 
     final activeBang = selectedBang ?? defaultSearchBang;
 

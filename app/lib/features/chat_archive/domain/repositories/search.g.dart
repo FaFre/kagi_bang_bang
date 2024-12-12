@@ -7,7 +7,7 @@ part of 'search.dart';
 // **************************************************************************
 
 String _$chatArchiveSearchRepositoryHash() =>
-    r'a3decc7975bf49995b20ea578db3c08b69f7c03c';
+    r'd7174cfb877c61ee4e9580f44d7ffd11bf3b4b60';
 
 /// See also [ChatArchiveSearchRepository].
 @ProviderFor(ChatArchiveSearchRepository)

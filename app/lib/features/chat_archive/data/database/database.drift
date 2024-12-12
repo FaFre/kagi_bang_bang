@@ -28,7 +28,7 @@ CREATE TRIGGER chat_after_update AFTER UPDATE ON chat BEGIN
     chat_fts(chat_fts, rowid, title, content) 
     VALUES('delete', old.rowid, old.title, old.content);
   INSERT INTO 
-    chat_fts(chat_fts, title, content) 
+    chat_fts(rowid, title, content) 
     VALUES (new.rowid, new.title, new.content);
 END;
 

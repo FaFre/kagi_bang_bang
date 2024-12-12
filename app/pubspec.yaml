@@ -26,11 +26,11 @@ dependencies:
   flutter_pdf_text: ^0.7.0
   flutter_secure_storage: ^9.2.2
   flutter_sharing_intent: ^1.1.1
-  go_router: ^14.3.0
+  go_router: ^14.4.1
   google_fonts: ^6.2.1
   home_widget: ^0.7.0
   hooks_riverpod: ^2.6.1
-  html: ^0.15.4
+  html: ^0.15.5
   http: ^1.2.2
   json_annotation: ^4.9.0
   lexo_rank:
@@ -41,7 +41,7 @@ dependencies:
   mime: ^2.0.0
   package_info_plus: ^8.1.0
   path: ^1.9.0
-  path_provider: ^2.1.4
+  path_provider: ^2.1.5
   reorderable_grid: ^1.0.10
   riverpod: ^2.6.1
   riverpod_annotation: ^2.6.1
@@ -69,7 +69,7 @@ dev_dependencies:
   copy_with_extension_gen: ^5.0.4
   custom_lint: ^0.6.8
   dependency_validator: ^4.1.1
-  drift_dev: ^2.21.1
+  drift_dev: ^2.21.2
   fast_equatable_lint: ^0.3.0
   flutter_launcher_icons: ^0.14.1
   go_router_builder: ^2.7.1

@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'package:exceptions/exceptions.dart';
 import 'package:http/http.dart' as http;
 import 'package:lensai/core/http_error_handler.dart';
+import 'package:lensai/features/search/domain/entities/abstract/i_search_suggestion_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'autosuggest.g.dart';
 
 @Riverpod(keepAlive: true)
-class KagiAutosuggestService extends _$KagiAutosuggestService {
+class KagiAutosuggestService extends _$KagiAutosuggestService
+    implements ISearchSuggestionProvider {
   static final _baseUrl = Uri.https('kagi.com', 'api/autosuggest');
 
   late http.Client _client;
@@ -18,6 +20,7 @@ class KagiAutosuggestService extends _$KagiAutosuggestService {
     _client = http.Client();
   }
 
+  @override
   Future<Result<List<String>>> getSuggestions(String query) async {
     return Result.fromAsync(
       () async {

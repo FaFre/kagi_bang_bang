@@ -83,10 +83,6 @@ class ChatArchiveSearchRepository extends _$ChatArchiveSearchRepository {
     _streamController = StreamController();
     _searchDatabase = ref.watch(chatSearchDatabaseProvider);
 
-    ref.onDispose(() async {
-      await _streamController.close();
-    });
-
     // populate with initial chats
     await _searchDatabase.searchDao.deleteAllChats();
     await _searchDatabase.searchDao.indexChats(await _availableChats());
@@ -112,6 +108,7 @@ class ChatArchiveSearchRepository extends _$ChatArchiveSearchRepository {
 
     ref.onDispose(() async {
       await changeStreamSubscription.cancel();
+      await _streamController.close();
     });
 
     yield* _streamController.stream;

@@ -15,7 +15,9 @@ import androidx.fragment.app.Fragment
 import eu.lensai.flutter_mozilla_components.addons.WebExtensionPromptFeature
 import eu.lensai.flutter_mozilla_components.databinding.FragmentBrowserBinding
 import eu.lensai.flutter_mozilla_components.ext.getPreferenceKey
+import eu.lensai.flutter_mozilla_components.pip.PictureInPictureIntegration
 import eu.lensai.flutter_mozilla_components.services.DownloadService
+import mozilla.components.browser.state.selector.selectedTab
 import mozilla.components.concept.engine.EngineView
 import mozilla.components.feature.app.links.AppLinksFeature
 import mozilla.components.feature.downloads.DownloadsFeature
@@ -51,6 +53,7 @@ abstract class BaseBrowserFragment : Fragment(), UserInteractionHandler, Activit
     private val appLinksFeature = ViewBoundFeatureWrapper<AppLinksFeature>()
     private val promptFeature = ViewBoundFeatureWrapper<PromptFeature>()
     private val webExtensionPromptFeature = ViewBoundFeatureWrapper<WebExtensionPromptFeature>()
+    private val pictureInPictureIntegration = ViewBoundFeatureWrapper<PictureInPictureIntegration>()
     private val sitePermissionsFeature = ViewBoundFeatureWrapper<SitePermissionsFeature>()
     private val swipeRefreshFeature = ViewBoundFeatureWrapper<SwipeRefreshFeature>()
     private val secureWindowFeature = ViewBoundFeatureWrapper<SecureWindowFeature>()
@@ -251,16 +254,11 @@ abstract class BaseBrowserFragment : Fragment(), UserInteractionHandler, Activit
 
         fullScreenFeature.set(
             feature = FullScreenFeature(
-                components.core.store,
-                components.useCases.sessionUseCases,
-                sessionId,
-            ) { inFullScreen ->
-                if (inFullScreen) {
-                    activity?.enterImmersiveMode()
-                } else {
-                    activity?.exitImmersiveMode()
-                }
-            },
+                store = components.core.store,
+                sessionUseCases = components.useCases.sessionUseCases,
+                tabId = sessionId,
+                fullScreenChanged = ::fullScreenChanged,
+            ),
             owner = this,
             view = binding.root,
         )
@@ -273,6 +271,16 @@ abstract class BaseBrowserFragment : Fragment(), UserInteractionHandler, Activit
             ),
             owner = this,
             view = binding.root,
+        )
+
+        pictureInPictureIntegration.set(
+            feature = PictureInPictureIntegration(
+                components.core.store,
+                requireActivity(),
+                sessionId,
+            ),
+            owner = this,
+            view = view,
         )
 
         secureWindowFeature.set(
@@ -312,9 +320,32 @@ abstract class BaseBrowserFragment : Fragment(), UserInteractionHandler, Activit
         return binding.root
     }
 
+    private fun fullScreenChanged(enabled: Boolean) {
+        if (enabled) {
+            activity?.enterImmersiveMode()
+        } else {
+            activity?.exitImmersiveMode()
+        }
+    }
+
     @CallSuper
     override fun onBackPressed(): Boolean {
         return backButtonHandler.any { it.onBackPressed() }
+    }
+
+    final override fun onPause() {
+        pictureInPictureIntegration.get()?.onHomePressed() ?: false
+        super.onPause()
+    }
+
+    final override fun onPictureInPictureModeChanged(enabled: Boolean) {
+        val session = components.core.store.state.selectedTab
+        val fullScreenMode = session?.content?.fullScreen ?: false
+        // If we're exiting PIP mode and we're in fullscreen mode, then we should exit fullscreen mode as well.
+        if (!enabled && fullScreenMode) {
+            onBackPressed()
+            fullScreenChanged(false)
+        }
     }
 
     @CallSuper

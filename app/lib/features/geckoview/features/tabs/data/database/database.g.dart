@@ -195,13 +195,54 @@ class Tab extends Table with TableInfo<Tab, TabData> {
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
+  late final GeneratedColumn<String> url = GeneratedColumn<String>(
+      'url', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  late final GeneratedColumn<String> extractedContentMarkdown =
+      GeneratedColumn<String>('extracted_content_markdown', aliasedName, true,
+          type: DriftSqlType.string,
+          requiredDuringInsert: false,
+          $customConstraints: '');
+  late final GeneratedColumn<String> extractedContentPlain =
+      GeneratedColumn<String>('extracted_content_plain', aliasedName, true,
+          type: DriftSqlType.string,
+          requiredDuringInsert: false,
+          $customConstraints: '');
+  late final GeneratedColumn<String> fullContentMarkdown =
+      GeneratedColumn<String>('full_content_markdown', aliasedName, true,
+          type: DriftSqlType.string,
+          requiredDuringInsert: false,
+          $customConstraints: '');
+  late final GeneratedColumn<String> fullContentPlain = GeneratedColumn<String>(
+      'full_content_plain', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      $customConstraints: '');
   late final GeneratedColumn<DateTime> timestamp = GeneratedColumn<DateTime>(
       'timestamp', aliasedName, false,
       type: DriftSqlType.dateTime,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   @override
-  List<GeneratedColumn> get $columns => [id, containerId, orderKey, timestamp];
+  List<GeneratedColumn> get $columns => [
+        id,
+        containerId,
+        orderKey,
+        url,
+        title,
+        extractedContentMarkdown,
+        extractedContentPlain,
+        fullContentMarkdown,
+        fullContentPlain,
+        timestamp
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -219,6 +260,20 @@ class Tab extends Table with TableInfo<Tab, TabData> {
           .read(DriftSqlType.string, data['${effectivePrefix}container_id']),
       orderKey: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}order_key'])!,
+      url: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}url']),
+      title: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}title']),
+      extractedContentMarkdown: attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}extracted_content_markdown']),
+      extractedContentPlain: attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}extracted_content_plain']),
+      fullContentMarkdown: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}full_content_markdown']),
+      fullContentPlain: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}full_content_plain']),
       timestamp: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}timestamp'])!,
     );
@@ -237,11 +292,23 @@ class TabData extends DataClass implements Insertable<TabData> {
   final String id;
   final String? containerId;
   final String orderKey;
+  final String? url;
+  final String? title;
+  final String? extractedContentMarkdown;
+  final String? extractedContentPlain;
+  final String? fullContentMarkdown;
+  final String? fullContentPlain;
   final DateTime timestamp;
   const TabData(
       {required this.id,
       this.containerId,
       required this.orderKey,
+      this.url,
+      this.title,
+      this.extractedContentMarkdown,
+      this.extractedContentPlain,
+      this.fullContentMarkdown,
+      this.fullContentPlain,
       required this.timestamp});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -251,6 +318,25 @@ class TabData extends DataClass implements Insertable<TabData> {
       map['container_id'] = Variable<String>(containerId);
     }
     map['order_key'] = Variable<String>(orderKey);
+    if (!nullToAbsent || url != null) {
+      map['url'] = Variable<String>(url);
+    }
+    if (!nullToAbsent || title != null) {
+      map['title'] = Variable<String>(title);
+    }
+    if (!nullToAbsent || extractedContentMarkdown != null) {
+      map['extracted_content_markdown'] =
+          Variable<String>(extractedContentMarkdown);
+    }
+    if (!nullToAbsent || extractedContentPlain != null) {
+      map['extracted_content_plain'] = Variable<String>(extractedContentPlain);
+    }
+    if (!nullToAbsent || fullContentMarkdown != null) {
+      map['full_content_markdown'] = Variable<String>(fullContentMarkdown);
+    }
+    if (!nullToAbsent || fullContentPlain != null) {
+      map['full_content_plain'] = Variable<String>(fullContentPlain);
+    }
     map['timestamp'] = Variable<DateTime>(timestamp);
     return map;
   }
@@ -262,6 +348,16 @@ class TabData extends DataClass implements Insertable<TabData> {
       id: serializer.fromJson<String>(json['id']),
       containerId: serializer.fromJson<String?>(json['container_id']),
       orderKey: serializer.fromJson<String>(json['order_key']),
+      url: serializer.fromJson<String?>(json['url']),
+      title: serializer.fromJson<String?>(json['title']),
+      extractedContentMarkdown:
+          serializer.fromJson<String?>(json['extracted_content_markdown']),
+      extractedContentPlain:
+          serializer.fromJson<String?>(json['extracted_content_plain']),
+      fullContentMarkdown:
+          serializer.fromJson<String?>(json['full_content_markdown']),
+      fullContentPlain:
+          serializer.fromJson<String?>(json['full_content_plain']),
       timestamp: serializer.fromJson<DateTime>(json['timestamp']),
     );
   }
@@ -272,6 +368,14 @@ class TabData extends DataClass implements Insertable<TabData> {
       'id': serializer.toJson<String>(id),
       'container_id': serializer.toJson<String?>(containerId),
       'order_key': serializer.toJson<String>(orderKey),
+      'url': serializer.toJson<String?>(url),
+      'title': serializer.toJson<String?>(title),
+      'extracted_content_markdown':
+          serializer.toJson<String?>(extractedContentMarkdown),
+      'extracted_content_plain':
+          serializer.toJson<String?>(extractedContentPlain),
+      'full_content_markdown': serializer.toJson<String?>(fullContentMarkdown),
+      'full_content_plain': serializer.toJson<String?>(fullContentPlain),
       'timestamp': serializer.toJson<DateTime>(timestamp),
     };
   }
@@ -280,11 +384,31 @@ class TabData extends DataClass implements Insertable<TabData> {
           {String? id,
           Value<String?> containerId = const Value.absent(),
           String? orderKey,
+          Value<String?> url = const Value.absent(),
+          Value<String?> title = const Value.absent(),
+          Value<String?> extractedContentMarkdown = const Value.absent(),
+          Value<String?> extractedContentPlain = const Value.absent(),
+          Value<String?> fullContentMarkdown = const Value.absent(),
+          Value<String?> fullContentPlain = const Value.absent(),
           DateTime? timestamp}) =>
       TabData(
         id: id ?? this.id,
         containerId: containerId.present ? containerId.value : this.containerId,
         orderKey: orderKey ?? this.orderKey,
+        url: url.present ? url.value : this.url,
+        title: title.present ? title.value : this.title,
+        extractedContentMarkdown: extractedContentMarkdown.present
+            ? extractedContentMarkdown.value
+            : this.extractedContentMarkdown,
+        extractedContentPlain: extractedContentPlain.present
+            ? extractedContentPlain.value
+            : this.extractedContentPlain,
+        fullContentMarkdown: fullContentMarkdown.present
+            ? fullContentMarkdown.value
+            : this.fullContentMarkdown,
+        fullContentPlain: fullContentPlain.present
+            ? fullContentPlain.value
+            : this.fullContentPlain,
         timestamp: timestamp ?? this.timestamp,
       );
   TabData copyWithCompanion(TabCompanion data) {
@@ -293,6 +417,20 @@ class TabData extends DataClass implements Insertable<TabData> {
       containerId:
           data.containerId.present ? data.containerId.value : this.containerId,
       orderKey: data.orderKey.present ? data.orderKey.value : this.orderKey,
+      url: data.url.present ? data.url.value : this.url,
+      title: data.title.present ? data.title.value : this.title,
+      extractedContentMarkdown: data.extractedContentMarkdown.present
+          ? data.extractedContentMarkdown.value
+          : this.extractedContentMarkdown,
+      extractedContentPlain: data.extractedContentPlain.present
+          ? data.extractedContentPlain.value
+          : this.extractedContentPlain,
+      fullContentMarkdown: data.fullContentMarkdown.present
+          ? data.fullContentMarkdown.value
+          : this.fullContentMarkdown,
+      fullContentPlain: data.fullContentPlain.present
+          ? data.fullContentPlain.value
+          : this.fullContentPlain,
       timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
     );
   }
@@ -303,13 +441,29 @@ class TabData extends DataClass implements Insertable<TabData> {
           ..write('id: $id, ')
           ..write('containerId: $containerId, ')
           ..write('orderKey: $orderKey, ')
+          ..write('url: $url, ')
+          ..write('title: $title, ')
+          ..write('extractedContentMarkdown: $extractedContentMarkdown, ')
+          ..write('extractedContentPlain: $extractedContentPlain, ')
+          ..write('fullContentMarkdown: $fullContentMarkdown, ')
+          ..write('fullContentPlain: $fullContentPlain, ')
           ..write('timestamp: $timestamp')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, containerId, orderKey, timestamp);
+  int get hashCode => Object.hash(
+      id,
+      containerId,
+      orderKey,
+      url,
+      title,
+      extractedContentMarkdown,
+      extractedContentPlain,
+      fullContentMarkdown,
+      fullContentPlain,
+      timestamp);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -317,6 +471,12 @@ class TabData extends DataClass implements Insertable<TabData> {
           other.id == this.id &&
           other.containerId == this.containerId &&
           other.orderKey == this.orderKey &&
+          other.url == this.url &&
+          other.title == this.title &&
+          other.extractedContentMarkdown == this.extractedContentMarkdown &&
+          other.extractedContentPlain == this.extractedContentPlain &&
+          other.fullContentMarkdown == this.fullContentMarkdown &&
+          other.fullContentPlain == this.fullContentPlain &&
           other.timestamp == this.timestamp);
 }
 
@@ -324,12 +484,24 @@ class TabCompanion extends UpdateCompanion<TabData> {
   final Value<String> id;
   final Value<String?> containerId;
   final Value<String> orderKey;
+  final Value<String?> url;
+  final Value<String?> title;
+  final Value<String?> extractedContentMarkdown;
+  final Value<String?> extractedContentPlain;
+  final Value<String?> fullContentMarkdown;
+  final Value<String?> fullContentPlain;
   final Value<DateTime> timestamp;
   final Value<int> rowid;
   const TabCompanion({
     this.id = const Value.absent(),
     this.containerId = const Value.absent(),
     this.orderKey = const Value.absent(),
+    this.url = const Value.absent(),
+    this.title = const Value.absent(),
+    this.extractedContentMarkdown = const Value.absent(),
+    this.extractedContentPlain = const Value.absent(),
+    this.fullContentMarkdown = const Value.absent(),
+    this.fullContentPlain = const Value.absent(),
     this.timestamp = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -337,6 +509,12 @@ class TabCompanion extends UpdateCompanion<TabData> {
     required String id,
     this.containerId = const Value.absent(),
     required String orderKey,
+    this.url = const Value.absent(),
+    this.title = const Value.absent(),
+    this.extractedContentMarkdown = const Value.absent(),
+    this.extractedContentPlain = const Value.absent(),
+    this.fullContentMarkdown = const Value.absent(),
+    this.fullContentPlain = const Value.absent(),
     required DateTime timestamp,
     this.rowid = const Value.absent(),
   })  : id = Value(id),
@@ -346,6 +524,12 @@ class TabCompanion extends UpdateCompanion<TabData> {
     Expression<String>? id,
     Expression<String>? containerId,
     Expression<String>? orderKey,
+    Expression<String>? url,
+    Expression<String>? title,
+    Expression<String>? extractedContentMarkdown,
+    Expression<String>? extractedContentPlain,
+    Expression<String>? fullContentMarkdown,
+    Expression<String>? fullContentPlain,
     Expression<DateTime>? timestamp,
     Expression<int>? rowid,
   }) {
@@ -353,6 +537,15 @@ class TabCompanion extends UpdateCompanion<TabData> {
       if (id != null) 'id': id,
       if (containerId != null) 'container_id': containerId,
       if (orderKey != null) 'order_key': orderKey,
+      if (url != null) 'url': url,
+      if (title != null) 'title': title,
+      if (extractedContentMarkdown != null)
+        'extracted_content_markdown': extractedContentMarkdown,
+      if (extractedContentPlain != null)
+        'extracted_content_plain': extractedContentPlain,
+      if (fullContentMarkdown != null)
+        'full_content_markdown': fullContentMarkdown,
+      if (fullContentPlain != null) 'full_content_plain': fullContentPlain,
       if (timestamp != null) 'timestamp': timestamp,
       if (rowid != null) 'rowid': rowid,
     });
@@ -362,12 +555,26 @@ class TabCompanion extends UpdateCompanion<TabData> {
       {Value<String>? id,
       Value<String?>? containerId,
       Value<String>? orderKey,
+      Value<String?>? url,
+      Value<String?>? title,
+      Value<String?>? extractedContentMarkdown,
+      Value<String?>? extractedContentPlain,
+      Value<String?>? fullContentMarkdown,
+      Value<String?>? fullContentPlain,
       Value<DateTime>? timestamp,
       Value<int>? rowid}) {
     return TabCompanion(
       id: id ?? this.id,
       containerId: containerId ?? this.containerId,
       orderKey: orderKey ?? this.orderKey,
+      url: url ?? this.url,
+      title: title ?? this.title,
+      extractedContentMarkdown:
+          extractedContentMarkdown ?? this.extractedContentMarkdown,
+      extractedContentPlain:
+          extractedContentPlain ?? this.extractedContentPlain,
+      fullContentMarkdown: fullContentMarkdown ?? this.fullContentMarkdown,
+      fullContentPlain: fullContentPlain ?? this.fullContentPlain,
       timestamp: timestamp ?? this.timestamp,
       rowid: rowid ?? this.rowid,
     );
@@ -385,6 +592,27 @@ class TabCompanion extends UpdateCompanion<TabData> {
     if (orderKey.present) {
       map['order_key'] = Variable<String>(orderKey.value);
     }
+    if (url.present) {
+      map['url'] = Variable<String>(url.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (extractedContentMarkdown.present) {
+      map['extracted_content_markdown'] =
+          Variable<String>(extractedContentMarkdown.value);
+    }
+    if (extractedContentPlain.present) {
+      map['extracted_content_plain'] =
+          Variable<String>(extractedContentPlain.value);
+    }
+    if (fullContentMarkdown.present) {
+      map['full_content_markdown'] =
+          Variable<String>(fullContentMarkdown.value);
+    }
+    if (fullContentPlain.present) {
+      map['full_content_plain'] = Variable<String>(fullContentPlain.value);
+    }
     if (timestamp.present) {
       map['timestamp'] = Variable<DateTime>(timestamp.value);
     }
@@ -400,7 +628,260 @@ class TabCompanion extends UpdateCompanion<TabData> {
           ..write('id: $id, ')
           ..write('containerId: $containerId, ')
           ..write('orderKey: $orderKey, ')
+          ..write('url: $url, ')
+          ..write('title: $title, ')
+          ..write('extractedContentMarkdown: $extractedContentMarkdown, ')
+          ..write('extractedContentPlain: $extractedContentPlain, ')
+          ..write('fullContentMarkdown: $fullContentMarkdown, ')
+          ..write('fullContentPlain: $fullContentPlain, ')
           ..write('timestamp: $timestamp, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class TabFts extends Table
+    with TableInfo<TabFts, TabFt>, VirtualTableInfo<TabFts, TabFt> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  TabFts(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: '');
+  late final GeneratedColumn<String> url = GeneratedColumn<String>(
+      'url', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: '');
+  late final GeneratedColumn<String> extractedContentPlain =
+      GeneratedColumn<String>('extracted_content_plain', aliasedName, false,
+          type: DriftSqlType.string,
+          requiredDuringInsert: true,
+          $customConstraints: '');
+  late final GeneratedColumn<String> fullContentPlain = GeneratedColumn<String>(
+      'full_content_plain', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: '');
+  @override
+  List<GeneratedColumn> get $columns =>
+      [title, url, extractedContentPlain, fullContentPlain];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tab_fts';
+  @override
+  Set<GeneratedColumn> get $primaryKey => const {};
+  @override
+  TabFt map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TabFt(
+      title: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      url: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}url'])!,
+      extractedContentPlain: attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}extracted_content_plain'])!,
+      fullContentPlain: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}full_content_plain'])!,
+    );
+  }
+
+  @override
+  TabFts createAlias(String alias) {
+    return TabFts(attachedDatabase, alias);
+  }
+
+  @override
+  bool get dontWriteConstraints => true;
+  @override
+  String get moduleAndArgs =>
+      'fts5(title, url, extracted_content_plain, full_content_plain, content=tab, tokenize="trigram")';
+}
+
+class TabFt extends DataClass implements Insertable<TabFt> {
+  final String title;
+  final String url;
+  final String extractedContentPlain;
+  final String fullContentPlain;
+  const TabFt(
+      {required this.title,
+      required this.url,
+      required this.extractedContentPlain,
+      required this.fullContentPlain});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['title'] = Variable<String>(title);
+    map['url'] = Variable<String>(url);
+    map['extracted_content_plain'] = Variable<String>(extractedContentPlain);
+    map['full_content_plain'] = Variable<String>(fullContentPlain);
+    return map;
+  }
+
+  factory TabFt.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TabFt(
+      title: serializer.fromJson<String>(json['title']),
+      url: serializer.fromJson<String>(json['url']),
+      extractedContentPlain:
+          serializer.fromJson<String>(json['extracted_content_plain']),
+      fullContentPlain: serializer.fromJson<String>(json['full_content_plain']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'title': serializer.toJson<String>(title),
+      'url': serializer.toJson<String>(url),
+      'extracted_content_plain':
+          serializer.toJson<String>(extractedContentPlain),
+      'full_content_plain': serializer.toJson<String>(fullContentPlain),
+    };
+  }
+
+  TabFt copyWith(
+          {String? title,
+          String? url,
+          String? extractedContentPlain,
+          String? fullContentPlain}) =>
+      TabFt(
+        title: title ?? this.title,
+        url: url ?? this.url,
+        extractedContentPlain:
+            extractedContentPlain ?? this.extractedContentPlain,
+        fullContentPlain: fullContentPlain ?? this.fullContentPlain,
+      );
+  TabFt copyWithCompanion(TabFtsCompanion data) {
+    return TabFt(
+      title: data.title.present ? data.title.value : this.title,
+      url: data.url.present ? data.url.value : this.url,
+      extractedContentPlain: data.extractedContentPlain.present
+          ? data.extractedContentPlain.value
+          : this.extractedContentPlain,
+      fullContentPlain: data.fullContentPlain.present
+          ? data.fullContentPlain.value
+          : this.fullContentPlain,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TabFt(')
+          ..write('title: $title, ')
+          ..write('url: $url, ')
+          ..write('extractedContentPlain: $extractedContentPlain, ')
+          ..write('fullContentPlain: $fullContentPlain')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(title, url, extractedContentPlain, fullContentPlain);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TabFt &&
+          other.title == this.title &&
+          other.url == this.url &&
+          other.extractedContentPlain == this.extractedContentPlain &&
+          other.fullContentPlain == this.fullContentPlain);
+}
+
+class TabFtsCompanion extends UpdateCompanion<TabFt> {
+  final Value<String> title;
+  final Value<String> url;
+  final Value<String> extractedContentPlain;
+  final Value<String> fullContentPlain;
+  final Value<int> rowid;
+  const TabFtsCompanion({
+    this.title = const Value.absent(),
+    this.url = const Value.absent(),
+    this.extractedContentPlain = const Value.absent(),
+    this.fullContentPlain = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TabFtsCompanion.insert({
+    required String title,
+    required String url,
+    required String extractedContentPlain,
+    required String fullContentPlain,
+    this.rowid = const Value.absent(),
+  })  : title = Value(title),
+        url = Value(url),
+        extractedContentPlain = Value(extractedContentPlain),
+        fullContentPlain = Value(fullContentPlain);
+  static Insertable<TabFt> custom({
+    Expression<String>? title,
+    Expression<String>? url,
+    Expression<String>? extractedContentPlain,
+    Expression<String>? fullContentPlain,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (title != null) 'title': title,
+      if (url != null) 'url': url,
+      if (extractedContentPlain != null)
+        'extracted_content_plain': extractedContentPlain,
+      if (fullContentPlain != null) 'full_content_plain': fullContentPlain,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TabFtsCompanion copyWith(
+      {Value<String>? title,
+      Value<String>? url,
+      Value<String>? extractedContentPlain,
+      Value<String>? fullContentPlain,
+      Value<int>? rowid}) {
+    return TabFtsCompanion(
+      title: title ?? this.title,
+      url: url ?? this.url,
+      extractedContentPlain:
+          extractedContentPlain ?? this.extractedContentPlain,
+      fullContentPlain: fullContentPlain ?? this.fullContentPlain,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (url.present) {
+      map['url'] = Variable<String>(url.value);
+    }
+    if (extractedContentPlain.present) {
+      map['extracted_content_plain'] =
+          Variable<String>(extractedContentPlain.value);
+    }
+    if (fullContentPlain.present) {
+      map['full_content_plain'] = Variable<String>(fullContentPlain.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TabFtsCompanion(')
+          ..write('title: $title, ')
+          ..write('url: $url, ')
+          ..write('extractedContentPlain: $extractedContentPlain, ')
+          ..write('fullContentPlain: $fullContentPlain, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -412,6 +893,16 @@ abstract class _$TabDatabase extends GeneratedDatabase {
   $TabDatabaseManager get managers => $TabDatabaseManager(this);
   late final Container container = Container(this);
   late final Tab tab = Tab(this);
+  late final TabFts tabFts = TabFts(this);
+  late final Trigger tabAfterInsert = Trigger(
+      'CREATE TRIGGER tab_after_insert AFTER INSERT ON tab BEGIN INSERT INTO tab_fts ("rowid", title, url, extracted_content_plain, full_content_plain) VALUES (new."rowid", new.title, new.url, new.extracted_content_plain, new.full_content_plain);END',
+      'tab_after_insert');
+  late final Trigger tabAfterDelete = Trigger(
+      'CREATE TRIGGER tab_after_delete AFTER DELETE ON tab BEGIN INSERT INTO tab_fts (tab_fts, "rowid", title, url, extracted_content_plain, full_content_plain) VALUES (\'delete\', old."rowid", old.title, old.url, old.extracted_content_plain, old.full_content_plain);END',
+      'tab_after_delete');
+  late final Trigger tabAfterUpdate = Trigger(
+      'CREATE TRIGGER tab_after_update AFTER UPDATE ON tab BEGIN INSERT INTO tab_fts (tab_fts, "rowid", title, url, extracted_content_plain, full_content_plain) VALUES (\'delete\', old."rowid", old.title, old.url, old.extracted_content_plain, old.full_content_plain);INSERT INTO tab_fts ("rowid", title, url, extracted_content_plain, full_content_plain) VALUES (new."rowid", new.title, new.url, new.extracted_content_plain, new.full_content_plain);END',
+      'tab_after_update');
   late final ContainerDao containerDao = ContainerDao(this as TabDatabase);
   late final TabDao tabDao = TabDao(this as TabDatabase);
   Selectable<ContainerDataWithCount> containersWithCount() {
@@ -471,11 +962,60 @@ abstract class _$TabDatabase extends GeneratedDatabase {
         }).map((QueryRow row) => row.read<String>('_c0'));
   }
 
+  Selectable<TabQueryResult> queryTabsBasic(
+      {required String beforeMatch,
+      required String afterMatch,
+      required String query}) {
+    return customSelect(
+        'WITH weights AS (SELECT 10.0 AS title_weight, 5.0 AS url_weight) SELECT t.id, highlight(tab_fts, 0, ?1, ?2) AS title, highlight(tab_fts, 1, ?1, ?2) AS url, bm25(tab_fts, weights.title_weight, weights.url_weight) AS weighted_rank FROM tab_fts AS fts INNER JOIN tab AS t ON t."rowid" = fts."rowid" CROSS JOIN weights WHERE fts.title LIKE ?3 OR fts.url LIKE ?3 ORDER BY weighted_rank ASC, t.timestamp DESC',
+        variables: [
+          Variable<String>(beforeMatch),
+          Variable<String>(afterMatch),
+          Variable<String>(query)
+        ],
+        readsFrom: {
+          tab,
+          tabFts,
+        }).map((QueryRow row) => TabQueryResult(
+          title: row.read<String>('title'),
+          url: row.read<String>('url'),
+          weightedRank: row.read<double>('weighted_rank'),
+        ));
+  }
+
+  Selectable<TabQueryResult> queryTabsFullContent(
+      {required String beforeMatch,
+      required String afterMatch,
+      required String ellipsis,
+      required int snippetLength,
+      required String query}) {
+    return customSelect(
+        'WITH weights AS (SELECT 10.0 AS title_weight, 5.0 AS url_weight, 3.0 AS extracted_weight, 1.0 AS full_weight) SELECT highlight(tab_fts, 0, ?1, ?2) AS title, highlight(tab_fts, 1, ?1, ?2) AS url, snippet(tab_fts, 2, ?1, ?2, ?3, ?4) AS extracted_content, snippet(tab_fts, 3, ?1, ?2, ?3, ?4) AS full_content,(bm25(tab_fts, weights.title_weight, weights.url_weight, weights.extracted_weight, weights.full_weight))AS weighted_rank FROM tab_fts(?5)AS fts INNER JOIN tab AS t ON t."rowid" = fts."rowid" CROSS JOIN weights ORDER BY weighted_rank ASC, t.timestamp DESC',
+        variables: [
+          Variable<String>(beforeMatch),
+          Variable<String>(afterMatch),
+          Variable<String>(ellipsis),
+          Variable<int>(snippetLength),
+          Variable<String>(query)
+        ],
+        readsFrom: {
+          tabFts,
+          tab,
+        }).map((QueryRow row) => TabQueryResult(
+          title: row.read<String>('title'),
+          url: row.read<String>('url'),
+          extractedContent: row.read<String>('extracted_content'),
+          fullContent: row.read<String>('full_content'),
+          weightedRank: row.read<double>('weighted_rank'),
+        ));
+  }
+
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [container, tab];
+  List<DatabaseSchemaEntity> get allSchemaEntities =>
+      [container, tab, tabFts, tabAfterInsert, tabAfterDelete, tabAfterUpdate];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
         [
@@ -484,6 +1024,27 @@ abstract class _$TabDatabase extends GeneratedDatabase {
                 limitUpdateKind: UpdateKind.delete),
             result: [
               TableUpdate('tab', kind: UpdateKind.delete),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('tab',
+                limitUpdateKind: UpdateKind.insert),
+            result: [
+              TableUpdate('tab_fts', kind: UpdateKind.insert),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('tab',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('tab_fts', kind: UpdateKind.insert),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('tab',
+                limitUpdateKind: UpdateKind.update),
+            result: [
+              TableUpdate('tab_fts', kind: UpdateKind.insert),
             ],
           ),
         ],
@@ -743,6 +1304,12 @@ typedef $TabCreateCompanionBuilder = TabCompanion Function({
   required String id,
   Value<String?> containerId,
   required String orderKey,
+  Value<String?> url,
+  Value<String?> title,
+  Value<String?> extractedContentMarkdown,
+  Value<String?> extractedContentPlain,
+  Value<String?> fullContentMarkdown,
+  Value<String?> fullContentPlain,
   required DateTime timestamp,
   Value<int> rowid,
 });
@@ -750,6 +1317,12 @@ typedef $TabUpdateCompanionBuilder = TabCompanion Function({
   Value<String> id,
   Value<String?> containerId,
   Value<String> orderKey,
+  Value<String?> url,
+  Value<String?> title,
+  Value<String?> extractedContentMarkdown,
+  Value<String?> extractedContentPlain,
+  Value<String?> fullContentMarkdown,
+  Value<String?> fullContentPlain,
   Value<DateTime> timestamp,
   Value<int> rowid,
 });
@@ -784,6 +1357,28 @@ class $TabFilterComposer extends Composer<_$TabDatabase, Tab> {
 
   ColumnFilters<String> get orderKey => $composableBuilder(
       column: $table.orderKey, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get url => $composableBuilder(
+      column: $table.url, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get extractedContentMarkdown => $composableBuilder(
+      column: $table.extractedContentMarkdown,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get extractedContentPlain => $composableBuilder(
+      column: $table.extractedContentPlain,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get fullContentMarkdown => $composableBuilder(
+      column: $table.fullContentMarkdown,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get fullContentPlain => $composableBuilder(
+      column: $table.fullContentPlain,
+      builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get timestamp => $composableBuilder(
       column: $table.timestamp, builder: (column) => ColumnFilters(column));
@@ -823,6 +1418,28 @@ class $TabOrderingComposer extends Composer<_$TabDatabase, Tab> {
   ColumnOrderings<String> get orderKey => $composableBuilder(
       column: $table.orderKey, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get url => $composableBuilder(
+      column: $table.url, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get extractedContentMarkdown => $composableBuilder(
+      column: $table.extractedContentMarkdown,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get extractedContentPlain => $composableBuilder(
+      column: $table.extractedContentPlain,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get fullContentMarkdown => $composableBuilder(
+      column: $table.fullContentMarkdown,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get fullContentPlain => $composableBuilder(
+      column: $table.fullContentPlain,
+      builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<DateTime> get timestamp => $composableBuilder(
       column: $table.timestamp, builder: (column) => ColumnOrderings(column));
 
@@ -860,6 +1477,24 @@ class $TabAnnotationComposer extends Composer<_$TabDatabase, Tab> {
 
   GeneratedColumn<String> get orderKey =>
       $composableBuilder(column: $table.orderKey, builder: (column) => column);
+
+  GeneratedColumn<String> get url =>
+      $composableBuilder(column: $table.url, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get extractedContentMarkdown => $composableBuilder(
+      column: $table.extractedContentMarkdown, builder: (column) => column);
+
+  GeneratedColumn<String> get extractedContentPlain => $composableBuilder(
+      column: $table.extractedContentPlain, builder: (column) => column);
+
+  GeneratedColumn<String> get fullContentMarkdown => $composableBuilder(
+      column: $table.fullContentMarkdown, builder: (column) => column);
+
+  GeneratedColumn<String> get fullContentPlain => $composableBuilder(
+      column: $table.fullContentPlain, builder: (column) => column);
 
   GeneratedColumn<DateTime> get timestamp =>
       $composableBuilder(column: $table.timestamp, builder: (column) => column);
@@ -911,6 +1546,12 @@ class $TabTableManager extends RootTableManager<
             Value<String> id = const Value.absent(),
             Value<String?> containerId = const Value.absent(),
             Value<String> orderKey = const Value.absent(),
+            Value<String?> url = const Value.absent(),
+            Value<String?> title = const Value.absent(),
+            Value<String?> extractedContentMarkdown = const Value.absent(),
+            Value<String?> extractedContentPlain = const Value.absent(),
+            Value<String?> fullContentMarkdown = const Value.absent(),
+            Value<String?> fullContentPlain = const Value.absent(),
             Value<DateTime> timestamp = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
@@ -918,6 +1559,12 @@ class $TabTableManager extends RootTableManager<
             id: id,
             containerId: containerId,
             orderKey: orderKey,
+            url: url,
+            title: title,
+            extractedContentMarkdown: extractedContentMarkdown,
+            extractedContentPlain: extractedContentPlain,
+            fullContentMarkdown: fullContentMarkdown,
+            fullContentPlain: fullContentPlain,
             timestamp: timestamp,
             rowid: rowid,
           ),
@@ -925,6 +1572,12 @@ class $TabTableManager extends RootTableManager<
             required String id,
             Value<String?> containerId = const Value.absent(),
             required String orderKey,
+            Value<String?> url = const Value.absent(),
+            Value<String?> title = const Value.absent(),
+            Value<String?> extractedContentMarkdown = const Value.absent(),
+            Value<String?> extractedContentPlain = const Value.absent(),
+            Value<String?> fullContentMarkdown = const Value.absent(),
+            Value<String?> fullContentPlain = const Value.absent(),
             required DateTime timestamp,
             Value<int> rowid = const Value.absent(),
           }) =>
@@ -932,6 +1585,12 @@ class $TabTableManager extends RootTableManager<
             id: id,
             containerId: containerId,
             orderKey: orderKey,
+            url: url,
+            title: title,
+            extractedContentMarkdown: extractedContentMarkdown,
+            extractedContentPlain: extractedContentPlain,
+            fullContentMarkdown: fullContentMarkdown,
+            fullContentPlain: fullContentPlain,
             timestamp: timestamp,
             rowid: rowid,
           ),
@@ -986,6 +1645,157 @@ typedef $TabProcessedTableManager = ProcessedTableManager<
     (TabData, $TabReferences),
     TabData,
     PrefetchHooks Function({bool containerId})>;
+typedef $TabFtsCreateCompanionBuilder = TabFtsCompanion Function({
+  required String title,
+  required String url,
+  required String extractedContentPlain,
+  required String fullContentPlain,
+  Value<int> rowid,
+});
+typedef $TabFtsUpdateCompanionBuilder = TabFtsCompanion Function({
+  Value<String> title,
+  Value<String> url,
+  Value<String> extractedContentPlain,
+  Value<String> fullContentPlain,
+  Value<int> rowid,
+});
+
+class $TabFtsFilterComposer extends Composer<_$TabDatabase, TabFts> {
+  $TabFtsFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get url => $composableBuilder(
+      column: $table.url, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get extractedContentPlain => $composableBuilder(
+      column: $table.extractedContentPlain,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get fullContentPlain => $composableBuilder(
+      column: $table.fullContentPlain,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $TabFtsOrderingComposer extends Composer<_$TabDatabase, TabFts> {
+  $TabFtsOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get url => $composableBuilder(
+      column: $table.url, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get extractedContentPlain => $composableBuilder(
+      column: $table.extractedContentPlain,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get fullContentPlain => $composableBuilder(
+      column: $table.fullContentPlain,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $TabFtsAnnotationComposer extends Composer<_$TabDatabase, TabFts> {
+  $TabFtsAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get url =>
+      $composableBuilder(column: $table.url, builder: (column) => column);
+
+  GeneratedColumn<String> get extractedContentPlain => $composableBuilder(
+      column: $table.extractedContentPlain, builder: (column) => column);
+
+  GeneratedColumn<String> get fullContentPlain => $composableBuilder(
+      column: $table.fullContentPlain, builder: (column) => column);
+}
+
+class $TabFtsTableManager extends RootTableManager<
+    _$TabDatabase,
+    TabFts,
+    TabFt,
+    $TabFtsFilterComposer,
+    $TabFtsOrderingComposer,
+    $TabFtsAnnotationComposer,
+    $TabFtsCreateCompanionBuilder,
+    $TabFtsUpdateCompanionBuilder,
+    (TabFt, BaseReferences<_$TabDatabase, TabFts, TabFt>),
+    TabFt,
+    PrefetchHooks Function()> {
+  $TabFtsTableManager(_$TabDatabase db, TabFts table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $TabFtsFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $TabFtsOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $TabFtsAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> title = const Value.absent(),
+            Value<String> url = const Value.absent(),
+            Value<String> extractedContentPlain = const Value.absent(),
+            Value<String> fullContentPlain = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              TabFtsCompanion(
+            title: title,
+            url: url,
+            extractedContentPlain: extractedContentPlain,
+            fullContentPlain: fullContentPlain,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String title,
+            required String url,
+            required String extractedContentPlain,
+            required String fullContentPlain,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              TabFtsCompanion.insert(
+            title: title,
+            url: url,
+            extractedContentPlain: extractedContentPlain,
+            fullContentPlain: fullContentPlain,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $TabFtsProcessedTableManager = ProcessedTableManager<
+    _$TabDatabase,
+    TabFts,
+    TabFt,
+    $TabFtsFilterComposer,
+    $TabFtsOrderingComposer,
+    $TabFtsAnnotationComposer,
+    $TabFtsCreateCompanionBuilder,
+    $TabFtsUpdateCompanionBuilder,
+    (TabFt, BaseReferences<_$TabDatabase, TabFts, TabFt>),
+    TabFt,
+    PrefetchHooks Function()>;
 
 class $TabDatabaseManager {
   final _$TabDatabase _db;
@@ -993,4 +1803,5 @@ class $TabDatabaseManager {
   $ContainerTableManager get container =>
       $ContainerTableManager(_db, _db.container);
   $TabTableManager get tab => $TabTableManager(_db, _db.tab);
+  $TabFtsTableManager get tabFts => $TabFtsTableManager(_db, _db.tabFts);
 }

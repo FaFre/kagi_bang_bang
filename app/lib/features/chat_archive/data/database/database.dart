@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:lensai/features/chat_archive/data/database/daos/search.dart';
-import 'package:lensai/features/query/domain/tokenizer.dart';
+import 'package:lensai/features/search/domain/fts_tokenizer.dart';
 
 part 'database.g.dart';
 

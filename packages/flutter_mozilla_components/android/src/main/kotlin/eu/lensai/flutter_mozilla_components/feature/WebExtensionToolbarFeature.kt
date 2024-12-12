@@ -119,7 +119,7 @@ class WebExtensionToolbarFeature(
             extension.browserAction?.let { browserAction ->
                 addOrUpdateAction(
                     extension = extension,
-                    defaultAction = browserAction,
+                    globalAction = browserAction,
                     tabAction = tab?.extensionState?.get(extension.id)?.browserAction,
                 )
             }
@@ -132,7 +132,7 @@ class WebExtensionToolbarFeature(
                 if (pageAction.copyWithOverride(tabPageAction).enabled == true) {
                     addOrUpdateAction(
                         extension = extension,
-                        defaultAction = pageAction,
+                        globalAction = pageAction,
                         tabAction = tabPageAction,
                         isPageAction = true,
                     )
@@ -156,62 +156,60 @@ class WebExtensionToolbarFeature(
 
     private fun addOrUpdateAction(
         extension: WebExtensionState,
-        defaultAction: Action,
+        globalAction: Action,
         tabAction: Action?,
         isPageAction: Boolean = false,
     ) {
-        var action = defaultAction
+        val actionMap = if (isPageAction) webExtensionPageActions else webExtensionBrowserActions
+        // Add the global page/browser action if it doesn't exist
+        var toolbarAction = actionMap.getOrPut(extension.id) {
+            CoroutineScope(iconJobDispatcher).launch {
+                try {
+                    //TODO: make variable size
+                    val icon = globalAction.loadIcon?.invoke(128)
+                    icon?.let {
+                        val imageBytes = icon.toWebPBytes()
+                        runOnUiThread {
+                            addonEvents.onUpdateWebExtensionIcon(
+                                timestampArg = System.currentTimeMillis(),
+                                extensionIdArg = extension.id,
+                                actionTypeArg = if (isPageAction) WebExtensionActionType.PAGE else WebExtensionActionType.BROWSER,
+                                iconArg = imageBytes
+                            ) { }
+                        }
+                    }
+                } catch (throwable: Throwable) {
+                    Log.log(
+                        Log.Priority.ERROR,
+                        "mozac-webextensions",
+                        throwable,
+                        "Failed to load browser action icon, falling back to default.",
+                    )
+                }
+            }
+
+            globalAction
+        }
 
         // Apply tab-specific override of browser/page action
         tabAction?.let {
-            action = action.copyWithOverride(it)
+            toolbarAction = toolbarAction.copyWithOverride(it)
         }
 
-        CoroutineScope(iconJobDispatcher).launch {
-            try {
-                //TODO: make variable size
-                val icon = action.loadIcon?.invoke(128)
-                icon?.let {
-                    val imageBytes = icon.toWebPBytes()
-                    runOnUiThread {
-                        addonEvents.onUpdateWebExtensionIcon(
-                            timestampArg = System.currentTimeMillis(),
-                            extensionIdArg = extension.id,
-                            actionTypeArg = if (isPageAction) WebExtensionActionType.PAGE else WebExtensionActionType.BROWSER,
-                            iconArg = imageBytes
-                        ) { }
-                    }
-                }
-            } catch (throwable: Throwable) {
-                Log.log(
-                    Log.Priority.ERROR,
-                    "mozac-webextensions",
-                    throwable,
-                    "Failed to load browser action icon, falling back to default.",
-                )
-            }
-        }
+        val data = WebExtensionData(
+            extensionId = extension.id,
+            title = toolbarAction.title,
+            enabled = toolbarAction.enabled,
+            badgeText = toolbarAction.badgeText,
+            badgeTextColor = toolbarAction.badgeTextColor?.toLong(),
+            badgeBackgroundColor = toolbarAction.badgeBackgroundColor?.toLong(),
+        )
 
-        val actionMap = if (isPageAction) webExtensionPageActions else webExtensionBrowserActions
-        // Add the global page/browser action if it doesn't exist
-        val toolbarAction = actionMap.getOrPut(extension.id) {
-            val toolbarAction = WebExtensionData(
-                extensionId = extension.id,
-                title = action.title,
-                enabled = action.enabled,
-                badgeText = action.badgeText,
-                badgeTextColor = action.badgeTextColor?.toLong(),
-                badgeBackgroundColor = action.badgeBackgroundColor?.toLong(),
-            )
-
-            addonEvents.onUpsertWebExtensionAction(
-                timestampArg = System.currentTimeMillis(),
-                extensionIdArg = extension.id,
-                actionTypeArg = if (isPageAction)  WebExtensionActionType.PAGE else WebExtensionActionType.BROWSER,
-                extensionDataArg = toolbarAction
-            ) { }
-
-            action
-        }
+        addonEvents.onUpsertWebExtensionAction(
+            timestampArg = System.currentTimeMillis(),
+            extensionIdArg = extension.id,
+            actionTypeArg = if (isPageAction)  WebExtensionActionType.PAGE else WebExtensionActionType.BROWSER,
+            extensionDataArg = data
+        ) { }
     }
 }

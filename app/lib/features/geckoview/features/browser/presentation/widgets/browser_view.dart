@@ -7,6 +7,7 @@ import 'package:lensai/core/logger.dart';
 import 'package:lensai/features/geckoview/domain/providers.dart';
 import 'package:lensai/features/geckoview/domain/providers/tab_state.dart';
 import 'package:lensai/features/geckoview/domain/providers/web_extensions_state.dart';
+import 'package:lensai/features/geckoview/domain/repositories/tab.dart';
 
 class BrowserView extends StatefulHookConsumerWidget {
   final Duration screenshotPeriod;
@@ -84,6 +85,8 @@ class _BrowserViewState extends ConsumerState<BrowserView>
     WidgetsBinding.instance.addObserver(this);
 
     //Initialize and register dependencies
+    ref.listenManual(tabRepositoryProvider, (previous, next) {});
+
     ref.listenManual(
       selectionActionServiceProvider,
       (previous, next) {},

@@ -380,7 +380,7 @@ abstract class _$ChatSearchDatabase extends GeneratedDatabase {
       'CREATE TRIGGER chat_after_delete AFTER DELETE ON chat BEGIN INSERT INTO chat_fts (chat_fts, "rowid", title, content) VALUES (\'delete\', old."rowid", old.title, old.content);END',
       'chat_after_delete');
   late final Trigger chatAfterUpdate = Trigger(
-      'CREATE TRIGGER chat_after_update AFTER UPDATE ON chat BEGIN INSERT INTO chat_fts (chat_fts, "rowid", title, content) VALUES (\'delete\', old."rowid", old.title, old.content);INSERT INTO chat_fts (chat_fts, title, content) VALUES (new."rowid", new.title, new.content);END',
+      'CREATE TRIGGER chat_after_update AFTER UPDATE ON chat BEGIN INSERT INTO chat_fts (chat_fts, "rowid", title, content) VALUES (\'delete\', old."rowid", old.title, old.content);INSERT INTO chat_fts ("rowid", title, content) VALUES (new."rowid", new.title, new.content);END',
       'chat_after_update');
   late final SearchDao searchDao = SearchDao(this as ChatSearchDatabase);
   Selectable<ChatQueryResult> chatQuery(
