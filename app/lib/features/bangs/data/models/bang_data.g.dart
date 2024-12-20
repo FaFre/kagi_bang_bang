@@ -34,10 +34,10 @@ abstract class _$BangDataCWProxy {
   /// BangData(...).copyWith(id: 12, name: "My name")
   /// ````
   BangData call({
-    String? websiteName,
-    String? domain,
-    String? trigger,
-    String? urlTemplate,
+    String websiteName,
+    String domain,
+    String trigger,
+    String urlTemplate,
     String? category,
     String? subCategory,
     Set<BangFormat>? format,
@@ -104,24 +104,22 @@ class _$BangDataCWProxyImpl implements _$BangDataCWProxy {
     Object? icon = const $CopyWithPlaceholder(),
   }) {
     return BangData(
-      websiteName:
-          websiteName == const $CopyWithPlaceholder() || websiteName == null
-              ? _value.websiteName
-              // ignore: cast_nullable_to_non_nullable
-              : websiteName as String,
-      domain: domain == const $CopyWithPlaceholder() || domain == null
+      websiteName: websiteName == const $CopyWithPlaceholder()
+          ? _value.websiteName
+          // ignore: cast_nullable_to_non_nullable
+          : websiteName as String,
+      domain: domain == const $CopyWithPlaceholder()
           ? _value.domain
           // ignore: cast_nullable_to_non_nullable
           : domain as String,
-      trigger: trigger == const $CopyWithPlaceholder() || trigger == null
+      trigger: trigger == const $CopyWithPlaceholder()
           ? _value.trigger
           // ignore: cast_nullable_to_non_nullable
           : trigger as String,
-      urlTemplate:
-          urlTemplate == const $CopyWithPlaceholder() || urlTemplate == null
-              ? _value.urlTemplate
-              // ignore: cast_nullable_to_non_nullable
-              : urlTemplate as String,
+      urlTemplate: urlTemplate == const $CopyWithPlaceholder()
+          ? _value.urlTemplate
+          // ignore: cast_nullable_to_non_nullable
+          : urlTemplate as String,
       category: category == const $CopyWithPlaceholder()
           ? _value.category
           // ignore: cast_nullable_to_non_nullable

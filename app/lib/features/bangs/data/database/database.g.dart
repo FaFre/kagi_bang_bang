@@ -1689,8 +1689,7 @@ final class $BangFrequencyReferences
   static BangTable _triggerTable(_$BangDatabase db) => db.bang.createAlias(
       $_aliasNameGenerator(db.bangFrequency.trigger, db.bang.trigger));
 
-  $BangTableProcessedTableManager? get trigger {
-    if ($_item.trigger == null) return null;
+  $BangTableProcessedTableManager get trigger {
     final manager = $BangTableTableManager($_db, $_db.bang)
         .filter((f) => f.trigger($_item.trigger!));
     final item = $_typedResult.readTableOrNull(_triggerTable($_db));
@@ -1927,8 +1926,7 @@ final class $BangIconReferences
   static BangTable _triggerTable(_$BangDatabase db) => db.bang
       .createAlias($_aliasNameGenerator(db.bangIcon.trigger, db.bang.trigger));
 
-  $BangTableProcessedTableManager? get trigger {
-    if ($_item.trigger == null) return null;
+  $BangTableProcessedTableManager get trigger {
     final manager = $BangTableTableManager($_db, $_db.bang)
         .filter((f) => f.trigger($_item.trigger!));
     final item = $_typedResult.readTableOrNull(_triggerTable($_db));

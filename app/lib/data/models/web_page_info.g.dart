@@ -20,7 +20,7 @@ abstract class _$WebPageInfoCWProxy {
   /// WebPageInfo(...).copyWith(id: 12, name: "My name")
   /// ````
   WebPageInfo call({
-    Uri? url,
+    Uri url,
     String? title,
     BrowserIcon? favicon,
   });
@@ -55,7 +55,7 @@ class _$WebPageInfoCWProxyImpl implements _$WebPageInfoCWProxy {
     Object? favicon = const $CopyWithPlaceholder(),
   }) {
     return WebPageInfo(
-      url: url == const $CopyWithPlaceholder() || url == null
+      url: url == const $CopyWithPlaceholder()
           ? _value.url
           // ignore: cast_nullable_to_non_nullable
           : url as Uri,

@@ -35,15 +35,15 @@ abstract class _$SettingsCWProxy {
   /// ````
   Settings call({
     String? kagiSession,
-    bool? showEarlyAccessFeatures,
-    bool? incognitoMode,
-    bool? enableJavascript,
-    bool? launchUrlExternal,
-    bool? blockHttpProtocol,
-    ThemeMode? themeMode,
+    bool showEarlyAccessFeatures,
+    bool incognitoMode,
+    bool enableJavascript,
+    bool launchUrlExternal,
+    bool blockHttpProtocol,
+    ThemeMode themeMode,
     KagiTool? quickAction,
-    bool? quickActionVoiceInput,
-    bool? enableReadability,
+    bool quickActionVoiceInput,
+    bool enableReadability,
   });
 }
 
@@ -116,32 +116,27 @@ class _$SettingsCWProxyImpl implements _$SettingsCWProxy {
           // ignore: cast_nullable_to_non_nullable
           : kagiSession as String?,
       showEarlyAccessFeatures:
-          showEarlyAccessFeatures == const $CopyWithPlaceholder() ||
-                  showEarlyAccessFeatures == null
+          showEarlyAccessFeatures == const $CopyWithPlaceholder()
               ? _value.showEarlyAccessFeatures
               // ignore: cast_nullable_to_non_nullable
               : showEarlyAccessFeatures as bool,
-      incognitoMode:
-          incognitoMode == const $CopyWithPlaceholder() || incognitoMode == null
-              ? _value.incognitoMode
-              // ignore: cast_nullable_to_non_nullable
-              : incognitoMode as bool,
-      enableJavascript: enableJavascript == const $CopyWithPlaceholder() ||
-              enableJavascript == null
+      incognitoMode: incognitoMode == const $CopyWithPlaceholder()
+          ? _value.incognitoMode
+          // ignore: cast_nullable_to_non_nullable
+          : incognitoMode as bool,
+      enableJavascript: enableJavascript == const $CopyWithPlaceholder()
           ? _value.enableJavascript
           // ignore: cast_nullable_to_non_nullable
           : enableJavascript as bool,
-      launchUrlExternal: launchUrlExternal == const $CopyWithPlaceholder() ||
-              launchUrlExternal == null
+      launchUrlExternal: launchUrlExternal == const $CopyWithPlaceholder()
           ? _value.launchUrlExternal
           // ignore: cast_nullable_to_non_nullable
           : launchUrlExternal as bool,
-      blockHttpProtocol: blockHttpProtocol == const $CopyWithPlaceholder() ||
-              blockHttpProtocol == null
+      blockHttpProtocol: blockHttpProtocol == const $CopyWithPlaceholder()
           ? _value.blockHttpProtocol
           // ignore: cast_nullable_to_non_nullable
           : blockHttpProtocol as bool,
-      themeMode: themeMode == const $CopyWithPlaceholder() || themeMode == null
+      themeMode: themeMode == const $CopyWithPlaceholder()
           ? _value.themeMode
           // ignore: cast_nullable_to_non_nullable
           : themeMode as ThemeMode,
@@ -150,13 +145,11 @@ class _$SettingsCWProxyImpl implements _$SettingsCWProxy {
           // ignore: cast_nullable_to_non_nullable
           : quickAction as KagiTool?,
       quickActionVoiceInput:
-          quickActionVoiceInput == const $CopyWithPlaceholder() ||
-                  quickActionVoiceInput == null
+          quickActionVoiceInput == const $CopyWithPlaceholder()
               ? _value.quickActionVoiceInput
               // ignore: cast_nullable_to_non_nullable
               : quickActionVoiceInput as bool,
-      enableReadability: enableReadability == const $CopyWithPlaceholder() ||
-              enableReadability == null
+      enableReadability: enableReadability == const $CopyWithPlaceholder()
           ? _value.enableReadability
           // ignore: cast_nullable_to_non_nullable
           : enableReadability as bool,

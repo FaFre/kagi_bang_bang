@@ -28,8 +28,8 @@ abstract class _$WebExtensionStateCWProxy {
   /// WebExtensionState(...).copyWith(id: 12, name: "My name")
   /// ````
   WebExtensionState call({
-    String? extensionId,
-    bool? enabled,
+    String extensionId,
+    bool enabled,
     String? title,
     String? badgeText,
     Color? badgeTextColor,
@@ -86,12 +86,11 @@ class _$WebExtensionStateCWProxyImpl implements _$WebExtensionStateCWProxy {
     Object? icon = const $CopyWithPlaceholder(),
   }) {
     return WebExtensionState(
-      extensionId:
-          extensionId == const $CopyWithPlaceholder() || extensionId == null
-              ? _value.extensionId
-              // ignore: cast_nullable_to_non_nullable
-              : extensionId as String,
-      enabled: enabled == const $CopyWithPlaceholder() || enabled == null
+      extensionId: extensionId == const $CopyWithPlaceholder()
+          ? _value.extensionId
+          // ignore: cast_nullable_to_non_nullable
+          : extensionId as String,
+      enabled: enabled == const $CopyWithPlaceholder()
           ? _value.enabled
           // ignore: cast_nullable_to_non_nullable
           : enabled as bool,

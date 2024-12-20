@@ -41,18 +41,18 @@ abstract class _$TabStateCWProxy {
   /// ````
   TabState call({
     String? contextId,
-    Uri? url,
-    String? title,
+    Uri url,
+    String title,
     EquatableImage? icon,
     EquatableImage? thumbnail,
-    int? progress,
-    bool? isPrivate,
-    bool? isFullScreen,
-    bool? isLoading,
-    SecurityState? securityInfoState,
-    HistoryState? historyState,
-    ReaderableState? readerableState,
-    FindResultState? findResultState,
+    int progress,
+    bool isPrivate,
+    bool isFullScreen,
+    bool isLoading,
+    SecurityState securityInfoState,
+    HistoryState historyState,
+    ReaderableState readerableState,
+    FindResultState findResultState,
   });
 }
 
@@ -134,11 +134,11 @@ class _$TabStateCWProxyImpl implements _$TabStateCWProxy {
           ? _value.contextId
           // ignore: cast_nullable_to_non_nullable
           : contextId as String?,
-      url: url == const $CopyWithPlaceholder() || url == null
+      url: url == const $CopyWithPlaceholder()
           ? _value.url
           // ignore: cast_nullable_to_non_nullable
           : url as Uri,
-      title: title == const $CopyWithPlaceholder() || title == null
+      title: title == const $CopyWithPlaceholder()
           ? _value.title
           // ignore: cast_nullable_to_non_nullable
           : title as String,
@@ -150,40 +150,35 @@ class _$TabStateCWProxyImpl implements _$TabStateCWProxy {
           ? _value.thumbnail
           // ignore: cast_nullable_to_non_nullable
           : thumbnail as EquatableImage?,
-      progress: progress == const $CopyWithPlaceholder() || progress == null
+      progress: progress == const $CopyWithPlaceholder()
           ? _value.progress
           // ignore: cast_nullable_to_non_nullable
           : progress as int,
-      isPrivate: isPrivate == const $CopyWithPlaceholder() || isPrivate == null
+      isPrivate: isPrivate == const $CopyWithPlaceholder()
           ? _value.isPrivate
           // ignore: cast_nullable_to_non_nullable
           : isPrivate as bool,
-      isFullScreen:
-          isFullScreen == const $CopyWithPlaceholder() || isFullScreen == null
-              ? _value.isFullScreen
-              // ignore: cast_nullable_to_non_nullable
-              : isFullScreen as bool,
-      isLoading: isLoading == const $CopyWithPlaceholder() || isLoading == null
+      isFullScreen: isFullScreen == const $CopyWithPlaceholder()
+          ? _value.isFullScreen
+          // ignore: cast_nullable_to_non_nullable
+          : isFullScreen as bool,
+      isLoading: isLoading == const $CopyWithPlaceholder()
           ? _value.isLoading
           // ignore: cast_nullable_to_non_nullable
           : isLoading as bool,
-      securityInfoState: securityInfoState == const $CopyWithPlaceholder() ||
-              securityInfoState == null
+      securityInfoState: securityInfoState == const $CopyWithPlaceholder()
           ? _value.securityInfoState
           // ignore: cast_nullable_to_non_nullable
           : securityInfoState as SecurityState,
-      historyState:
-          historyState == const $CopyWithPlaceholder() || historyState == null
-              ? _value.historyState
-              // ignore: cast_nullable_to_non_nullable
-              : historyState as HistoryState,
-      readerableState: readerableState == const $CopyWithPlaceholder() ||
-              readerableState == null
+      historyState: historyState == const $CopyWithPlaceholder()
+          ? _value.historyState
+          // ignore: cast_nullable_to_non_nullable
+          : historyState as HistoryState,
+      readerableState: readerableState == const $CopyWithPlaceholder()
           ? _value.readerableState
           // ignore: cast_nullable_to_non_nullable
           : readerableState as ReaderableState,
-      findResultState: findResultState == const $CopyWithPlaceholder() ||
-              findResultState == null
+      findResultState: findResultState == const $CopyWithPlaceholder()
           ? _value.findResultState
           // ignore: cast_nullable_to_non_nullable
           : findResultState as FindResultState,
