@@ -67,7 +67,29 @@ android {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.release
+            signingConfig = signingConfigs.debug
+
+            minifyEnabled false
+            shrinkResources false
+
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    bundle {
+        // Profiler issues require us to temporarily package native code compressed to
+        // match the previous APK packaging.
+        // https://bugzilla.mozilla.org/show_bug.cgi?id=1865634
+        packagingOptions {
+            jniLibs {
+                it.useLegacyPackaging = true
+            }
+        }
+    }
+
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging true
         }
     }
 

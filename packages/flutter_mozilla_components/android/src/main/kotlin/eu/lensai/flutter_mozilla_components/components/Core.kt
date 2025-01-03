@@ -31,6 +31,7 @@ import mozilla.components.feature.addons.AddonManager
 import mozilla.components.feature.addons.amo.AMOAddonsProvider
 import mozilla.components.feature.addons.migration.DefaultSupportedAddonsChecker
 import mozilla.components.feature.addons.update.DefaultAddonUpdater
+import mozilla.components.feature.customtabs.store.CustomTabsServiceStore
 import mozilla.components.feature.downloads.DownloadMiddleware
 import mozilla.components.feature.media.MediaSessionFeature
 import mozilla.components.feature.media.middleware.RecordingDevicesMiddleware
@@ -154,6 +155,11 @@ class Core(private val context: Context,
             MediaSessionFeature(context, MediaSessionService::class.java, this).start()
         }
     }
+
+    /**
+     * The [CustomTabsServiceStore] holds global custom tabs related data.
+     */
+    val customTabsStore by lazy { CustomTabsServiceStore() }
 
     /**
      * The storage component for persisting browser tab sessions.

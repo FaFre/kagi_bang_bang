@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lensai/data/models/equatable_iterable.dart';
 import 'package:lensai/features/bangs/data/models/bang_data.dart';
@@ -15,9 +16,12 @@ import 'package:lensai/features/search/domain/providers/search_suggestions.dart'
 import 'package:lensai/features/search/presentation/widgets/bang_chips.dart';
 import 'package:lensai/features/search/presentation/widgets/search_field.dart';
 import 'package:lensai/presentation/hooks/listenable_callback.dart';
+import 'package:lensai/presentation/widgets/failure_widget.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class SearchScreen extends HookConsumerWidget {
+  static const _matchPrefix = '***';
+
   final String? initialSearchText;
 
   const SearchScreen({required this.initialSearchText});
@@ -36,9 +40,13 @@ class SearchScreen extends HookConsumerWidget {
             .read(searchSuggestionsProvider().notifier)
             .addQuery(searchTextController.text);
 
-        await ref
-            .read(tabSearchRepositoryProvider.notifier)
-            .addQuery(searchTextController.text);
+        await ref.read(tabSearchRepositoryProvider.notifier).addQuery(
+              searchTextController.text,
+              // ignore: avoid_redundant_argument_values
+              matchPrefix: _matchPrefix,
+              // ignore: avoid_redundant_argument_values
+              matchSuffix: _matchPrefix,
+            );
       },
     );
 
@@ -212,14 +220,50 @@ class SearchScreen extends HookConsumerWidget {
                   enabled: tabs.isLoading,
                   child: tabs.when(
                     data: (data) {
-                      return SliverList.builder(itemBuilder: itemBuilder);
+                      return SliverList.builder(
+                        itemCount: data.length,
+                        itemBuilder: (context, index) {
+                          final result = data[index];
+
+                          final headHasMatch =
+                              result.title.contains(_matchPrefix);
+                          final bodyResult =
+                              result.extractedContent ?? result.fullContent;
+
+                          return ListTile(
+                            title: Markdown(
+                              shrinkWrap: true,
+                              padding: EdgeInsets.zero,
+                              data: result.title,
+                              physics: const NeverScrollableScrollPhysics(),
+                            ),
+                            subtitle: (!headHasMatch && bodyResult != null)
+                                ? Markdown(
+                                    shrinkWrap: true,
+                                    padding: EdgeInsets.zero,
+                                    data: bodyResult,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                  )
+                                : null,
+                          );
+                        },
+                      );
                     },
-                    error: error,
+                    error: (error, stackTrace) {
+                      return FailureWidget(
+                        title: 'Could not load tabs',
+                        exception: error,
+                      );
+                    },
                     loading: () => SliverList.builder(
                       itemCount: tabs.valueOrNull?.length ?? 3,
                       itemBuilder: (context, index) {
-                        return ListTile()
-                      },),
+                        return ListTile(
+                          title: Bone.text(),
+                        );
+                      },
+                    ),
                   ),
                 );
               },

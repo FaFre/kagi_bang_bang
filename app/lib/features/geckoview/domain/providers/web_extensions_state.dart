@@ -31,7 +31,7 @@ class WebExtensionsState extends _$WebExtensionsState {
 
       state = {...state}..[extensionId] = current.copyWith(
           title: data.title,
-          enabled: data.enabled,
+          enabled: data.enabled ?? current.enabled,
           badgeText: data.badgeText,
           badgeTextColor: (data.badgeTextColor != null)
               ? Color(data.badgeTextColor!)

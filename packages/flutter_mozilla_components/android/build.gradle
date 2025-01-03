@@ -109,10 +109,6 @@ dependencies {
     implementation "org.mozilla.components:support-ktx:$mozillaComponentsVersion"
     implementation "org.mozilla.components:support-webextensions:$mozillaComponentsVersion"
     implementation "org.mozilla.components:support-locale:$mozillaComponentsVersion"
-    implementation "org.mozilla.components:lib-fetch-httpurlconnection:$mozillaComponentsVersion"
-    implementation "org.mozilla.components:lib-crash:$mozillaComponentsVersion"
-    implementation "org.mozilla.components:lib-publicsuffixlist:$mozillaComponentsVersion"
-    implementation "org.mozilla.components:lib-dataprotect:$mozillaComponentsVersion"
     implementation "org.mozilla.components:concept-engine:$mozillaComponentsVersion"
     implementation "org.mozilla.components:concept-fetch:$mozillaComponentsVersion"
     implementation "org.mozilla.components:concept-toolbar:$mozillaComponentsVersion"
@@ -125,8 +121,8 @@ dependencies {
     implementation "org.mozilla.components:browser-thumbnails:$mozillaComponentsVersion"
     implementation "org.mozilla.components:feature-addons:$mozillaComponentsVersion"
     implementation "org.mozilla.components:feature-app-links:$mozillaComponentsVersion"
-    implementation "org.mozilla.components:feature-autofill:$mozillaComponentsVersion"
     implementation "org.mozilla.components:feature-awesomebar:$mozillaComponentsVersion"
+    implementation "org.mozilla.components:feature-customtabs:$mozillaComponentsVersion"
     implementation "org.mozilla.components:feature-downloads:$mozillaComponentsVersion"
     implementation "org.mozilla.components:feature-media:$mozillaComponentsVersion"
     implementation "org.mozilla.components:feature-tabs:$mozillaComponentsVersion"
@@ -137,7 +133,6 @@ dependencies {
     implementation "org.mozilla.components:feature-sitepermissions:$mozillaComponentsVersion"
     implementation "org.mozilla.components:feature-webcompat:$mozillaComponentsVersion"
     implementation "org.mozilla.components:feature-webnotifications:$mozillaComponentsVersion"
-    implementation "org.mozilla.components:service-digitalassetlinks:$mozillaComponentsVersion"
     implementation "org.mozilla.components:ui-widgets:$mozillaComponentsVersion"
 
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'

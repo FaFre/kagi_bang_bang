@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -34,6 +36,14 @@
 
     <!-- Needed for uploading media files on devices with Android 13 and later. -->
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
+
+    <!-- Needed to interact with all apps installed on a device -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+
+    <!-- Needed to support Credential Manager with Android 14 and later. -->
+    <uses-permission android:name="android.permission.CREDENTIAL_MANAGER_SET_ORIGIN" />
+    <uses-permission android:name="android.permission.CREDENTIAL_MANAGER_QUERY_CANDIDATE_CREDENTIALS" />
+
     
     <application
         android:label="Lensai"
@@ -148,6 +158,14 @@
             <meta-data android:name="android.appwidget.provider"
                 android:resource="@xml/search_bar_widget_info"/>
         </receiver>
+
+        <service
+            android:name="eu.lensai.flutter_mozilla_components.services.CustomTabsService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.support.customtabs.action.CustomTabsService" />
+            </intent-filter>
+        </service>
 
         <service
             android:name="eu.lensai.flutter_mozilla_components.services.DownloadService"

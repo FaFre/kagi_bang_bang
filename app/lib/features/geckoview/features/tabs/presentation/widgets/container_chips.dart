@@ -35,55 +35,63 @@ class ContainerChips extends HookConsumerWidget {
         ref.watch(filteredContainersWithCountProvider(searchText));
 
     return containersAsync.when(
-      data: (availableContainers) => SizedBox(
-        height: 48,
-        child: Row(
-          children: [
-            if (selectedContainer != null || availableContainers.isNotEmpty)
-              Expanded(
-                child: SelectableChips(
-                  deleteIcon: false,
-                  itemId: (container) => container.id,
-                  itemAvatar: (container) => Container(
-                    width: 20.0,
-                    height: 20.0,
-                    decoration: BoxDecoration(
-                      color: container.color,
-                      shape: BoxShape.circle,
+      data: (availableContainers) {
+        if (selectedContainer == null &&
+            availableContainers.isEmpty &&
+            !displayMenu) {
+          return const SizedBox.shrink();
+        }
+
+        return SizedBox(
+          height: 48,
+          child: Row(
+            children: [
+              if (selectedContainer != null || availableContainers.isNotEmpty)
+                Expanded(
+                  child: SelectableChips(
+                    deleteIcon: false,
+                    itemId: (container) => container.id,
+                    itemAvatar: (container) => Container(
+                      width: 20.0,
+                      height: 20.0,
+                      decoration: BoxDecoration(
+                        color: container.color,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    itemLabel: (container) =>
+                        Text(container.name ?? 'New Container'),
+                    itemBadgeCount: (container) => container.tabCount,
+                    availableItems: availableContainers,
+                    selectedItem: selectedContainer,
+                    onSelected: onSelected,
+                    onDeleted: onDeleted,
+                  ),
+                )
+              else
+                Visibility(
+                  visible: displayMenu,
+                  child: Expanded(
+                    child: Text(
+                      "Press '>' to manage Containers.",
+                      style: TextStyle(
+                        color: Theme.of(context).hintColor,
+                        fontStyle: FontStyle.italic,
+                      ),
                     ),
                   ),
-                  itemLabel: (container) =>
-                      Text(container.name ?? 'New Container'),
-                  itemBadgeCount: (container) => container.tabCount,
-                  availableItems: availableContainers,
-                  selectedItem: selectedContainer,
-                  onSelected: onSelected,
-                  onDeleted: onDeleted,
                 ),
-              )
-            else
-              Visibility(
-                visible: displayMenu,
-                child: Expanded(
-                  child: Text(
-                    "Press '>' to manage Containers.",
-                    style: TextStyle(
-                      color: Theme.of(context).hintColor,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
+              if (displayMenu)
+                IconButton(
+                  onPressed: () async {
+                    await context.push(ContainerListRoute().location);
+                  },
+                  icon: const Icon(Icons.chevron_right),
                 ),
-              ),
-            if (displayMenu)
-              IconButton(
-                onPressed: () async {
-                  await context.push(ContainerListRoute().location);
-                },
-                icon: const Icon(Icons.chevron_right),
-              ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      },
       error: (error, stackTrace) => const SizedBox.shrink(),
       loading: () => const SizedBox(
         height: 48,
