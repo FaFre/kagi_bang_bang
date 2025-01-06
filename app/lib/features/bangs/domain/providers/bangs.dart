@@ -1,5 +1,6 @@
 import 'package:lensai/features/bangs/data/models/bang.dart';
 import 'package:lensai/features/bangs/data/models/bang_data.dart';
+import 'package:lensai/features/bangs/data/models/search_history_entry.dart';
 import 'package:lensai/features/bangs/domain/repositories/data.dart';
 import 'package:lensai/features/bangs/domain/repositories/sync.dart';
 import 'package:riverpod/riverpod.dart';
@@ -51,6 +52,12 @@ Stream<List<BangData>> frequentBangDataList(Ref ref) {
 }
 
 @Riverpod()
+Stream<List<SearchHistoryEntry>> searchHistory(Ref ref) {
+  final repository = ref.watch(bangDataRepositoryProvider.notifier);
+  return repository.watchSearchHistory(limit: 3); //TODO: make count dynamic
+}
+
+@Riverpod()
 Future<BangData> bangDataEnsureIcon(
   Ref ref,
   BangData bang,
@@ -77,10 +84,4 @@ Stream<int> bangCountOfGroup(
 ) {
   final repository = ref.watch(bangDataRepositoryProvider.notifier);
   return repository.watchBangCount(group);
-}
-
-@Riverpod()
-Stream<double> bangIconCacheSizeMegabytes(Ref ref) {
-  final repository = ref.watch(bangDataRepositoryProvider.notifier);
-  return repository.watchIconCacheSize();
 }

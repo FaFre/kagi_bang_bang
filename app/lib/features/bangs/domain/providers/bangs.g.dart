@@ -368,6 +368,25 @@ final frequentBangDataListProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef FrequentBangDataListRef = AutoDisposeStreamProviderRef<List<BangData>>;
+String _$searchHistoryHash() => r'7b97798729643de8e44fd8024cdc02f35124b08b';
+
+/// See also [searchHistory].
+@ProviderFor(searchHistory)
+final searchHistoryProvider =
+    AutoDisposeStreamProvider<List<SearchHistoryEntry>>.internal(
+  searchHistory,
+  name: r'searchHistoryProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$searchHistoryHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef SearchHistoryRef
+    = AutoDisposeStreamProviderRef<List<SearchHistoryEntry>>;
 String _$bangDataEnsureIconHash() =>
     r'423b8e92fd89ec328c2fcc8f9e55365c30633fd2';
 
@@ -760,25 +779,5 @@ class _BangCountOfGroupProviderElement
   @override
   BangGroup get group => (origin as BangCountOfGroupProvider).group;
 }
-
-String _$bangIconCacheSizeMegabytesHash() =>
-    r'e08bfdc7bb47a56c079464478f0b8b5516b2effe';
-
-/// See also [bangIconCacheSizeMegabytes].
-@ProviderFor(bangIconCacheSizeMegabytes)
-final bangIconCacheSizeMegabytesProvider =
-    AutoDisposeStreamProvider<double>.internal(
-  bangIconCacheSizeMegabytes,
-  name: r'bangIconCacheSizeMegabytesProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$bangIconCacheSizeMegabytesHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef BangIconCacheSizeMegabytesRef = AutoDisposeStreamProviderRef<double>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

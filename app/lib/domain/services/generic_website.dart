@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:exceptions/exceptions.dart';
@@ -10,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:lensai/core/http_error_handler.dart';
 import 'package:lensai/data/models/web_page_info.dart';
 import 'package:lensai/features/geckoview/domain/entities/browser_icon.dart';
+import 'package:lensai/features/user/domain/repositories/cache.dart';
 import 'package:lensai/utils/lru_cache.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -56,15 +58,19 @@ class GenericWebsiteService extends _$GenericWebsiteService {
 
   late http.Client _client;
 
-  final LRUCache<String, BrowserIcon> _iconCache;
+  //Global icon cache
+  late CacheRepository _cacheRepository;
+  //Local decoded icon cache
+  final LRUCache<String, BrowserIcon> _browserIconCache;
 
   GenericWebsiteService()
       : _iconsService = GeckoIconService(),
-        _iconCache = LRUCache(50);
+        _browserIconCache = LRUCache(50);
 
   @override
   void build() {
     _client = http.Client();
+    _cacheRepository = ref.watch(cacheRepositoryProvider.notifier);
   }
 
   static Map<String, dynamic> _serializeResource(Resource resource) {
@@ -89,7 +95,14 @@ class GenericWebsiteService extends _$GenericWebsiteService {
     );
   }
 
-  static List<Resource> _extractIcons(Document document) {
+  static Uri _resolveRelativeUri(Uri baseUri, Uri uri) {
+    if (!uri.isAbsolute) {
+      return baseUri.resolveUri(uri);
+    }
+    return uri;
+  }
+
+  static List<Resource> _extractIcons(Uri baseUrl, Document document) {
     final List<Resource> icons = [];
 
     void collectLinkIcons(String rel) {
@@ -99,15 +112,17 @@ class GenericWebsiteService extends _$GenericWebsiteService {
         final type = _typeMap[rel];
         final mimeType = link.attributes['type'];
         if (href != null && type != null) {
-          icons.add(
-            Resource(
-              url: href,
-              type: type,
-              sizes: sizesToList(link.attributes['sizes']).toList(),
-              mimeType: (mimeType?.isNotEmpty ?? true) ? null : mimeType,
-              maskable: false,
-            ),
-          );
+          if (Uri.tryParse(href) case final Uri url) {
+            icons.add(
+              Resource(
+                url: _resolveRelativeUri(baseUrl, url).toString(),
+                type: type,
+                sizes: sizesToList(link.attributes['sizes']).toList(),
+                mimeType: (mimeType?.isNotEmpty ?? true) ? null : mimeType,
+                maskable: false,
+              ),
+            );
+          }
         }
       }
     }
@@ -118,14 +133,16 @@ class GenericWebsiteService extends _$GenericWebsiteService {
         final content = meta.attributes['content'];
         final type = _typeMap[property];
         if (content != null && type != null) {
-          icons.add(
-            Resource(
-              type: type,
-              url: content,
-              sizes: [],
-              maskable: false,
-            ),
-          );
+          if (Uri.tryParse(content) case final Uri url) {
+            icons.add(
+              Resource(
+                type: type,
+                url: _resolveRelativeUri(baseUrl, url).toString(),
+                sizes: [],
+                maskable: false,
+              ),
+            );
+          }
         }
       }
     }
@@ -136,14 +153,16 @@ class GenericWebsiteService extends _$GenericWebsiteService {
         final content = meta.attributes['content'];
         final type = _typeMap[name];
         if (content != null && type != null) {
-          icons.add(
-            Resource(
-              type: type,
-              url: content,
-              sizes: [],
-              maskable: false,
-            ),
-          );
+          if (Uri.tryParse(content) case final Uri url) {
+            icons.add(
+              Resource(
+                type: type,
+                url: _resolveRelativeUri(baseUrl, url).toString(),
+                sizes: [],
+                maskable: false,
+              ),
+            );
+          }
         }
       }
     }
@@ -166,7 +185,7 @@ class GenericWebsiteService extends _$GenericWebsiteService {
     return icons;
   }
 
-  Future<Result<WebPageInfo>> getInfo(Uri url) async {
+  Future<Result<WebPageInfo>> fetchPageInfo(Uri url) async {
     return Result.fromAsync(
       () async {
         final response =
@@ -175,23 +194,28 @@ class GenericWebsiteService extends _$GenericWebsiteService {
         final result = await compute(
           (args) async {
             final document = html_parser.parse(args[0]);
+            final baseUri = Uri.parse(args[1]);
 
             final title = document.querySelector('title')?.text;
-            final resources = _extractIcons(document);
+            final resources = _extractIcons(baseUri, document);
 
             return {
               'title': title,
               'resources': resources.map(_serializeResource).toList(),
             };
           },
-          [response.body],
+          [response.body, url.toString()],
         );
 
         final resources = (result['resources']! as List<Map<String, dynamic>>)
             .map(_deserializeResource)
             .toList();
 
-        final favicon = await getUrlFavicon(url: url, resources: resources);
+        final favicon = await getCachedIcon(url) ??
+            await loadIcon(
+              url: url,
+              resources: resources,
+            );
 
         return WebPageInfo(
           url: url,
@@ -203,26 +227,50 @@ class GenericWebsiteService extends _$GenericWebsiteService {
     );
   }
 
-  Future<BrowserIcon> getUrlFavicon({
-    required Uri url,
-    List<Resource> resources = const [],
-  }) async {
-    final cached = _iconCache.get(url.host);
-    if (cached == null) {
-      final result =
-          await _iconsService.loadIcon(url: url, resources: resources);
+  Future<BrowserIcon?> getCachedIcon(Uri url) async {
+    final cachedBrowserIcon = _browserIconCache.get(url.origin);
+    if (cachedBrowserIcon != null) {
+      return cachedBrowserIcon;
+    }
 
-      return _iconCache.set(
-        url.host,
+    final cachedIcon = await _cacheRepository.getCachedIcon(url.origin);
+    if (cachedIcon != null) {
+      return _browserIconCache.set(
+        url.origin,
         await BrowserIcon.fromBytes(
-          result.image,
-          dominantColor: (result.color != null) ? Color(result.color!) : null,
-          source: result.source,
+          cachedIcon,
+          dominantColor: null,
+          source: IconSource.disk,
         ),
       );
     }
 
-    return cached;
+    return null;
+  }
+
+  Future<BrowserIcon> loadIcon({
+    required Uri url,
+    required List<Resource> resources,
+    bool isPrivate = false,
+    bool waitOnNetworkLoad = true,
+  }) async {
+    final result = await _iconsService.loadIcon(
+      url: url,
+      resources: resources,
+      isPrivate: isPrivate,
+      waitOnNetworkLoad: waitOnNetworkLoad,
+    );
+
+    // unawaited(_cacheRepository.cacheIcon(url, result.image));
+
+    return _browserIconCache.set(
+      url.origin,
+      await BrowserIcon.fromBytes(
+        result.image,
+        dominantColor: (result.color != null) ? Color(result.color!) : null,
+        source: result.source,
+      ),
+    );
   }
 
   // Future<Uri?> tryUpgradeToHttps(Uri httpUri) async {

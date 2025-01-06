@@ -36,8 +36,8 @@ class TabStates extends _$TabStates {
       );
   }
 
-  Future<void> _onIconChange(IconEvent event) async {
-    final IconEvent(:tabId, :bytes) = event;
+  Future<void> _onIconChange(IconChangeEvent event) async {
+    final IconChangeEvent(:tabId, :bytes) = event;
 
     final image = (bytes != null)
         ? (await tryDecodeImage(bytes)
@@ -131,7 +131,7 @@ class TabStates extends _$TabStates {
           await _lock.synchronized(() => _onTabContentStateChange(event));
         },
       ),
-      eventService.iconEvents.listen(
+      eventService.iconChangeEvents.listen(
         (event) async {
           await _lock.synchronized(() => _onIconChange(event));
         },

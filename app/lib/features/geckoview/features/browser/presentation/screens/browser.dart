@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
@@ -30,13 +28,10 @@ import 'package:lensai/features/geckoview/features/find_in_page/presentation/wid
 import 'package:lensai/features/geckoview/features/readerview/presentation/widgets/reader_appearance_button.dart';
 import 'package:lensai/features/geckoview/features/readerview/presentation/widgets/reader_button.dart';
 import 'package:lensai/features/kagi/data/entities/modes.dart';
-import 'package:lensai/features/kagi/data/services/session.dart';
-import 'package:lensai/features/settings/data/models/settings.dart';
-import 'package:lensai/features/settings/data/repositories/settings_repository.dart';
+import 'package:lensai/features/user/domain/repositories/settings.dart';
 import 'package:lensai/presentation/hooks/overlay_portal_controller.dart';
 import 'package:lensai/utils/ui_helper.dart' as ui_helper;
 import 'package:share_plus/share_plus.dart';
-import 'package:speech_to_text_google_dialog/speech_to_text_google_dialog.dart';
 
 class BrowserScreen extends HookConsumerWidget {
   const BrowserScreen({super.key});
@@ -53,26 +48,6 @@ class BrowserScreen extends HookConsumerWidget {
 
     final displayedSheet = ref.watch(bottomSheetControllerProvider);
     final displayedOverlayDialog = ref.watch(overlayDialogControllerProvider);
-
-    final showEarlyAccessFeatures = ref.watch(
-      settingsRepositoryProvider.select(
-        (value) => (value.valueOrNull ?? Settings.withDefaults())
-            .showEarlyAccessFeatures,
-      ),
-    );
-
-    final quickAction = ref.watch(
-      settingsRepositoryProvider.select(
-        (value) => (value.valueOrNull ?? Settings.withDefaults()).quickAction,
-      ),
-    );
-
-    final quickActionVoice = ref.watch(
-      settingsRepositoryProvider.select(
-        (value) => (value.valueOrNull ?? Settings.withDefaults())
-            .quickActionVoiceInput,
-      ),
-    );
 
     final selectedTabId =
         ref.watch(selectedTabStateProvider.select((value) => value?.id));
@@ -97,26 +72,23 @@ class BrowserScreen extends HookConsumerWidget {
     );
 
     ref.listen(
-      settingsRepositoryProvider
-          .select((value) => value.valueOrNull?.enableJavascript),
+      settingsRepositoryProvider.select((value) => value.enableJavascript),
       (previous, next) async {
-        if (next != null) {
-          await ref.read(engineSettingsServiceProvider).javaScriptEnabled(next);
-        }
+        await ref.read(engineSettingsServiceProvider).javaScriptEnabled(next);
       },
     );
 
-    ref.listen(
-      settingsRepositoryProvider
-          .select((value) => value.valueOrNull?.kagiSession),
-      (previous, next) async {
-        if (next != null && next.isNotEmpty) {
-          await ref
-              .read(kagiSessionServiceProvider.notifier)
-              .setKagiSession(next);
-        }
-      },
-    );
+    // ref.listen(
+    //   settingsRepositoryProvider
+    //       .select((value) => value.valueOrNull?.kagiSession),
+    //   (previous, next) async {
+    //     if (next != null && next.isNotEmpty) {
+    //       await ref
+    //           .read(kagiSessionServiceProvider.notifier)
+    //           .setKagiSession(next);
+    //     }
+    //   },
+    // );
 
     return PopScope(
       //We need this for BackButtonListener to work downstream
@@ -217,78 +189,78 @@ class BrowserScreen extends HookConsumerWidget {
                                   },
                                   icon: Icon(KagiTool.summarizer.icon),
                                 ),
-                                if (showEarlyAccessFeatures)
-                                  IconButton(
-                                    color: (activeTool == KagiTool.assistant)
-                                        ? Theme.of(context).colorScheme.primary
-                                        : null,
-                                    onPressed: () {
-                                      ref
-                                          .read(
-                                            createTabStreamProvider.notifier,
-                                          )
-                                          .createTab(
-                                            CreateTabSheet(
-                                              preferredTool: KagiTool.assistant,
-                                            ),
-                                          );
-                                    },
-                                    icon: Icon(KagiTool.assistant.icon),
-                                  ),
+                                // if (showEarlyAccessFeatures)
+                                //   IconButton(
+                                //     color: (activeTool == KagiTool.assistant)
+                                //         ? Theme.of(context).colorScheme.primary
+                                //         : null,
+                                //     onPressed: () {
+                                //       ref
+                                //           .read(
+                                //             createTabStreamProvider.notifier,
+                                //           )
+                                //           .createTab(
+                                //             CreateTabSheet(
+                                //               preferredTool: KagiTool.assistant,
+                                //             ),
+                                //           );
+                                //     },
+                                //     icon: Icon(KagiTool.assistant.icon),
+                                //   ),
                               ],
                             );
                           },
                         ),
                   actions: [
                     if (selectedTabId != null) ReaderButton(),
-                    if (quickAction != null)
-                      InkWell(
-                        onTap: () async {
-                          var tab = CreateTabSheet(
-                            preferredTool: quickAction,
-                          );
+                    // if (quickAction != null)
+                    //   InkWell(
+                    //     onTap: () async {
+                    //       var tab = CreateTabSheet(
+                    //         preferredTool: quickAction,
+                    //       );
 
-                          if (quickActionVoice) {
-                            final completer = Completer<String>();
+                    //       if (quickActionVoice) {
+                    //         final completer = Completer<String>();
 
-                            final isServiceAvailable =
-                                await SpeechToTextGoogleDialog.getInstance()
-                                    .showGoogleDialog(
-                              onTextReceived: (data) {
-                                completer.complete(data.toString());
-                              },
-                              // locale: "en-US",
-                            );
+                    //         final isServiceAvailable =
+                    //             await SpeechToTextGoogleDialog.getInstance()
+                    //                 .showGoogleDialog(
+                    //           onTextReceived: (data) {
+                    //             completer.complete(data.toString());
+                    //           },
+                    //           // locale: "en-US",
+                    //         );
 
-                            if (!isServiceAvailable) {
-                              if (context.mounted) {
-                                ui_helper.showErrorMessage(
-                                  context,
-                                  'Service is not available',
-                                );
-                              }
-                            }
+                    //         if (!isServiceAvailable) {
+                    //           if (context.mounted) {
+                    //             ui_helper.showErrorMessage(
+                    //               context,
+                    //               'Service is not available',
+                    //             );
+                    //           }
+                    //         }
 
-                            tab = CreateTabSheet(
-                              preferredTool: quickAction,
-                              content: await completer.future,
-                            );
-                          }
+                    //         tab = CreateTabSheet(
+                    //           preferredTool: quickAction,
+                    //           content: await completer.future,
+                    //         );
+                    //       }
 
-                          ref
-                              .read(createTabStreamProvider.notifier)
-                              .createTab(tab);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 15.0,
-                            horizontal: 8.0,
-                          ),
-                          child: Icon(
-                            quickActionVoice ? Icons.mic : quickAction.icon,
-                          ),
-                        ),
-                      ),
+                    //       ref
+                    //           .read(createTabStreamProvider.notifier)
+                    //           .createTab(tab);
+                    //     },
+                    //     child: Padding(
+                    //       padding: const EdgeInsets.symmetric(
+                    //         vertical: 15.0,
+                    //         horizontal: 8.0,
+                    //       ),
+                    //       child: Icon(
+                    //         quickActionVoice ? Icons.mic : quickAction.icon,
+                    //       ),
+                    //     ),
+                    //   ),
                     TabsActionButton(
                       isActive: displayedSheet is ViewTabsSheet,
                       onTap: () {
@@ -394,8 +366,7 @@ class BrowserScreen extends HookConsumerWidget {
                                 ),
                                 MenuItemButton(
                                   onPressed: () async {
-                                    await ref
-                                        .read(addonServiceProvider)
+                                    await addonService
                                         .startAddonManagerActivity();
                                   },
                                   leadingIcon: const Icon(MdiIcons.puzzleEdit),

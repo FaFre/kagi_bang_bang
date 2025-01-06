@@ -13,7 +13,9 @@ class WebsiteTitleTile extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final pageInfoAsync = ref.watch(pageInfoProvider(url));
+    final pageInfoAsync = (precachedInfo?.isPageInfoComplete ?? false)
+        ? AsyncValue.data(precachedInfo!)
+        : ref.watch(pageInfoProvider(url));
 
     return Skeletonizer(
       enabled: pageInfoAsync.isLoading && precachedInfo == null,

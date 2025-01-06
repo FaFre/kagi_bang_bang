@@ -977,6 +977,7 @@ abstract class _$TabDatabase extends GeneratedDatabase {
           tab,
           tabFts,
         }).map((QueryRow row) => TabQueryResult(
+          id: row.read<String>('id'),
           title: row.read<String>('title'),
           url: row.read<String>('url'),
           weightedRank: row.read<double>('weighted_rank'),
@@ -990,7 +991,7 @@ abstract class _$TabDatabase extends GeneratedDatabase {
       required int snippetLength,
       required String query}) {
     return customSelect(
-        'WITH weights AS (SELECT 10.0 AS title_weight, 5.0 AS url_weight, 3.0 AS extracted_weight, 1.0 AS full_weight) SELECT highlight(tab_fts, 0, ?1, ?2) AS title, highlight(tab_fts, 1, ?1, ?2) AS url, snippet(tab_fts, 2, ?1, ?2, ?3, ?4) AS extracted_content, snippet(tab_fts, 3, ?1, ?2, ?3, ?4) AS full_content,(bm25(tab_fts, weights.title_weight, weights.url_weight, weights.extracted_weight, weights.full_weight))AS weighted_rank FROM tab_fts(?5)AS fts INNER JOIN tab AS t ON t."rowid" = fts."rowid" CROSS JOIN weights ORDER BY weighted_rank ASC, t.timestamp DESC',
+        'WITH weights AS (SELECT 10.0 AS title_weight, 5.0 AS url_weight, 3.0 AS extracted_weight, 1.0 AS full_weight) SELECT t.id, highlight(tab_fts, 0, ?1, ?2) AS title, highlight(tab_fts, 1, ?1, ?2) AS url, snippet(tab_fts, 2, ?1, ?2, ?3, ?4) AS extracted_content, snippet(tab_fts, 3, ?1, ?2, ?3, ?4) AS full_content,(bm25(tab_fts, weights.title_weight, weights.url_weight, weights.extracted_weight, weights.full_weight))AS weighted_rank FROM tab_fts(?5)AS fts INNER JOIN tab AS t ON t."rowid" = fts."rowid" CROSS JOIN weights ORDER BY weighted_rank ASC, t.timestamp DESC',
         variables: [
           Variable<String>(beforeMatch),
           Variable<String>(afterMatch),
@@ -999,9 +1000,10 @@ abstract class _$TabDatabase extends GeneratedDatabase {
           Variable<String>(query)
         ],
         readsFrom: {
-          tabFts,
           tab,
+          tabFts,
         }).map((QueryRow row) => TabQueryResult(
+          id: row.read<String>('id'),
           title: row.read<String>('title'),
           url: row.read<String>('url'),
           extractedContent: row.read<String>('extracted_content'),

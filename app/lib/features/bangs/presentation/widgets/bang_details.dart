@@ -5,9 +5,6 @@ import 'package:lensai/core/routing/routes.dart';
 import 'package:lensai/features/bangs/data/models/bang_data.dart';
 import 'package:lensai/features/bangs/presentation/widgets/bang_icon.dart';
 import 'package:lensai/features/geckoview/domain/repositories/tab.dart';
-import 'package:lensai/features/settings/data/models/settings.dart';
-import 'package:lensai/features/settings/data/repositories/settings_repository.dart';
-import 'package:lensai/utils/ui_helper.dart' as ui_helper;
 
 class BangDetails extends HookConsumerWidget {
   final BangData bangData;
@@ -71,24 +68,12 @@ class BangDetails extends HookConsumerWidget {
                     onPressed: () async {
                       final url = Uri.parse(bangData.getUrl('').origin);
 
-                      final launchExternal = ref.read(
-                        settingsRepositoryProvider.select(
-                          (value) =>
-                              (value.valueOrNull ?? Settings.withDefaults())
-                                  .launchUrlExternal,
-                        ),
-                      );
+                      await ref
+                          .read(tabRepositoryProvider.notifier)
+                          .addTab(url: url);
 
-                      if (launchExternal) {
-                        await ui_helper.launchUrlFeedback(context, url);
-                      } else {
-                        await ref
-                            .read(tabRepositoryProvider.notifier)
-                            .addTab(url: url);
-
-                        if (context.mounted) {
-                          context.go(BrowserRoute().location);
-                        }
+                      if (context.mounted) {
+                        context.go(BrowserRoute().location);
                       }
                     },
                     label: Text(bangData.domain),

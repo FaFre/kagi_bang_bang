@@ -66,53 +66,55 @@ class BangChips extends HookConsumerWidget {
     );
 
     return availableBangs.when(
-      data: (availableBangs) => SizedBox(
-        height: 48,
-        child: Row(
-          children: [
-            if (activeBang != null || availableBangs.isNotEmpty)
-              Expanded(
-                child: SelectableChips(
-                  itemId: (bang) => bang.trigger,
-                  itemAvatar: (bang) => BangIcon(bang, iconSize: 20),
-                  itemLabel: (bang) => Text(bang.websiteName),
-                  availableItems: availableBangs,
-                  selectedItem: activeBang,
-                  onSelected: onSelected,
-                  onDeleted: onDeleted,
-                ),
-              )
-            else
-              Visibility(
-                visible: displayMenu,
-                child: Expanded(
-                  child: Text(
-                    "Press '>' to search Bangs.",
-                    style: TextStyle(
-                      color: Theme.of(context).hintColor,
-                      fontStyle: FontStyle.italic,
+      data: (availableBangs) {
+        return SizedBox(
+          height: 48,
+          child: Row(
+            children: [
+              if (activeBang != null || availableBangs.isNotEmpty)
+                Expanded(
+                  child: SelectableChips(
+                    itemId: (bang) => bang.trigger,
+                    itemAvatar: (bang) => BangIcon(bang, iconSize: 20),
+                    itemLabel: (bang) => Text(bang.websiteName),
+                    availableItems: availableBangs,
+                    selectedItem: activeBang,
+                    onSelected: onSelected,
+                    onDeleted: onDeleted,
+                  ),
+                )
+              else
+                Visibility(
+                  visible: displayMenu,
+                  child: Expanded(
+                    child: Text(
+                      "Press '>' to search Bangs.",
+                      style: TextStyle(
+                        color: Theme.of(context).hintColor,
+                        fontStyle: FontStyle.italic,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            if (displayMenu)
-              IconButton(
-                onPressed: () async {
-                  final searchText = searchTextController?.text.trim();
+              if (displayMenu)
+                IconButton(
+                  onPressed: () async {
+                    final searchText = searchTextController?.text.trim();
 
-                  await context.push(
-                    BangSearchRoute(
-                      searchText: (searchText?.isEmpty ?? true)
-                          ? BangSearchRoute.emptySearchText
-                          : searchText!,
-                    ).location,
-                  );
-                },
-                icon: const Icon(Icons.chevron_right),
-              ),
-          ],
-        ),
-      ),
+                    await context.push(
+                      BangSearchRoute(
+                        searchText: (searchText?.isEmpty ?? true)
+                            ? BangSearchRoute.emptySearchText
+                            : searchText!,
+                      ).location,
+                    );
+                  },
+                  icon: const Icon(Icons.chevron_right),
+                ),
+            ],
+          ),
+        );
+      },
       error: (error, stackTrace) => const SizedBox.shrink(),
       loading: () => const SizedBox(
         height: 48,

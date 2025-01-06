@@ -10,8 +10,7 @@ import 'package:lensai/core/routing/routes.dart';
 import 'package:lensai/extensions/date_time.dart';
 import 'package:lensai/features/chat_archive/domain/entities/chat_entity.dart';
 import 'package:lensai/features/chat_archive/domain/repositories/search.dart';
-import 'package:lensai/features/settings/data/models/settings.dart';
-import 'package:lensai/features/settings/data/repositories/settings_repository.dart';
+import 'package:lensai/features/user/domain/repositories/settings.dart';
 import 'package:lensai/presentation/hooks/listenable_callback.dart';
 import 'package:lensai/presentation/widgets/failure_widget.dart';
 
@@ -22,9 +21,7 @@ class ChatArchiveSearchScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final resultsAsync = ref.watch(chatArchiveSearchRepositoryProvider);
     final incognitoEnabled = ref.watch(
-      settingsRepositoryProvider.select(
-        (value) => (value.valueOrNull ?? Settings.withDefaults()).incognitoMode,
-      ),
+      settingsRepositoryProvider.select((value) => value.incognitoMode),
     );
 
     final textEditingController = useTextEditingController();

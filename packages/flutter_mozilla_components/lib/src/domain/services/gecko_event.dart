@@ -8,7 +8,8 @@ import 'package:rxdart/rxdart.dart';
 typedef HistoryEvent = ({String tabId, HistoryState history});
 typedef ReaderableEvent = ({String tabId, ReaderableState readerable});
 typedef SecurityInfoEvent = ({String tabId, SecurityInfoState securityInfo});
-typedef IconEvent = ({String tabId, Uint8List? bytes});
+typedef IconChangeEvent = ({String tabId, Uint8List? bytes});
+typedef IconUpdateEvent = ({String url, Uint8List bytes});
 typedef ThumbnailEvent = ({String tabId, Uint8List? bytes});
 typedef FindResultsEvent = ({String tabId, List<FindResultState> results});
 
@@ -24,7 +25,8 @@ class GeckoEventService extends GeckoStateEvents {
   final _securityInfoSubject = ReplaySubject<SecurityInfoEvent>();
   final _readerableSubject = ReplaySubject<ReaderableEvent>();
 
-  final _iconSubject = PublishSubject<IconEvent>();
+  final _iconChangeSubject = PublishSubject<IconChangeEvent>();
+  final _iconUpdateSubject = PublishSubject<IconUpdateEvent>();
   final _thumbnailSubject = PublishSubject<ThumbnailEvent>();
   final _findResultsSubject = PublishSubject<FindResultsEvent>();
 
@@ -41,7 +43,8 @@ class GeckoEventService extends GeckoStateEvents {
   Stream<ReaderableEvent> get readerableEvents => _readerableSubject.stream;
   Stream<SecurityInfoEvent> get securityInfoEvents =>
       _securityInfoSubject.stream;
-  Stream<IconEvent> get iconEvents => _iconSubject.stream;
+  Stream<IconChangeEvent> get iconChangeEvents => _iconChangeSubject.stream;
+  Stream<IconUpdateEvent> get iconUpdateEvents => _iconUpdateSubject.stream;
   Stream<ThumbnailEvent> get thumbnailEvents => _thumbnailSubject.stream;
   Stream<FindResultsEvent> get findResultsEvent => _findResultsSubject.stream;
 
@@ -114,7 +117,14 @@ class GeckoEventService extends GeckoStateEvents {
 
   @override
   void onIconChange(int timestamp, String id, Uint8List? bytes) {
-    _iconSubject.addWhenMoreRecent(timestamp, id, (tabId: id, bytes: bytes));
+    _iconChangeSubject
+        .addWhenMoreRecent(timestamp, id, (tabId: id, bytes: bytes));
+  }
+
+  @override
+  void onIconUpdate(int timestamp, String url, Uint8List bytes) {
+    _iconUpdateSubject
+        .addWhenMoreRecent(timestamp, url, (url: url, bytes: bytes));
   }
 
   @override
@@ -162,7 +172,7 @@ class GeckoEventService extends GeckoStateEvents {
     unawaited(_historySubject.close());
     unawaited(_readerableSubject.close());
     unawaited(_securityInfoSubject.close());
-    unawaited(_iconSubject.close());
+    unawaited(_iconChangeSubject.close());
     unawaited(_thumbnailSubject.close());
     unawaited(_findResultsSubject.close());
     unawaited(_tabAddedSubject.close());

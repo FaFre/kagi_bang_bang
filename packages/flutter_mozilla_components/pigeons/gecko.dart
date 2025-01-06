@@ -853,6 +853,7 @@ abstract class GeckoCookieApi {
 abstract class GeckoStateEvents {
   void onViewReadyStateChange(int timestamp, bool state);
   void onEngineReadyStateChange(int timestamp, bool state);
+  void onIconUpdate(int timestamp, String url, Uint8List bytes);
 
   void onTabAdded(int timestamp, String tabId);
 

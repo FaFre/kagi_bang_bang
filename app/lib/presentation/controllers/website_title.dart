@@ -8,5 +8,5 @@ part 'website_title.g.dart';
 @Riverpod(keepAlive: true)
 Future<WebPageInfo> pageInfo(Ref ref, Uri url) {
   final websiteService = ref.watch(genericWebsiteServiceProvider.notifier);
-  return websiteService.getInfo(url).then((value) => value.value);
+  return websiteService.fetchPageInfo(url).then((value) => value.value);
 }

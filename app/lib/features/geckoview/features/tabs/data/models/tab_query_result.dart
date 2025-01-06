@@ -1,4 +1,6 @@
 class TabQueryResult {
+  final String id;
+
   final String title;
   final String url;
 
@@ -8,6 +10,7 @@ class TabQueryResult {
   final double weightedRank;
 
   TabQueryResult({
+    required this.id,
     required this.title,
     required this.url,
     this.extractedContent,

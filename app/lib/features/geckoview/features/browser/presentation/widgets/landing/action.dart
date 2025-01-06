@@ -4,17 +4,19 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lensai/core/routing/routes.dart';
 import 'package:lensai/features/geckoview/features/browser/presentation/widgets/error_container.dart';
-import 'package:lensai/features/settings/data/repositories/settings_repository.dart';
 
 class LandingAction extends HookConsumerWidget {
   const LandingAction({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final sessionTokenAvailable = ref.watch(
-      settingsRepositoryProvider.select(
-        (value) => value.valueOrNull?.kagiSession?.isNotEmpty ?? false,
-      ),
-    );
+    //TODO: REWORK!
+    final sessionTokenAvailable = false;
+
+    // ref.watch(
+    //   settingsRepositoryProvider.select(
+    //     (value) => value.valueOrNull?.kagiSession?.isNotEmpty ?? false,
+    //   ),
+    // );
 
     return Visibility(
       visible: !sessionTokenAvailable,

@@ -288,6 +288,140 @@ class _AvailableTabIdsProviderElement
   String? get containerId => (origin as AvailableTabIdsProvider).containerId;
 }
 
+String _$seamlessFilteredTabsHash() =>
+    r'1abfb0e9ae834cdde5ab64b6174f24f45f36a272';
+
+/// See also [seamlessFilteredTabs].
+@ProviderFor(seamlessFilteredTabs)
+const seamlessFilteredTabsProvider = SeamlessFilteredTabsFamily();
+
+/// See also [seamlessFilteredTabs].
+class SeamlessFilteredTabsFamily extends Family<List<String>> {
+  /// See also [seamlessFilteredTabs].
+  const SeamlessFilteredTabsFamily();
+
+  /// See also [seamlessFilteredTabs].
+  SeamlessFilteredTabsProvider call(
+    String? containerId,
+  ) {
+    return SeamlessFilteredTabsProvider(
+      containerId,
+    );
+  }
+
+  @override
+  SeamlessFilteredTabsProvider getProviderOverride(
+    covariant SeamlessFilteredTabsProvider provider,
+  ) {
+    return call(
+      provider.containerId,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'seamlessFilteredTabsProvider';
+}
+
+/// See also [seamlessFilteredTabs].
+class SeamlessFilteredTabsProvider extends AutoDisposeProvider<List<String>> {
+  /// See also [seamlessFilteredTabs].
+  SeamlessFilteredTabsProvider(
+    String? containerId,
+  ) : this._internal(
+          (ref) => seamlessFilteredTabs(
+            ref as SeamlessFilteredTabsRef,
+            containerId,
+          ),
+          from: seamlessFilteredTabsProvider,
+          name: r'seamlessFilteredTabsProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$seamlessFilteredTabsHash,
+          dependencies: SeamlessFilteredTabsFamily._dependencies,
+          allTransitiveDependencies:
+              SeamlessFilteredTabsFamily._allTransitiveDependencies,
+          containerId: containerId,
+        );
+
+  SeamlessFilteredTabsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.containerId,
+  }) : super.internal();
+
+  final String? containerId;
+
+  @override
+  Override overrideWith(
+    List<String> Function(SeamlessFilteredTabsRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: SeamlessFilteredTabsProvider._internal(
+        (ref) => create(ref as SeamlessFilteredTabsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        containerId: containerId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeProviderElement<List<String>> createElement() {
+    return _SeamlessFilteredTabsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SeamlessFilteredTabsProvider &&
+        other.containerId == containerId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, containerId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin SeamlessFilteredTabsRef on AutoDisposeProviderRef<List<String>> {
+  /// The parameter `containerId` of this provider.
+  String? get containerId;
+}
+
+class _SeamlessFilteredTabsProviderElement
+    extends AutoDisposeProviderElement<List<String>>
+    with SeamlessFilteredTabsRef {
+  _SeamlessFilteredTabsProviderElement(super.provider);
+
+  @override
+  String? get containerId =>
+      (origin as SeamlessFilteredTabsProvider).containerId;
+}
+
 String _$selectedBangTriggerHash() =>
     r'b0e12bc95e93d50d04f1c658230cea9f15ff0385';
 

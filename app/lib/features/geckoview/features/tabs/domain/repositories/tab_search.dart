@@ -30,13 +30,15 @@ class TabSearchRepository extends _$TabSearchRepository {
             )
             .get(),
       );
+    } else {
+      state = const AsyncValue.data(null);
     }
   }
 
   @override
-  Future<List<TabQueryResult>> build() {
+  Future<List<TabQueryResult>?> build() {
     _db = ref.watch(tabDatabaseProvider);
 
-    return Future.value([]);
+    return Future.value();
   }
 }

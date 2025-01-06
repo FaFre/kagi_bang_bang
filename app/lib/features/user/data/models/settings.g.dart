@@ -7,23 +7,13 @@ part of 'settings.dart';
 // **************************************************************************
 
 abstract class _$SettingsCWProxy {
-  Settings kagiSession(String? kagiSession);
-
-  Settings showEarlyAccessFeatures(bool showEarlyAccessFeatures);
-
   Settings incognitoMode(bool incognitoMode);
 
   Settings enableJavascript(bool enableJavascript);
 
-  Settings launchUrlExternal(bool launchUrlExternal);
-
   Settings blockHttpProtocol(bool blockHttpProtocol);
 
   Settings themeMode(ThemeMode themeMode);
-
-  Settings quickAction(KagiTool? quickAction);
-
-  Settings quickActionVoiceInput(bool quickActionVoiceInput);
 
   Settings enableReadability(bool enableReadability);
 
@@ -34,15 +24,10 @@ abstract class _$SettingsCWProxy {
   /// Settings(...).copyWith(id: 12, name: "My name")
   /// ````
   Settings call({
-    String? kagiSession,
-    bool showEarlyAccessFeatures,
     bool incognitoMode,
     bool enableJavascript,
-    bool launchUrlExternal,
     bool blockHttpProtocol,
     ThemeMode themeMode,
-    KagiTool? quickAction,
-    bool quickActionVoiceInput,
     bool enableReadability,
   });
 }
@@ -54,13 +39,6 @@ class _$SettingsCWProxyImpl implements _$SettingsCWProxy {
   final Settings _value;
 
   @override
-  Settings kagiSession(String? kagiSession) => this(kagiSession: kagiSession);
-
-  @override
-  Settings showEarlyAccessFeatures(bool showEarlyAccessFeatures) =>
-      this(showEarlyAccessFeatures: showEarlyAccessFeatures);
-
-  @override
   Settings incognitoMode(bool incognitoMode) =>
       this(incognitoMode: incognitoMode);
 
@@ -69,22 +47,11 @@ class _$SettingsCWProxyImpl implements _$SettingsCWProxy {
       this(enableJavascript: enableJavascript);
 
   @override
-  Settings launchUrlExternal(bool launchUrlExternal) =>
-      this(launchUrlExternal: launchUrlExternal);
-
-  @override
   Settings blockHttpProtocol(bool blockHttpProtocol) =>
       this(blockHttpProtocol: blockHttpProtocol);
 
   @override
   Settings themeMode(ThemeMode themeMode) => this(themeMode: themeMode);
-
-  @override
-  Settings quickAction(KagiTool? quickAction) => this(quickAction: quickAction);
-
-  @override
-  Settings quickActionVoiceInput(bool quickActionVoiceInput) =>
-      this(quickActionVoiceInput: quickActionVoiceInput);
 
   @override
   Settings enableReadability(bool enableReadability) =>
@@ -99,27 +66,13 @@ class _$SettingsCWProxyImpl implements _$SettingsCWProxy {
   /// Settings(...).copyWith(id: 12, name: "My name")
   /// ````
   Settings call({
-    Object? kagiSession = const $CopyWithPlaceholder(),
-    Object? showEarlyAccessFeatures = const $CopyWithPlaceholder(),
     Object? incognitoMode = const $CopyWithPlaceholder(),
     Object? enableJavascript = const $CopyWithPlaceholder(),
-    Object? launchUrlExternal = const $CopyWithPlaceholder(),
     Object? blockHttpProtocol = const $CopyWithPlaceholder(),
     Object? themeMode = const $CopyWithPlaceholder(),
-    Object? quickAction = const $CopyWithPlaceholder(),
-    Object? quickActionVoiceInput = const $CopyWithPlaceholder(),
     Object? enableReadability = const $CopyWithPlaceholder(),
   }) {
     return Settings(
-      kagiSession: kagiSession == const $CopyWithPlaceholder()
-          ? _value.kagiSession
-          // ignore: cast_nullable_to_non_nullable
-          : kagiSession as String?,
-      showEarlyAccessFeatures:
-          showEarlyAccessFeatures == const $CopyWithPlaceholder()
-              ? _value.showEarlyAccessFeatures
-              // ignore: cast_nullable_to_non_nullable
-              : showEarlyAccessFeatures as bool,
       incognitoMode: incognitoMode == const $CopyWithPlaceholder()
           ? _value.incognitoMode
           // ignore: cast_nullable_to_non_nullable
@@ -128,10 +81,6 @@ class _$SettingsCWProxyImpl implements _$SettingsCWProxy {
           ? _value.enableJavascript
           // ignore: cast_nullable_to_non_nullable
           : enableJavascript as bool,
-      launchUrlExternal: launchUrlExternal == const $CopyWithPlaceholder()
-          ? _value.launchUrlExternal
-          // ignore: cast_nullable_to_non_nullable
-          : launchUrlExternal as bool,
       blockHttpProtocol: blockHttpProtocol == const $CopyWithPlaceholder()
           ? _value.blockHttpProtocol
           // ignore: cast_nullable_to_non_nullable
@@ -140,15 +89,6 @@ class _$SettingsCWProxyImpl implements _$SettingsCWProxy {
           ? _value.themeMode
           // ignore: cast_nullable_to_non_nullable
           : themeMode as ThemeMode,
-      quickAction: quickAction == const $CopyWithPlaceholder()
-          ? _value.quickAction
-          // ignore: cast_nullable_to_non_nullable
-          : quickAction as KagiTool?,
-      quickActionVoiceInput:
-          quickActionVoiceInput == const $CopyWithPlaceholder()
-              ? _value.quickActionVoiceInput
-              // ignore: cast_nullable_to_non_nullable
-              : quickActionVoiceInput as bool,
       enableReadability: enableReadability == const $CopyWithPlaceholder()
           ? _value.enableReadability
           // ignore: cast_nullable_to_non_nullable
@@ -162,3 +102,29 @@ extension $SettingsCopyWith on Settings {
   // ignore: library_private_types_in_public_api
   _$SettingsCWProxy get copyWith => _$SettingsCWProxyImpl(this);
 }
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+Settings _$SettingsFromJson(Map<String, dynamic> json) => Settings.withDefaults(
+      incognitoMode: json['incognitoMode'] as bool?,
+      enableJavascript: json['enableJavascript'] as bool?,
+      blockHttpProtocol: json['blockHttpProtocol'] as bool?,
+      themeMode: $enumDecodeNullable(_$ThemeModeEnumMap, json['themeMode']),
+      enableReadability: json['enableReadability'] as bool?,
+    );
+
+Map<String, dynamic> _$SettingsToJson(Settings instance) => <String, dynamic>{
+      'incognitoMode': instance.incognitoMode,
+      'enableJavascript': instance.enableJavascript,
+      'blockHttpProtocol': instance.blockHttpProtocol,
+      'themeMode': _$ThemeModeEnumMap[instance.themeMode]!,
+      'enableReadability': instance.enableReadability,
+    };
+
+const _$ThemeModeEnumMap = {
+  ThemeMode.system: 'system',
+  ThemeMode.light: 'light',
+  ThemeMode.dark: 'dark',
+};

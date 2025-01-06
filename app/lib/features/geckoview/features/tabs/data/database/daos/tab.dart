@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:collection/collection.dart';
 import 'package:drift/drift.dart';
-import 'package:lensai/core/logger.dart';
 import 'package:lensai/features/geckoview/domain/entities/tab_state.dart';
 import 'package:lensai/features/geckoview/features/tabs/data/database/database.dart';
 import 'package:lensai/features/geckoview/features/tabs/data/models/tab_query_result.dart';

@@ -52,7 +52,10 @@ sealed class FtsQueryBuilder {
     //Merge short tokens
     _mergeShortBarewords(barewords, minTokenLength);
 
-    _tokens = barewords.take(tokenLimit).toList();
+    _tokens = barewords
+        .where((bareword) => bareword.word.length >= minTokenLength)
+        .take(tokenLimit)
+        .toList();
   }
 
   static void _mergeShortBarewords(
@@ -62,7 +65,7 @@ sealed class FtsQueryBuilder {
     for (var i = 0; i < barewords.length; i++) {
       final bareword = barewords[i];
 
-      if (i != 0) {
+      if (i > 0) {
         if (bareword.word.length < minTokenLength) {
           barewords[i] = barewords[i - 1].join(bareword);
         }

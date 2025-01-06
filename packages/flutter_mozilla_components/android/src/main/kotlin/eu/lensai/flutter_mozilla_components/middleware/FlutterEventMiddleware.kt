@@ -70,6 +70,17 @@ class FlutterEventMiddleware(private val flutterEvents: GeckoStateEvents) : Midd
                     ) { _ -> }
                 }
             }
+            is ContentAction.UpdateIconAction -> {
+                val bytes = action.icon.toWebPBytes()
+
+                runOnUiThread {
+                    flutterEvents.onIconUpdate(
+                        System.currentTimeMillis(),
+                        action.pageUrl,
+                        bytes
+                    ) { _ -> }
+                }
+            }
             else -> {
                 //logger.debug("Event fired: " + action.javaClass.name)
             }

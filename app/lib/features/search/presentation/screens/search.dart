@@ -1,12 +1,16 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lensai/data/models/equatable_iterable.dart';
 import 'package:lensai/features/bangs/data/models/bang_data.dart';
 import 'package:lensai/features/bangs/domain/providers/bangs.dart';
+import 'package:lensai/features/bangs/domain/providers/search.dart';
 import 'package:lensai/features/bangs/domain/repositories/data.dart';
 import 'package:lensai/features/geckoview/domain/providers/tab_state.dart';
+import 'package:lensai/features/geckoview/domain/repositories/tab.dart';
 import 'package:lensai/features/geckoview/features/browser/domain/providers.dart';
 import 'package:lensai/features/geckoview/features/tabs/data/models/container_data.dart';
 import 'package:lensai/features/geckoview/features/tabs/domain/providers/selected_container.dart';
@@ -75,6 +79,20 @@ class SearchScreen extends HookConsumerWidget {
       },
     );
 
+    Future<void> submitSearch(String query) async {
+      if (activeBang != null && (formKey.currentState?.validate() == true)) {
+        final searchUri = await ref.read(
+          triggerBangSearchProvider(activeBang, query).future,
+        );
+
+        await ref.read(tabRepositoryProvider.notifier).addTab(url: searchUri);
+
+        if (context.mounted) {
+          context.pop();
+        }
+      }
+    }
+
     final selectedContainer = useState<ContainerData?>(globalSelectedContainer);
 
     final availableTabs = ref
@@ -111,7 +129,7 @@ class SearchScreen extends HookConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Site Search',
+                      'Search Provider',
                       style: Theme.of(context).textTheme.labelSmall,
                     ),
                     BangChips(
@@ -150,7 +168,7 @@ class SearchScreen extends HookConsumerWidget {
             ),
             HookConsumer(
               builder: (context, ref, child) {
-                final hasSearchText = useListenableSelector(
+                useListenableSelector(
                   searchTextController,
                   () => searchTextController.text.isNotEmpty,
                 );
@@ -158,30 +176,65 @@ class SearchScreen extends HookConsumerWidget {
                 final suggestions =
                     useStream(ref.watch(searchSuggestionsProvider()));
 
-                return (!hasSearchText || !suggestions.hasData)
-                    ? SliverList.builder(
-                        itemCount: 5,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            leading: const Icon(Icons.history),
-                            title: Text('Search History $index'),
-                          );
-                        },
-                      )
-                    : SliverList.builder(
-                        itemCount: suggestions.data!.length,
-                        itemBuilder: (context, index) {
-                          final suggestion = suggestions.data![index];
+                final searchHistory = ref.watch(searchHistoryProvider);
 
-                          return ListTile(
-                            leading: const Icon(Icons.search),
-                            title: Text(suggestion),
-                            onLongPress: () {
-                              searchTextController.text = suggestion;
-                            },
-                          );
+                final searchText = searchTextController.text;
+
+                if ((!searchText.isNotEmpty || !suggestions.hasData) &&
+                    (searchHistory.value?.isNotEmpty ?? false)) {
+                  final entries = searchHistory.value!;
+
+                  return SliverList.builder(
+                    itemCount: entries.length,
+                    itemBuilder: (context, index) {
+                      final query = entries[index].searchQuery;
+
+                      return ListTile(
+                        leading: const Icon(Icons.history),
+                        title: Text(query),
+                        onLongPress: () {
+                          searchTextController.text = query;
                         },
+                        onTap: () async {
+                          await submitSearch(query);
+                        },
+                        trailing: IconButton(
+                          onPressed: () async {
+                            await ref
+                                .read(bangDataRepositoryProvider.notifier)
+                                .removeSearchEntry(query);
+                          },
+                          icon: const Icon(Icons.close),
+                        ),
                       );
+                    },
+                  );
+                }
+
+                final prioritizedSuggestions = [
+                  if (searchText.isNotEmpty) searchText,
+                  if (suggestions.data != null)
+                    ...suggestions.data!
+                        .whereNot((suggestion) => suggestion == searchText),
+                ];
+
+                return SliverList.builder(
+                  itemCount: prioritizedSuggestions.length,
+                  itemBuilder: (context, index) {
+                    final suggestion = prioritizedSuggestions[index];
+
+                    return ListTile(
+                      leading: const Icon(Icons.search),
+                      title: Text(suggestion),
+                      onLongPress: () {
+                        searchTextController.text = suggestion;
+                      },
+                      onTap: () async {
+                        await submitSearch(suggestion);
+                      },
+                    );
+                  },
+                );
               },
             ),
             const SliverToBoxAdapter(
@@ -220,6 +273,10 @@ class SearchScreen extends HookConsumerWidget {
                   enabled: tabs.isLoading,
                   child: tabs.when(
                     data: (data) {
+                      if (data == null) {
+                        return const SizedBox.shrink();
+                      }
+
                       return SliverList.builder(
                         itemCount: data.length,
                         itemBuilder: (context, index) {
@@ -282,10 +339,12 @@ class SearchScreen extends HookConsumerWidget {
                     }
 
                     return ListTile(
-                      leading: RawImage(
-                        image: tab.icon?.value,
-                        height: 24,
-                        width: 24,
+                      leading: RepaintBoundary(
+                        child: RawImage(
+                          image: tab.icon?.value,
+                          height: 24,
+                          width: 24,
+                        ),
                       ),
                       title: Text(tab.title),
                       subtitle: Text(

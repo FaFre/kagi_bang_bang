@@ -8,9 +8,8 @@ import 'package:lensai/features/geckoview/features/browser/presentation/widgets/
 import 'package:lensai/features/geckoview/features/browser/presentation/widgets/speech_to_text_button.dart';
 import 'package:lensai/features/kagi/data/entities/modes.dart';
 import 'package:lensai/features/kagi/utils/url_builder.dart' as uri_builder;
-import 'package:lensai/features/settings/data/models/settings.dart';
-import 'package:lensai/features/settings/data/repositories/settings_repository.dart';
 import 'package:lensai/features/share_intent/domain/entities/shared_content.dart';
+import 'package:lensai/features/user/domain/repositories/settings.dart';
 import 'package:lensai/presentation/hooks/sync_page_tab.dart';
 
 class AssistantTab extends HookConsumerWidget {
@@ -26,9 +25,7 @@ class AssistantTab extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final incognitoEnabled = ref.watch(
-      settingsRepositoryProvider.select(
-        (value) => (value.valueOrNull ?? Settings.withDefaults()).incognitoMode,
-      ),
+      settingsRepositoryProvider.select((value) => value.incognitoMode),
     );
 
     final researchVariant = ref.watch(activeResearchVariantProvider);

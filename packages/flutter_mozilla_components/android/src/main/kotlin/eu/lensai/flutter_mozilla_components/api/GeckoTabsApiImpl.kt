@@ -115,21 +115,19 @@ class GeckoTabsApiImpl : GeckoTabsApi {
 
     private suspend fun handleIconChange(tab: SessionState) {
         try {
+            val iconBytes: ByteArray?
             if (tab.content.icon != null) {
-                val iconBytes = tab.content.icon?.toWebPBytes()
-                withContext(Dispatchers.Main) {
-                    components.flutterEvents.onIconChange(
-                        System.currentTimeMillis(),
-                        tab.id,
-                        iconBytes
-                    ) { }
-                }
+                iconBytes = tab.content.icon?.toWebPBytes()
             } else {
-                val result = components.core.icons.loadIcon(IconRequest(url = tab.content.url)).await()
-                val iconBytes = result.bitmap.toWebPBytes()
-                withContext(Dispatchers.Main) {
-                    components.flutterEvents.onIconChange(System.currentTimeMillis(), tab.id, iconBytes) { }
-                }
+                iconBytes = null
+            }
+
+            withContext(Dispatchers.Main) {
+                components.flutterEvents.onIconChange(
+                    System.currentTimeMillis(),
+                    tab.id,
+                    iconBytes
+                ) { }
             }
         } catch (e: Exception) {
             logger.error("$TAG: Failed to handle icon change for tab ${tab.id}", e)

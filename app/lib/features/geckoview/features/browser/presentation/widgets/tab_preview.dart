@@ -91,9 +91,11 @@ class TabPreview extends StatelessWidget {
                     ),
                     child: SizedBox(
                       width: double.infinity,
-                      child: RawImage(
-                        image: tab.thumbnail!.value,
-                        fit: BoxFit.fitWidth,
+                      child: RepaintBoundary(
+                        child: RawImage(
+                          image: tab.thumbnail!.value,
+                          fit: BoxFit.fitWidth,
+                        ),
                       ),
                     ),
                   ),

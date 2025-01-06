@@ -94,6 +94,27 @@ class BangDao extends DatabaseAccessor<BangDatabase> with _$BangDaoMixin {
     return db.bangQuery(query: db.buildFtsQuery(searchString));
   }
 
+  Future<int> addSearchEntry(String trigger, String searchQuery) {
+    return db.bangHistory.insertOne(
+      BangHistoryCompanion.insert(
+        searchQuery: searchQuery,
+        trigger: trigger,
+        searchDate: DateTime.now(),
+      ),
+      onConflict: DoUpdate(
+        target: [db.bangHistory.searchQuery],
+        (old) => BangHistoryCompanion.custom(
+          trigger: Variable(trigger),
+          searchDate: Variable(DateTime.now()),
+        ),
+      ),
+    );
+  }
+
+  Future<int> removeSearchEntry(String searchQuery) {
+    return db.bangHistory.deleteWhere((t) => t.searchQuery.equals(searchQuery));
+  }
+
   // Future<int> upsertBangIcon(String trigger, BrowserIcon icon) async {
   //   //TODO: swithc to WEBP in future, requires 3rd party
   //   final compressed = await icon.image.toByteData(format: ImageByteFormat.png);

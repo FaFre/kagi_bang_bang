@@ -599,171 +599,173 @@ class BangFrequencyCompanion extends UpdateCompanion<BangFrequencyData> {
   }
 }
 
-class BangIcon extends Table with TableInfo<BangIcon, BangIconData> {
+class BangHistory extends Table with TableInfo<BangHistory, BangHistoryData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  BangIcon(this.attachedDatabase, [this._alias]);
+  BangHistory(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> searchQuery = GeneratedColumn<String>(
+      'search_query', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'UNIQUE NOT NULL');
   late final GeneratedColumn<String> trigger = GeneratedColumn<String>(
       'trigger', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
-      $customConstraints:
-          'PRIMARY KEY NOT NULL REFERENCES bang("trigger")ON DELETE CASCADE');
-  late final GeneratedColumn<Uint8List> iconData = GeneratedColumn<Uint8List>(
-      'icon_data', aliasedName, false,
-      type: DriftSqlType.blob,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  late final GeneratedColumn<DateTime> fetchDate = GeneratedColumn<DateTime>(
-      'fetch_date', aliasedName, false,
+      $customConstraints: 'NOT NULL REFERENCES bang("trigger")');
+  late final GeneratedColumn<DateTime> searchDate = GeneratedColumn<DateTime>(
+      'search_date', aliasedName, false,
       type: DriftSqlType.dateTime,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   @override
-  List<GeneratedColumn> get $columns => [trigger, iconData, fetchDate];
+  List<GeneratedColumn> get $columns => [searchQuery, trigger, searchDate];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'bang_icon';
+  static const String $name = 'bang_history';
   @override
-  Set<GeneratedColumn> get $primaryKey => {trigger};
+  Set<GeneratedColumn> get $primaryKey => const {};
   @override
-  BangIconData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  BangHistoryData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return BangIconData(
+    return BangHistoryData(
+      searchQuery: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}search_query'])!,
       trigger: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}trigger'])!,
-      iconData: attachedDatabase.typeMapping
-          .read(DriftSqlType.blob, data['${effectivePrefix}icon_data'])!,
-      fetchDate: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}fetch_date'])!,
+      searchDate: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}search_date'])!,
     );
   }
 
   @override
-  BangIcon createAlias(String alias) {
-    return BangIcon(attachedDatabase, alias);
+  BangHistory createAlias(String alias) {
+    return BangHistory(attachedDatabase, alias);
   }
 
   @override
   bool get dontWriteConstraints => true;
 }
 
-class BangIconData extends DataClass implements Insertable<BangIconData> {
+class BangHistoryData extends DataClass implements Insertable<BangHistoryData> {
+  final String searchQuery;
   final String trigger;
-  final Uint8List iconData;
-  final DateTime fetchDate;
-  const BangIconData(
-      {required this.trigger, required this.iconData, required this.fetchDate});
+  final DateTime searchDate;
+  const BangHistoryData(
+      {required this.searchQuery,
+      required this.trigger,
+      required this.searchDate});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    map['search_query'] = Variable<String>(searchQuery);
     map['trigger'] = Variable<String>(trigger);
-    map['icon_data'] = Variable<Uint8List>(iconData);
-    map['fetch_date'] = Variable<DateTime>(fetchDate);
+    map['search_date'] = Variable<DateTime>(searchDate);
     return map;
   }
 
-  factory BangIconData.fromJson(Map<String, dynamic> json,
+  factory BangHistoryData.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return BangIconData(
+    return BangHistoryData(
+      searchQuery: serializer.fromJson<String>(json['search_query']),
       trigger: serializer.fromJson<String>(json['trigger']),
-      iconData: serializer.fromJson<Uint8List>(json['icon_data']),
-      fetchDate: serializer.fromJson<DateTime>(json['fetch_date']),
+      searchDate: serializer.fromJson<DateTime>(json['search_date']),
     );
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
+      'search_query': serializer.toJson<String>(searchQuery),
       'trigger': serializer.toJson<String>(trigger),
-      'icon_data': serializer.toJson<Uint8List>(iconData),
-      'fetch_date': serializer.toJson<DateTime>(fetchDate),
+      'search_date': serializer.toJson<DateTime>(searchDate),
     };
   }
 
-  BangIconData copyWith(
-          {String? trigger, Uint8List? iconData, DateTime? fetchDate}) =>
-      BangIconData(
+  BangHistoryData copyWith(
+          {String? searchQuery, String? trigger, DateTime? searchDate}) =>
+      BangHistoryData(
+        searchQuery: searchQuery ?? this.searchQuery,
         trigger: trigger ?? this.trigger,
-        iconData: iconData ?? this.iconData,
-        fetchDate: fetchDate ?? this.fetchDate,
+        searchDate: searchDate ?? this.searchDate,
       );
-  BangIconData copyWithCompanion(BangIconCompanion data) {
-    return BangIconData(
+  BangHistoryData copyWithCompanion(BangHistoryCompanion data) {
+    return BangHistoryData(
+      searchQuery:
+          data.searchQuery.present ? data.searchQuery.value : this.searchQuery,
       trigger: data.trigger.present ? data.trigger.value : this.trigger,
-      iconData: data.iconData.present ? data.iconData.value : this.iconData,
-      fetchDate: data.fetchDate.present ? data.fetchDate.value : this.fetchDate,
+      searchDate:
+          data.searchDate.present ? data.searchDate.value : this.searchDate,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('BangIconData(')
+    return (StringBuffer('BangHistoryData(')
+          ..write('searchQuery: $searchQuery, ')
           ..write('trigger: $trigger, ')
-          ..write('iconData: $iconData, ')
-          ..write('fetchDate: $fetchDate')
+          ..write('searchDate: $searchDate')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(trigger, $driftBlobEquality.hash(iconData), fetchDate);
+  int get hashCode => Object.hash(searchQuery, trigger, searchDate);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is BangIconData &&
+      (other is BangHistoryData &&
+          other.searchQuery == this.searchQuery &&
           other.trigger == this.trigger &&
-          $driftBlobEquality.equals(other.iconData, this.iconData) &&
-          other.fetchDate == this.fetchDate);
+          other.searchDate == this.searchDate);
 }
 
-class BangIconCompanion extends UpdateCompanion<BangIconData> {
+class BangHistoryCompanion extends UpdateCompanion<BangHistoryData> {
+  final Value<String> searchQuery;
   final Value<String> trigger;
-  final Value<Uint8List> iconData;
-  final Value<DateTime> fetchDate;
+  final Value<DateTime> searchDate;
   final Value<int> rowid;
-  const BangIconCompanion({
+  const BangHistoryCompanion({
+    this.searchQuery = const Value.absent(),
     this.trigger = const Value.absent(),
-    this.iconData = const Value.absent(),
-    this.fetchDate = const Value.absent(),
+    this.searchDate = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  BangIconCompanion.insert({
+  BangHistoryCompanion.insert({
+    required String searchQuery,
     required String trigger,
-    required Uint8List iconData,
-    required DateTime fetchDate,
+    required DateTime searchDate,
     this.rowid = const Value.absent(),
-  })  : trigger = Value(trigger),
-        iconData = Value(iconData),
-        fetchDate = Value(fetchDate);
-  static Insertable<BangIconData> custom({
+  })  : searchQuery = Value(searchQuery),
+        trigger = Value(trigger),
+        searchDate = Value(searchDate);
+  static Insertable<BangHistoryData> custom({
+    Expression<String>? searchQuery,
     Expression<String>? trigger,
-    Expression<Uint8List>? iconData,
-    Expression<DateTime>? fetchDate,
+    Expression<DateTime>? searchDate,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
+      if (searchQuery != null) 'search_query': searchQuery,
       if (trigger != null) 'trigger': trigger,
-      if (iconData != null) 'icon_data': iconData,
-      if (fetchDate != null) 'fetch_date': fetchDate,
+      if (searchDate != null) 'search_date': searchDate,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
-  BangIconCompanion copyWith(
-      {Value<String>? trigger,
-      Value<Uint8List>? iconData,
-      Value<DateTime>? fetchDate,
+  BangHistoryCompanion copyWith(
+      {Value<String>? searchQuery,
+      Value<String>? trigger,
+      Value<DateTime>? searchDate,
       Value<int>? rowid}) {
-    return BangIconCompanion(
+    return BangHistoryCompanion(
+      searchQuery: searchQuery ?? this.searchQuery,
       trigger: trigger ?? this.trigger,
-      iconData: iconData ?? this.iconData,
-      fetchDate: fetchDate ?? this.fetchDate,
+      searchDate: searchDate ?? this.searchDate,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -771,14 +773,14 @@ class BangIconCompanion extends UpdateCompanion<BangIconData> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (searchQuery.present) {
+      map['search_query'] = Variable<String>(searchQuery.value);
+    }
     if (trigger.present) {
       map['trigger'] = Variable<String>(trigger.value);
     }
-    if (iconData.present) {
-      map['icon_data'] = Variable<Uint8List>(iconData.value);
-    }
-    if (fetchDate.present) {
-      map['fetch_date'] = Variable<DateTime>(fetchDate.value);
+    if (searchDate.present) {
+      map['search_date'] = Variable<DateTime>(searchDate.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -788,10 +790,10 @@ class BangIconCompanion extends UpdateCompanion<BangIconData> {
 
   @override
   String toString() {
-    return (StringBuffer('BangIconCompanion(')
+    return (StringBuffer('BangHistoryCompanion(')
+          ..write('searchQuery: $searchQuery, ')
           ..write('trigger: $trigger, ')
-          ..write('iconData: $iconData, ')
-          ..write('fetchDate: $fetchDate, ')
+          ..write('searchDate: $searchDate, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -985,8 +987,7 @@ class BangDataView extends ViewInfo<BangDataView, BangData>
         subCategory,
         format,
         frequency,
-        lastUsed,
-        iconData
+        lastUsed
       ];
   @override
   String get aliasedName => _alias ?? entityName;
@@ -995,7 +996,7 @@ class BangDataView extends ViewInfo<BangDataView, BangData>
   @override
   Map<SqlDialect, String> get createViewStatements => {
         SqlDialect.sqlite:
-            'CREATE VIEW bang_data_view AS SELECT b.*, bf.frequency, bf.last_used, bi.icon_data FROM bang AS b LEFT JOIN bang_frequency AS bf ON b."trigger" = bf."trigger" LEFT JOIN bang_icon AS bi ON b."trigger" = bi."trigger"',
+            'CREATE VIEW bang_data_view AS SELECT b.*, bf.frequency, bf.last_used FROM bang AS b LEFT JOIN bang_frequency AS bf ON b."trigger" = bf."trigger"',
       };
   @override
   BangDataView get asDslTable => this;
@@ -1055,9 +1056,6 @@ class BangDataView extends ViewInfo<BangDataView, BangData>
   late final GeneratedColumn<DateTime> lastUsed = GeneratedColumn<DateTime>(
       'last_used', aliasedName, true,
       type: DriftSqlType.dateTime);
-  late final GeneratedColumn<Uint8List> iconData = GeneratedColumn<Uint8List>(
-      'icon_data', aliasedName, true,
-      type: DriftSqlType.blob);
   @override
   BangDataView createAlias(String alias) {
     return BangDataView(attachedDatabase, alias);
@@ -1066,7 +1064,7 @@ class BangDataView extends ViewInfo<BangDataView, BangData>
   @override
   Query? get query => null;
   @override
-  Set<String> get readTables => const {'bang', 'bang_frequency', 'bang_icon'};
+  Set<String> get readTables => const {'bang', 'bang_frequency'};
 }
 
 abstract class _$BangDatabase extends GeneratedDatabase {
@@ -1075,7 +1073,7 @@ abstract class _$BangDatabase extends GeneratedDatabase {
   late final BangTable bang = BangTable(this);
   late final BangSync bangSync = BangSync(this);
   late final BangFrequency bangFrequency = BangFrequency(this);
-  late final BangIcon bangIcon = BangIcon(this);
+  late final BangHistory bangHistory = BangHistory(this);
   late final BangFts bangFts = BangFts(this);
   late final BangDataView bangDataView = BangDataView(this);
   late final Trigger bangAfterInsert = Trigger(
@@ -1099,13 +1097,12 @@ abstract class _$BangDatabase extends GeneratedDatabase {
 
   Selectable<BangData> bangQuery({required String query}) {
     return customSelect(
-        'SELECT b.*, bf.frequency, bf.last_used, bi.icon_data FROM bang_fts(?1)AS fts INNER JOIN bang AS b ON b."rowid" = fts."rowid" LEFT JOIN bang_frequency AS bf ON b."trigger" = bf."trigger" LEFT JOIN bang_icon AS bi ON b."trigger" = bi."trigger" ORDER BY RANK, bf.frequency NULLS LAST',
+        'SELECT b.*, bf.frequency, bf.last_used FROM bang_fts(?1)AS fts INNER JOIN bang AS b ON b."rowid" = fts."rowid" LEFT JOIN bang_frequency AS bf ON b."trigger" = bf."trigger" ORDER BY RANK, bf.frequency NULLS LAST',
         variables: [
           Variable<String>(query)
         ],
         readsFrom: {
           bangFrequency,
-          bangIcon,
           bang,
           bangFts,
         }).map((QueryRow row) => BangData(
@@ -1131,6 +1128,30 @@ abstract class _$BangDatabase extends GeneratedDatabase {
         }).map((QueryRow row) => row.read<String>('categories_json'));
   }
 
+  Selectable<SearchHistoryEntry> searchHistoryEntries({required int limit}) {
+    return customSelect(
+        'SELECT * FROM bang_history ORDER BY search_date DESC LIMIT ?1',
+        variables: [
+          Variable<int>(limit)
+        ],
+        readsFrom: {
+          bangHistory,
+        }).map((QueryRow row) => SearchHistoryEntry(
+          searchQuery: row.read<String>('search_query'),
+          trigger: row.read<String>('trigger'),
+          searchDate: row.read<DateTime>('search_date'),
+        ));
+  }
+
+  Future<int> evictHistoryEntries({required int limit}) {
+    return customUpdate(
+      'DELETE FROM bang_history WHERE "rowid" IN (SELECT "rowid" FROM bang_history ORDER BY search_date DESC LIMIT -1 OFFSET ?1)',
+      variables: [Variable<int>(limit)],
+      updates: {bangHistory},
+      updateKind: UpdateKind.delete,
+    );
+  }
+
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1139,7 +1160,7 @@ abstract class _$BangDatabase extends GeneratedDatabase {
         bang,
         bangSync,
         bangFrequency,
-        bangIcon,
+        bangHistory,
         bangFts,
         bangDataView,
         bangAfterInsert,
@@ -1154,13 +1175,6 @@ abstract class _$BangDatabase extends GeneratedDatabase {
                 limitUpdateKind: UpdateKind.delete),
             result: [
               TableUpdate('bang_frequency', kind: UpdateKind.delete),
-            ],
-          ),
-          WritePropagation(
-            on: TableUpdateQuery.onTableName('bang',
-                limitUpdateKind: UpdateKind.delete),
-            result: [
-              TableUpdate('bang_icon', kind: UpdateKind.delete),
             ],
           ),
           WritePropagation(
@@ -1230,17 +1244,17 @@ final class $BangTableReferences
         manager.$state.copyWith(prefetchedData: cache));
   }
 
-  static MultiTypedResultKey<BangIcon, List<BangIconData>> _bangIconRefsTable(
-          _$BangDatabase db) =>
-      MultiTypedResultKey.fromTable(db.bangIcon,
+  static MultiTypedResultKey<BangHistory, List<BangHistoryData>>
+      _bangHistoryRefsTable(_$BangDatabase db) => MultiTypedResultKey.fromTable(
+          db.bangHistory,
           aliasName:
-              $_aliasNameGenerator(db.bang.trigger, db.bangIcon.trigger));
+              $_aliasNameGenerator(db.bang.trigger, db.bangHistory.trigger));
 
-  $BangIconProcessedTableManager get bangIconRefs {
-    final manager = $BangIconTableManager($_db, $_db.bangIcon)
+  $BangHistoryProcessedTableManager get bangHistoryRefs {
+    final manager = $BangHistoryTableManager($_db, $_db.bangHistory)
         .filter((f) => f.trigger.trigger($_item.trigger));
 
-    final cache = $_typedResult.readTableOrNull(_bangIconRefsTable($_db));
+    final cache = $_typedResult.readTableOrNull(_bangHistoryRefsTable($_db));
     return ProcessedTableManager(
         manager.$state.copyWith(prefetchedData: cache));
   }
@@ -1303,19 +1317,19 @@ class $BangTableFilterComposer extends Composer<_$BangDatabase, BangTable> {
     return f(composer);
   }
 
-  Expression<bool> bangIconRefs(
-      Expression<bool> Function($BangIconFilterComposer f) f) {
-    final $BangIconFilterComposer composer = $composerBuilder(
+  Expression<bool> bangHistoryRefs(
+      Expression<bool> Function($BangHistoryFilterComposer f) f) {
+    final $BangHistoryFilterComposer composer = $composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.trigger,
-        referencedTable: $db.bangIcon,
+        referencedTable: $db.bangHistory,
         getReferencedColumn: (t) => t.trigger,
         builder: (joinBuilder,
                 {$addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer}) =>
-            $BangIconFilterComposer(
+            $BangHistoryFilterComposer(
               $db: $db,
-              $table: $db.bangIcon,
+              $table: $db.bangHistory,
               $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
               joinBuilder: joinBuilder,
               $removeJoinBuilderFromRootComposer:
@@ -1411,19 +1425,19 @@ class $BangTableAnnotationComposer extends Composer<_$BangDatabase, BangTable> {
     return f(composer);
   }
 
-  Expression<T> bangIconRefs<T extends Object>(
-      Expression<T> Function($BangIconAnnotationComposer a) f) {
-    final $BangIconAnnotationComposer composer = $composerBuilder(
+  Expression<T> bangHistoryRefs<T extends Object>(
+      Expression<T> Function($BangHistoryAnnotationComposer a) f) {
+    final $BangHistoryAnnotationComposer composer = $composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.trigger,
-        referencedTable: $db.bangIcon,
+        referencedTable: $db.bangHistory,
         getReferencedColumn: (t) => t.trigger,
         builder: (joinBuilder,
                 {$addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer}) =>
-            $BangIconAnnotationComposer(
+            $BangHistoryAnnotationComposer(
               $db: $db,
-              $table: $db.bangIcon,
+              $table: $db.bangHistory,
               $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
               joinBuilder: joinBuilder,
               $removeJoinBuilderFromRootComposer:
@@ -1444,7 +1458,7 @@ class $BangTableTableManager extends RootTableManager<
     $BangTableUpdateCompanionBuilder,
     (Bang, $BangTableReferences),
     Bang,
-    PrefetchHooks Function({bool bangFrequencyRefs, bool bangIconRefs})> {
+    PrefetchHooks Function({bool bangFrequencyRefs, bool bangHistoryRefs})> {
   $BangTableTableManager(_$BangDatabase db, BangTable table)
       : super(TableManagerState(
           db: db,
@@ -1504,12 +1518,12 @@ class $BangTableTableManager extends RootTableManager<
                   (e.readTable(table), $BangTableReferences(db, table, e)))
               .toList(),
           prefetchHooksCallback: (
-              {bangFrequencyRefs = false, bangIconRefs = false}) {
+              {bangFrequencyRefs = false, bangHistoryRefs = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [
                 if (bangFrequencyRefs) db.bangFrequency,
-                if (bangIconRefs) db.bangIcon
+                if (bangHistoryRefs) db.bangHistory
               ],
               addJoins: null,
               getPrefetchedDataCallback: (items) async {
@@ -1526,13 +1540,13 @@ class $BangTableTableManager extends RootTableManager<
                             (item, referencedItems) => referencedItems
                                 .where((e) => e.trigger == item.trigger),
                         typedResults: items),
-                  if (bangIconRefs)
+                  if (bangHistoryRefs)
                     await $_getPrefetchedData(
                         currentTable: table,
                         referencedTable:
-                            $BangTableReferences._bangIconRefsTable(db),
+                            $BangTableReferences._bangHistoryRefsTable(db),
                         managerFromTypedResult: (p0) =>
-                            $BangTableReferences(db, table, p0).bangIconRefs,
+                            $BangTableReferences(db, table, p0).bangHistoryRefs,
                         referencedItemsForCurrentItem:
                             (item, referencedItems) => referencedItems
                                 .where((e) => e.trigger == item.trigger),
@@ -1555,7 +1569,7 @@ typedef $BangTableProcessedTableManager = ProcessedTableManager<
     $BangTableUpdateCompanionBuilder,
     (Bang, $BangTableReferences),
     Bang,
-    PrefetchHooks Function({bool bangFrequencyRefs, bool bangIconRefs})>;
+    PrefetchHooks Function({bool bangFrequencyRefs, bool bangHistoryRefs})>;
 typedef $BangSyncCreateCompanionBuilder = BangSyncCompanion Function({
   Value<BangGroup> group,
   required DateTime lastSync,
@@ -1906,25 +1920,25 @@ typedef $BangFrequencyProcessedTableManager = ProcessedTableManager<
     (BangFrequencyData, $BangFrequencyReferences),
     BangFrequencyData,
     PrefetchHooks Function({bool trigger})>;
-typedef $BangIconCreateCompanionBuilder = BangIconCompanion Function({
+typedef $BangHistoryCreateCompanionBuilder = BangHistoryCompanion Function({
+  required String searchQuery,
   required String trigger,
-  required Uint8List iconData,
-  required DateTime fetchDate,
+  required DateTime searchDate,
   Value<int> rowid,
 });
-typedef $BangIconUpdateCompanionBuilder = BangIconCompanion Function({
+typedef $BangHistoryUpdateCompanionBuilder = BangHistoryCompanion Function({
+  Value<String> searchQuery,
   Value<String> trigger,
-  Value<Uint8List> iconData,
-  Value<DateTime> fetchDate,
+  Value<DateTime> searchDate,
   Value<int> rowid,
 });
 
-final class $BangIconReferences
-    extends BaseReferences<_$BangDatabase, BangIcon, BangIconData> {
-  $BangIconReferences(super.$_db, super.$_table, super.$_typedResult);
+final class $BangHistoryReferences
+    extends BaseReferences<_$BangDatabase, BangHistory, BangHistoryData> {
+  $BangHistoryReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static BangTable _triggerTable(_$BangDatabase db) => db.bang
-      .createAlias($_aliasNameGenerator(db.bangIcon.trigger, db.bang.trigger));
+  static BangTable _triggerTable(_$BangDatabase db) => db.bang.createAlias(
+      $_aliasNameGenerator(db.bangHistory.trigger, db.bang.trigger));
 
   $BangTableProcessedTableManager get trigger {
     final manager = $BangTableTableManager($_db, $_db.bang)
@@ -1936,19 +1950,19 @@ final class $BangIconReferences
   }
 }
 
-class $BangIconFilterComposer extends Composer<_$BangDatabase, BangIcon> {
-  $BangIconFilterComposer({
+class $BangHistoryFilterComposer extends Composer<_$BangDatabase, BangHistory> {
+  $BangHistoryFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<Uint8List> get iconData => $composableBuilder(
-      column: $table.iconData, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get searchQuery => $composableBuilder(
+      column: $table.searchQuery, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get fetchDate => $composableBuilder(
-      column: $table.fetchDate, builder: (column) => ColumnFilters(column));
+  ColumnFilters<DateTime> get searchDate => $composableBuilder(
+      column: $table.searchDate, builder: (column) => ColumnFilters(column));
 
   $BangTableFilterComposer get trigger {
     final $BangTableFilterComposer composer = $composerBuilder(
@@ -1971,19 +1985,20 @@ class $BangIconFilterComposer extends Composer<_$BangDatabase, BangIcon> {
   }
 }
 
-class $BangIconOrderingComposer extends Composer<_$BangDatabase, BangIcon> {
-  $BangIconOrderingComposer({
+class $BangHistoryOrderingComposer
+    extends Composer<_$BangDatabase, BangHistory> {
+  $BangHistoryOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<Uint8List> get iconData => $composableBuilder(
-      column: $table.iconData, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get searchQuery => $composableBuilder(
+      column: $table.searchQuery, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get fetchDate => $composableBuilder(
-      column: $table.fetchDate, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<DateTime> get searchDate => $composableBuilder(
+      column: $table.searchDate, builder: (column) => ColumnOrderings(column));
 
   $BangTableOrderingComposer get trigger {
     final $BangTableOrderingComposer composer = $composerBuilder(
@@ -2006,19 +2021,20 @@ class $BangIconOrderingComposer extends Composer<_$BangDatabase, BangIcon> {
   }
 }
 
-class $BangIconAnnotationComposer extends Composer<_$BangDatabase, BangIcon> {
-  $BangIconAnnotationComposer({
+class $BangHistoryAnnotationComposer
+    extends Composer<_$BangDatabase, BangHistory> {
+  $BangHistoryAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<Uint8List> get iconData =>
-      $composableBuilder(column: $table.iconData, builder: (column) => column);
+  GeneratedColumn<String> get searchQuery => $composableBuilder(
+      column: $table.searchQuery, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get fetchDate =>
-      $composableBuilder(column: $table.fetchDate, builder: (column) => column);
+  GeneratedColumn<DateTime> get searchDate => $composableBuilder(
+      column: $table.searchDate, builder: (column) => column);
 
   $BangTableAnnotationComposer get trigger {
     final $BangTableAnnotationComposer composer = $composerBuilder(
@@ -2041,55 +2057,55 @@ class $BangIconAnnotationComposer extends Composer<_$BangDatabase, BangIcon> {
   }
 }
 
-class $BangIconTableManager extends RootTableManager<
+class $BangHistoryTableManager extends RootTableManager<
     _$BangDatabase,
-    BangIcon,
-    BangIconData,
-    $BangIconFilterComposer,
-    $BangIconOrderingComposer,
-    $BangIconAnnotationComposer,
-    $BangIconCreateCompanionBuilder,
-    $BangIconUpdateCompanionBuilder,
-    (BangIconData, $BangIconReferences),
-    BangIconData,
+    BangHistory,
+    BangHistoryData,
+    $BangHistoryFilterComposer,
+    $BangHistoryOrderingComposer,
+    $BangHistoryAnnotationComposer,
+    $BangHistoryCreateCompanionBuilder,
+    $BangHistoryUpdateCompanionBuilder,
+    (BangHistoryData, $BangHistoryReferences),
+    BangHistoryData,
     PrefetchHooks Function({bool trigger})> {
-  $BangIconTableManager(_$BangDatabase db, BangIcon table)
+  $BangHistoryTableManager(_$BangDatabase db, BangHistory table)
       : super(TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $BangIconFilterComposer($db: db, $table: table),
+              $BangHistoryFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $BangIconOrderingComposer($db: db, $table: table),
+              $BangHistoryOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $BangIconAnnotationComposer($db: db, $table: table),
+              $BangHistoryAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
+            Value<String> searchQuery = const Value.absent(),
             Value<String> trigger = const Value.absent(),
-            Value<Uint8List> iconData = const Value.absent(),
-            Value<DateTime> fetchDate = const Value.absent(),
+            Value<DateTime> searchDate = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
-              BangIconCompanion(
+              BangHistoryCompanion(
+            searchQuery: searchQuery,
             trigger: trigger,
-            iconData: iconData,
-            fetchDate: fetchDate,
+            searchDate: searchDate,
             rowid: rowid,
           ),
           createCompanionCallback: ({
+            required String searchQuery,
             required String trigger,
-            required Uint8List iconData,
-            required DateTime fetchDate,
+            required DateTime searchDate,
             Value<int> rowid = const Value.absent(),
           }) =>
-              BangIconCompanion.insert(
+              BangHistoryCompanion.insert(
+            searchQuery: searchQuery,
             trigger: trigger,
-            iconData: iconData,
-            fetchDate: fetchDate,
+            searchDate: searchDate,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) =>
-                  (e.readTable(table), $BangIconReferences(db, table, e)))
+                  (e.readTable(table), $BangHistoryReferences(db, table, e)))
               .toList(),
           prefetchHooksCallback: ({trigger = false}) {
             return PrefetchHooks(
@@ -2112,9 +2128,9 @@ class $BangIconTableManager extends RootTableManager<
                   state = state.withJoin(
                     currentTable: table,
                     currentColumn: table.trigger,
-                    referencedTable: $BangIconReferences._triggerTable(db),
+                    referencedTable: $BangHistoryReferences._triggerTable(db),
                     referencedColumn:
-                        $BangIconReferences._triggerTable(db).trigger,
+                        $BangHistoryReferences._triggerTable(db).trigger,
                   ) as T;
                 }
 
@@ -2128,17 +2144,17 @@ class $BangIconTableManager extends RootTableManager<
         ));
 }
 
-typedef $BangIconProcessedTableManager = ProcessedTableManager<
+typedef $BangHistoryProcessedTableManager = ProcessedTableManager<
     _$BangDatabase,
-    BangIcon,
-    BangIconData,
-    $BangIconFilterComposer,
-    $BangIconOrderingComposer,
-    $BangIconAnnotationComposer,
-    $BangIconCreateCompanionBuilder,
-    $BangIconUpdateCompanionBuilder,
-    (BangIconData, $BangIconReferences),
-    BangIconData,
+    BangHistory,
+    BangHistoryData,
+    $BangHistoryFilterComposer,
+    $BangHistoryOrderingComposer,
+    $BangHistoryAnnotationComposer,
+    $BangHistoryCreateCompanionBuilder,
+    $BangHistoryUpdateCompanionBuilder,
+    (BangHistoryData, $BangHistoryReferences),
+    BangHistoryData,
     PrefetchHooks Function({bool trigger})>;
 typedef $BangFtsCreateCompanionBuilder = BangFtsCompanion Function({
   required String trigger,
@@ -2266,7 +2282,7 @@ class $BangDatabaseManager {
       $BangSyncTableManager(_db, _db.bangSync);
   $BangFrequencyTableManager get bangFrequency =>
       $BangFrequencyTableManager(_db, _db.bangFrequency);
-  $BangIconTableManager get bangIcon =>
-      $BangIconTableManager(_db, _db.bangIcon);
+  $BangHistoryTableManager get bangHistory =>
+      $BangHistoryTableManager(_db, _db.bangHistory);
   $BangFtsTableManager get bangFts => $BangFtsTableManager(_db, _db.bangFts);
 }

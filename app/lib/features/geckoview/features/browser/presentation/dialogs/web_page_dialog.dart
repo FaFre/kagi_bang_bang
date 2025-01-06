@@ -6,7 +6,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lensai/data/models/web_page_info.dart';
-import 'package:lensai/features/bangs/data/models/bang_data.dart';
 import 'package:lensai/features/bangs/domain/providers/bangs.dart';
 import 'package:lensai/features/bangs/presentation/widgets/site_search.dart';
 import 'package:lensai/features/geckoview/domain/providers.dart';
@@ -14,13 +13,11 @@ import 'package:lensai/features/geckoview/domain/providers/tab_session.dart';
 import 'package:lensai/features/geckoview/domain/repositories/tab.dart';
 import 'package:lensai/features/kagi/data/entities/modes.dart';
 import 'package:lensai/features/kagi/utils/url_builder.dart' as uri_builder;
-import 'package:lensai/features/settings/data/models/settings.dart';
-import 'package:lensai/features/settings/data/repositories/settings_repository.dart';
 import 'package:lensai/features/share_intent/domain/entities/shared_content.dart';
+import 'package:lensai/features/user/domain/repositories/settings.dart';
 import 'package:lensai/presentation/widgets/failure_widget.dart';
 import 'package:lensai/presentation/widgets/website_title_tile.dart';
 import 'package:lensai/utils/ui_helper.dart' as ui_helper;
-import 'package:lensai/utils/uri_parser.dart' as uri_parser;
 import 'package:share_plus/share_plus.dart';
 
 class WebPageDialog extends HookConsumerWidget {
@@ -39,9 +36,7 @@ class WebPageDialog extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final incognitoEnabled = ref.watch(
-      settingsRepositoryProvider.select(
-        (value) => (value.valueOrNull ?? Settings.withDefaults()).incognitoMode,
-      ),
+      settingsRepositoryProvider.select((value) => value.incognitoMode),
     );
 
     final availableBangsAsync = ref.watch(
@@ -57,8 +52,9 @@ class WebPageDialog extends HookConsumerWidget {
     final availableBangCount = availableBangsAsync.valueOrNull?.length;
 
     final formKey = useMemoized(() => GlobalKey<FormState>());
-    final urlTextController = useTextEditingController(text: url.toString());
-    final urlTextFocusNode = useFocusNode();
+    final addressTextController =
+        useTextEditingController(text: url.toString());
+    final addressTextFocusNode = useFocusNode();
 
     return Stack(
       children: [
@@ -83,45 +79,34 @@ class WebPageDialog extends HookConsumerWidget {
                 child: Form(
                   key: formKey,
                   child: TextFormField(
-                    controller: urlTextController,
-                    focusNode: urlTextFocusNode,
+                    controller: addressTextController,
+                    focusNode: addressTextFocusNode,
                     enableIMEPersonalizedLearning: !incognitoEnabled,
-                    decoration: InputDecoration(
-                      labelText: 'URL',
-                      suffixIcon: IconButton(
-                        onPressed: () async {
-                          if (formKey.currentState?.validate() ?? false) {
-                            await ref
-                                .read(tabSessionProvider(tabId: null).notifier)
-                                .loadUrl(
-                                  url: uri_parser.tryParseUrl(
-                                    urlTextController.text,
-                                    eagerParsing: true,
-                                  )!,
-                                );
-
-                            onDismiss?.call();
-                          }
-                        },
-                        icon: const Icon(Icons.send),
-                      ),
+                    decoration: const InputDecoration(
+                      labelText: 'Address',
                     ),
                     validator: (value) {
-                      if (uri_parser.tryParseUrl(value, eagerParsing: true) !=
-                          null) {
+                      if (value != null && Uri.tryParse(value) != null) {
                         return null;
                       }
 
-                      return 'Invalid URL';
+                      return 'Invalid Address';
                     },
                     onTap: () {
-                      if (!urlTextFocusNode.hasFocus) {
+                      if (!addressTextFocusNode.hasFocus) {
                         // Select all text when the field is tapped
-                        urlTextController.selection = TextSelection(
+                        addressTextController.selection = TextSelection(
                           baseOffset: 0,
-                          extentOffset: urlTextController.text.length,
+                          extentOffset: addressTextController.text.length,
                         );
                       }
+                    },
+                    onFieldSubmitted: (value) async {
+                      await ref
+                          .read(tabSessionProvider(tabId: null).notifier)
+                          .loadUrl(url: Uri.tryParse(value)!);
+
+                      onDismiss?.call();
                     },
                   ),
                 ),
@@ -148,12 +133,12 @@ class WebPageDialog extends HookConsumerWidget {
                 loading: () => SiteSearch(
                   domain: url.host,
                   availableBangs: [
-                    BangData(
-                      websiteName: 'websiteName',
-                      domain: 'domain',
-                      trigger: 'trigger',
-                      urlTemplate: 'urlTemplate',
-                    ),
+                    // BangData(
+                    //   websiteName: 'websiteName',
+                    //   domain: 'domain',
+                    //   trigger: 'trigger',
+                    //   urlTemplate: 'urlTemplate',
+                    // ),
                   ],
                 ),
               ),
@@ -181,7 +166,7 @@ class WebPageDialog extends HookConsumerWidget {
             ),
             ListTile(
               leading: const Icon(MdiIcons.tabPlus),
-              title: const Text('Open in new tab'),
+              title: const Text('Clone tab'),
               onTap: () async {
                 await ref.read(tabRepositoryProvider.notifier).addTab(url: url);
 

@@ -12,16 +12,14 @@ import 'package:lensai/features/geckoview/domain/entities/security_state.dart';
 part 'tab_state.g.dart';
 
 @CopyWith()
-class TabState with FastEquatable implements WebPageInfo {
+class TabState extends WebPageInfo with FastEquatable {
   @CopyWithField(immutable: true)
   final String id;
 
   final String? contextId;
 
   @override
-  final Uri url;
-  @override
-  final String title;
+  String get title => super.title!;
 
   final EquatableImage? icon;
 
@@ -50,8 +48,8 @@ class TabState with FastEquatable implements WebPageInfo {
   TabState({
     required this.id,
     required this.contextId,
-    required this.url,
-    required this.title,
+    required super.url,
+    required String title,
     required this.icon,
     required this.thumbnail,
     required this.progress,
@@ -62,7 +60,7 @@ class TabState with FastEquatable implements WebPageInfo {
     required this.historyState,
     required this.readerableState,
     required this.findResultState,
-  });
+  }) : super(title: title);
 
   factory TabState.$default(String tabId) => TabState(
         id: tabId,

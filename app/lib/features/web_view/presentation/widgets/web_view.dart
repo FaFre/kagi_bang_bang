@@ -126,7 +126,7 @@
 
 //     final showEarlyAccessFeatures = ref.watch(
 //       settingsRepositoryProvider.select(
-//         (value) => (value.valueOrNull ?? Settings.withDefaults())
+//         (value) => value
 //             .showEarlyAccessFeatures,
 //       ),
 //     );
@@ -148,7 +148,7 @@
 //     ref.listen(
 //       settingsRepositoryProvider.select(
 //         (value) =>
-//             (value.valueOrNull ?? Settings.withDefaults()).enableJavascript,
+//             value.enableJavascript,
 //       ),
 //       (previous, next) async {
 //         final controller = ref.read(webViewControllerProvider(widget.tabId));
@@ -409,7 +409,7 @@
 //             if (url != null) {
 //               final launchExternal = ref.read(
 //                 settingsRepositoryProvider.select(
-//                   (value) => (value.valueOrNull ?? Settings.withDefaults())
+//                   (value) => value
 //                       .launchUrlExternal,
 //                 ),
 //               );

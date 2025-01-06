@@ -1,9 +1,5 @@
-import 'dart:convert';
-
 import 'package:exceptions/exceptions.dart';
 import 'package:http/http.dart' as http;
-import 'package:lensai/core/http_error_handler.dart';
-import 'package:lensai/features/settings/data/repositories/settings_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'chat.g.dart';
@@ -18,17 +14,19 @@ class KagiChatService extends _$KagiChatService {
   }
 
   Future<Result<String>> downloadChat(Uri url) {
-    final kagiSession =
-        ref.read(settingsRepositoryProvider).valueOrNull?.kagiSession;
+    throw Exception('Not implemented !');
 
-    return Result.fromAsync(
-      () async {
-        final response = await _client
-            .get(url.replace(queryParameters: {'token': kagiSession}));
+    // final kagiSession =
+    //     ref.read(settingsRepositoryProvider).valueOrNull?.kagiSession;
 
-        return utf8.decode(response.bodyBytes);
-      },
-      exceptionHandler: handleHttpError,
-    );
+    // return Result.fromAsync(
+    //   () async {
+    //     final response = await _client
+    //         .get(url.replace(queryParameters: {'token': kagiSession}));
+
+    //     return utf8.decode(response.bodyBytes);
+    //   },
+    //   exceptionHandler: handleHttpError,
+    // );
   }
 }

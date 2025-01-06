@@ -11,10 +11,7 @@ import 'package:lensai/features/chat_archive/domain/entities/chat_entity.dart';
 import 'package:lensai/features/chat_archive/domain/repositories/archive.dart';
 import 'package:lensai/features/chat_archive/utils/markdown_to_text.dart';
 import 'package:lensai/features/geckoview/domain/repositories/tab.dart';
-import 'package:lensai/features/settings/data/models/settings.dart';
-import 'package:lensai/features/settings/data/repositories/settings_repository.dart';
 import 'package:lensai/presentation/widgets/failure_widget.dart';
-import 'package:lensai/utils/ui_helper.dart' as ui_helper;
 import 'package:skeletonizer/skeletonizer.dart';
 
 class ChatArchiveDetailScreen extends HookConsumerWidget {
@@ -103,23 +100,12 @@ class ChatArchiveDetailScreen extends HookConsumerWidget {
             onTapLink: (text, href, title) async {
               if (href != null) {
                 if (Uri.parse(href) case final Uri url) {
-                  final launchExternal = ref.read(
-                    settingsRepositoryProvider.select(
-                      (value) => (value.valueOrNull ?? Settings.withDefaults())
-                          .launchUrlExternal,
-                    ),
-                  );
+                  await ref
+                      .read(tabRepositoryProvider.notifier)
+                      .addTab(url: url);
 
-                  if (launchExternal) {
-                    await ui_helper.launchUrlFeedback(context, Uri.parse(href));
-                  } else {
-                    await ref
-                        .read(tabRepositoryProvider.notifier)
-                        .addTab(url: url);
-
-                    if (context.mounted) {
-                      context.go(BrowserRoute().location);
-                    }
+                  if (context.mounted) {
+                    context.go(BrowserRoute().location);
                   }
                 }
               }

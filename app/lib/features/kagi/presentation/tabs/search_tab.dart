@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lensai/core/routing/routes.dart';
 import 'package:lensai/features/bangs/domain/providers/bangs.dart';
+import 'package:lensai/features/bangs/domain/providers/search.dart';
 import 'package:lensai/features/bangs/domain/repositories/data.dart';
 import 'package:lensai/features/bangs/presentation/widgets/bang_icon.dart';
 import 'package:lensai/features/bangs/presentation/widgets/search_field.dart';
@@ -33,7 +34,8 @@ class SearchTab extends HookConsumerWidget {
     final selectedBang = ref
         .watch(selectedBangDataProvider().select((value) => value.valueOrNull));
     final defaultSearchBang = ref.watch(
-        defaultSearchBangDataProvider.select((value) => value.valueOrNull));
+      defaultSearchBangDataProvider.select((value) => value.valueOrNull),
+    );
 
     final activeBang = selectedBang ?? defaultSearchBang;
 
@@ -42,11 +44,11 @@ class SearchTab extends HookConsumerWidget {
 
     Future<void> submitSearch() async {
       if (activeBang != null && (formKey.currentState?.validate() == true)) {
-        await ref
-            .read(bangDataRepositoryProvider.notifier)
-            .increaseFrequency(activeBang.trigger);
+        final searchUri = await ref.read(
+          triggerBangSearchProvider(activeBang, textController.text).future,
+        );
 
-        onSubmit(activeBang.getUrl(textController.text));
+        onSubmit(searchUri);
       }
     }
 

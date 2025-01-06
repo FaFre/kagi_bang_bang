@@ -3,7 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lensai/features/bangs/data/models/bang_data.dart';
-import 'package:lensai/features/bangs/domain/repositories/data.dart';
+import 'package:lensai/features/bangs/domain/providers/search.dart';
 import 'package:lensai/features/bangs/presentation/widgets/bang_icon.dart';
 import 'package:lensai/features/bangs/presentation/widgets/search_field.dart';
 import 'package:lensai/features/geckoview/domain/repositories/tab.dart';
@@ -36,13 +36,11 @@ class SiteSearch extends HookConsumerWidget {
 
     Future<void> submitSearch() async {
       if (activeBang != null && (formKey.currentState?.validate() == true)) {
-        await ref
-            .read(bangDataRepositoryProvider.notifier)
-            .increaseFrequency(activeBang.trigger);
+        final searchUri = await ref.read(
+          triggerBangSearchProvider(activeBang, textController.text).future,
+        );
 
-        await ref
-            .read(tabRepositoryProvider.notifier)
-            .addTab(url: activeBang.getUrl(textController.text));
+        await ref.read(tabRepositoryProvider.notifier).addTab(url: searchUri);
 
         ref.read(overlayDialogControllerProvider.notifier).dismiss();
       }

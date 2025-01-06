@@ -9,9 +9,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lensai/features/geckoview/features/browser/presentation/widgets/sheets/create_tab.dart';
 import 'package:lensai/features/kagi/data/entities/modes.dart';
 import 'package:lensai/features/kagi/utils/url_builder.dart' as uri_builder;
-import 'package:lensai/features/settings/data/models/settings.dart';
-import 'package:lensai/features/settings/data/repositories/settings_repository.dart';
 import 'package:lensai/features/share_intent/domain/entities/shared_content.dart';
+import 'package:lensai/features/user/domain/repositories/settings.dart';
 import 'package:lensai/presentation/widgets/website_title_tile.dart';
 import 'package:lensai/utils/uri_parser.dart' as uri_parser;
 
@@ -24,7 +23,7 @@ class _InputField extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final incognitoEnabled = ref.watch(
       settingsRepositoryProvider.select(
-        (value) => (value.valueOrNull ?? Settings.withDefaults()).incognitoMode,
+        (value) => value.incognitoMode,
       ),
     );
 

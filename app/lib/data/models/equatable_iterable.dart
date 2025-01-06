@@ -6,7 +6,7 @@ class EquatableCollection<T> with FastEquatable {
 
   EquatableCollection(this.collection, {required this.immutable})
       : assert(
-          collection is Map || collection is Iterable,
+          collection is Map || collection is Iterable || collection == null,
           'Collection type not supported',
         );
 

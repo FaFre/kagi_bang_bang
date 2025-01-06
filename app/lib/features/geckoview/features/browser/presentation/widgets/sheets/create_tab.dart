@@ -4,11 +4,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lensai/features/geckoview/features/browser/domain/entities/sheet.dart';
 import 'package:lensai/features/kagi/data/entities/modes.dart';
-import 'package:lensai/features/kagi/presentation/tabs/assistant_tab.dart';
 import 'package:lensai/features/kagi/presentation/tabs/search_tab.dart';
 import 'package:lensai/features/kagi/presentation/tabs/summarize_tab.dart';
-import 'package:lensai/features/settings/data/models/settings.dart';
-import 'package:lensai/features/settings/data/repositories/settings_repository.dart';
 import 'package:lensai/features/share_intent/domain/entities/shared_content.dart';
 import 'package:lensai/presentation/hooks/sync_page_tab.dart';
 
@@ -27,13 +24,6 @@ class CreateTabSheetWidget extends HookConsumerWidget {
   });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final showEarlyAccessFeatures = ref.watch(
-      settingsRepositoryProvider.select(
-        (value) => (value.valueOrNull ?? Settings.withDefaults())
-            .showEarlyAccessFeatures,
-      ),
-    );
-
     final sharedContent = useMemoized(
       () => (parameter.content != null)
           ? SharedContent.parse(parameter.content!)
@@ -45,20 +35,22 @@ class CreateTabSheetWidget extends HookConsumerWidget {
       () =>
           parameter.preferredTool?.index ??
           switch (sharedContent) {
-            SharedText(text: final text) =>
-              (showEarlyAccessFeatures && text.length > 25)
-                  ? KagiTool.assistant.index
-                  : KagiTool.search.index,
+            SharedText(text: final text) => KagiTool.search.index
+            // (showEarlyAccessFeatures && text.length > 25)
+            //     ? KagiTool.assistant.index
+            //     : KagiTool.search.index,
+            ,
             SharedUrl() => KagiTool.summarizer.index,
-            null => showEarlyAccessFeatures
-                ? KagiTool.assistant.index
-                : KagiTool.search.index,
+            null => KagiTool.search.index
+            // showEarlyAccessFeatures
+            //     ? KagiTool.assistant.index
+            //     : KagiTool.search.index,
           },
       [sharedContent],
     );
 
     final tabController = useTabController(
-      initialLength: KagiTool.values.length - (showEarlyAccessFeatures ? 0 : 1),
+      initialLength: KagiTool.values.length - 1,
       initialIndex: initialIndex,
     );
     final pageController = usePageController(initialPage: tabController.index);
@@ -95,11 +87,11 @@ class CreateTabSheetWidget extends HookConsumerWidget {
               icon: Icon(KagiTool.summarizer.icon),
               text: 'Summarize',
             ),
-            if (showEarlyAccessFeatures)
-              Tab(
-                icon: Icon(KagiTool.assistant.icon),
-                text: 'Assistant',
-              ),
+            // if (showEarlyAccessFeatures)
+            //   Tab(
+            //     icon: Icon(KagiTool.assistant.icon),
+            //     text: 'Assistant',
+            //   ),
           ],
         ),
         Padding(
@@ -115,11 +107,11 @@ class CreateTabSheetWidget extends HookConsumerWidget {
                 sharedContent: sharedContent,
                 onSubmit: onSubmit,
               ),
-              if (showEarlyAccessFeatures)
-                AssistantTab(
-                  sharedContent: sharedContent,
-                  onSubmit: onSubmit,
-                ),
+              // if (showEarlyAccessFeatures)
+              //   AssistantTab(
+              //     sharedContent: sharedContent,
+              //     onSubmit: onSubmit,
+              //   ),
             ],
           ),
         ),

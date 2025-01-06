@@ -2,10 +2,12 @@
 
 import 'dart:async';
 
+import 'package:lensai/data/models/equatable_iterable.dart';
 import 'package:lensai/features/bangs/data/models/bang_data.dart';
 import 'package:lensai/features/bangs/domain/repositories/data.dart';
 import 'package:lensai/features/geckoview/domain/providers/tab_list.dart';
 import 'package:lensai/features/geckoview/features/tabs/domain/providers.dart';
+import 'package:lensai/features/geckoview/features/tabs/domain/repositories/tab_search.dart';
 import 'package:lensai/features/kagi/data/entities/modes.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -96,4 +98,35 @@ List<String> availableTabIds(
 
   return containerTabs?.where((tabId) => tabStates.contains(tabId)).toList() ??
       [];
+}
+
+@Riverpod()
+List<String> seamlessFilteredTabs(
+  Ref ref,
+  String? containerId,
+) {
+  final tabSearchResults = ref
+      .watch(
+        tabSearchRepositoryProvider.select(
+          (value) => EquatableCollection(
+            value.valueOrNull?.map((tab) => tab.id).toList(),
+            immutable: true,
+          ),
+        ),
+      )
+      .collection;
+
+  final availableTabs = ref
+      .watch(
+        availableTabIdsProvider(containerId).select(
+          (value) => EquatableCollection(value, immutable: true),
+        ),
+      )
+      .collection;
+
+  if (tabSearchResults == null) {
+    return availableTabs;
+  }
+
+  return tabSearchResults.where((tab) => availableTabs.contains(tab)).toList();
 }

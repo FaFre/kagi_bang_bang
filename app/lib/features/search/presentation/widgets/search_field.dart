@@ -4,8 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lensai/features/bangs/data/models/bang_data.dart';
 import 'package:lensai/features/bangs/presentation/widgets/bang_icon.dart';
 import 'package:lensai/features/geckoview/features/browser/presentation/widgets/speech_to_text_button.dart';
-import 'package:lensai/features/settings/data/models/settings.dart';
-import 'package:lensai/features/settings/data/repositories/settings_repository.dart';
+import 'package:lensai/features/user/domain/repositories/settings.dart';
 
 class SearchField extends HookConsumerWidget {
   final TextEditingController textEditingController;
@@ -28,7 +27,7 @@ class SearchField extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final incognitoEnabled = ref.watch(
       settingsRepositoryProvider.select(
-        (value) => (value.valueOrNull ?? Settings.withDefaults()).incognitoMode,
+        (value) => value.incognitoMode,
       ),
     );
 

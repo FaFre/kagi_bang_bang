@@ -10,14 +10,17 @@ class GeckoIconService {
   Future<IconResult> loadIcon({
     required Uri url,
     List<Resource> resources = const [],
+    IconSize size = IconSize.defaultSize,
+    bool isPrivate = false,
+    bool waitOnNetworkLoad = true,
   }) async {
     return _api.loadIcon(
       IconRequest(
         url: url.toString(),
-        size: IconSize.defaultSize,
+        size: size,
         resources: resources,
-        isPrivate: false,
-        waitOnNetworkLoad: true,
+        isPrivate: isPrivate,
+        waitOnNetworkLoad: waitOnNetworkLoad,
       ),
     );
   }

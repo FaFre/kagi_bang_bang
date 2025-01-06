@@ -4,8 +4,7 @@ import 'package:home_widget/home_widget.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lensai/core/error_observer.dart';
 import 'package:lensai/domain/services/app_initialization.dart';
-import 'package:lensai/features/settings/data/models/settings.dart';
-import 'package:lensai/features/settings/data/repositories/settings_repository.dart';
+import 'package:lensai/features/user/domain/repositories/settings.dart';
 import 'package:lensai/presentation/hooks/on_initialization.dart';
 import 'package:lensai/presentation/widgets/main_app.dart';
 
@@ -25,8 +24,7 @@ void main() async {
         builder: (context, ref, child) {
           final themeMode = ref.watch(
             settingsRepositoryProvider.select(
-              (value) =>
-                  (value.valueOrNull ?? Settings.withDefaults()).themeMode,
+              (value) => value.themeMode,
             ),
           );
 

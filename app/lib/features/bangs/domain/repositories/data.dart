@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:drift/drift.dart';
 import 'package:exceptions/exceptions.dart';
 import 'package:lensai/domain/services/generic_website.dart';
-import 'package:lensai/extensions/database_table_size.dart';
 import 'package:lensai/features/bangs/data/database/database.dart';
 import 'package:lensai/features/bangs/data/models/bang.dart';
 import 'package:lensai/features/bangs/data/models/bang_data.dart';
+import 'package:lensai/features/bangs/data/models/search_history_entry.dart';
 import 'package:lensai/features/bangs/data/providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -63,8 +63,30 @@ class BangDataRepository extends _$BangDataRepository {
     return _db.bangDao.getFrequentBangDataList(groups: groups).watch();
   }
 
+  Stream<List<SearchHistoryEntry>> watchSearchHistory({required int limit}) {
+    return _db.searchHistoryEntries(limit: limit).watch();
+  }
+
   Future<void> increaseFrequency(String trigger) {
     return _db.bangDao.increaseBangFrequency(trigger);
+  }
+
+  Future<void> addSearchEntry(
+    String trigger,
+    String searchQuery, {
+    required int maxEntryCount,
+  }) {
+    //Pack in a transaction to bundle rebuilds of watch() queries
+    return _db.transaction(
+      () async {
+        await _db.bangDao.addSearchEntry(trigger, searchQuery);
+        await _db.evictHistoryEntries(limit: maxEntryCount);
+      },
+    );
+  }
+
+  Future<void> removeSearchEntry(String searchQuery) {
+    return _db.bangDao.removeSearchEntry(searchQuery);
   }
 
   Future<Result<BangData>> ensureIconAvailable(BangData bang) async {
@@ -72,20 +94,19 @@ class BangDataRepository extends _$BangDataRepository {
       return Result.success(bang);
     }
 
-    final icon = await ref
-        .read(genericWebsiteServiceProvider.notifier)
-        .getUrlFavicon(url: Uri.parse(bang.getUrl('').origin));
+    final url = bang.getUrl('');
 
-    // await _db.bangDao.upsertBangIcon(bang.trigger, icon);
-    return Result.success(bang.copyWith.icon(icon));
-  }
+    final websiteProvider = ref.read(genericWebsiteServiceProvider.notifier);
+    final cachedIcon = await websiteProvider.getCachedIcon(url);
 
-  Stream<double> watchIconCacheSize() {
-    return _db.tableSize(_db.bangIcon).watchSingle();
-  }
+    if (cachedIcon != null) {
+      return Result.success(bang.copyWith.icon(cachedIcon));
+    }
 
-  Future<int> clearIconData() {
-    return _db.bangIcon.deleteAll();
+    return websiteProvider.fetchPageInfo(url).then(
+          (result) => result
+              .flatMap((pageInfo) => bang.copyWith.icon(pageInfo.favicon)),
+        );
   }
 
   Future<int> resetFrequencies() {

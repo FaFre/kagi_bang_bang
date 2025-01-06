@@ -138,6 +138,7 @@ queryTabsFullContent WITH TabQueryResult:
     1.0 as full_weight       -- Full content matches less important
   )
   SELECT 
+      t.id,
       highlight(tab_fts, 0, :beforeMatch, :afterMatch) AS title,
       highlight(tab_fts, 1, :beforeMatch, :afterMatch) AS url,
       snippet(tab_fts, 2, :beforeMatch, :afterMatch, :ellipsis, :snippetLength) AS extracted_content,

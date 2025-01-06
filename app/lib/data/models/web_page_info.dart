@@ -9,9 +9,12 @@ class WebPageInfo {
   final String? title;
   final BrowserIcon? favicon;
 
+  bool get isPageInfoComplete =>
+      (title?.isNotEmpty ?? false) && favicon != null;
+
   WebPageInfo({
     required this.url,
-    required this.title,
-    required this.favicon,
+    this.title,
+    this.favicon,
   });
 }

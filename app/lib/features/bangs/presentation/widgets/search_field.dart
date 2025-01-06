@@ -1,14 +1,12 @@
 // The default Material-style Autocomplete options.
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lensai/features/bangs/data/models/bang_data.dart';
-import 'package:lensai/features/search/domain/providers/search_suggestions.dart';
 import 'package:lensai/features/bangs/presentation/widgets/bang_icon.dart';
 import 'package:lensai/features/geckoview/features/browser/presentation/widgets/speech_to_text_button.dart';
-import 'package:lensai/features/settings/data/models/settings.dart';
-import 'package:lensai/features/settings/data/repositories/settings_repository.dart';
+import 'package:lensai/features/search/domain/providers/search_suggestions.dart';
+import 'package:lensai/features/user/domain/repositories/settings.dart';
 import 'package:lensai/presentation/widgets/autocomplete.dart';
 
 class SearchField extends HookConsumerWidget {
@@ -31,19 +29,17 @@ class SearchField extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final incognitoEnabled = ref.watch(
-      settingsRepositoryProvider.select(
-        (value) => (value.valueOrNull ?? Settings.withDefaults()).incognitoMode,
-      ),
+      settingsRepositoryProvider.select((value) => value.incognitoMode),
     );
 
     final optionsStream = ref.watch(searchSuggestionsProvider());
 
     final focusNode = useFocusNode();
 
-    final quickAnswer = useListenableSelector(
-      textController,
-      () => textController.text.endsWith('?'),
-    );
+    // final quickAnswer = useListenableSelector(
+    //   textController,
+    //   () => textController.text.endsWith('?'),
+    // );
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -89,7 +85,7 @@ class SearchField extends HookConsumerWidget {
                         child: BangIcon(activeBang!, iconSize: 24.0),
                       )
                     : null,
-                label: const Text('Query'),
+                // label: const Text('Query'),
                 hintText: 'Ask anything...',
                 floatingLabelBehavior: FloatingLabelBehavior.always,
                 suffixIcon: SpeechToTextButton(
@@ -113,21 +109,21 @@ class SearchField extends HookConsumerWidget {
             );
           },
         ),
-        if (activeBang?.domain.endsWith('kagi.com') == true)
-          SwitchListTile(
-            value: quickAnswer,
-            onChanged: (_) {
-              if (textController.text.endsWith('?')) {
-                textController.text = textController.text
-                    .substring(0, textController.text.length - 1);
-              } else {
-                textController.text = '${textController.text}?';
-              }
-            },
-            contentPadding: EdgeInsets.zero,
-            title: const Text('Quick Answer'),
-            secondary: const Icon(MdiIcons.lightningBolt),
-          ),
+        // if (activeBang?.domain.endsWith('kagi.com') == true)
+        //   SwitchListTile(
+        //     value: quickAnswer,
+        //     onChanged: (_) {
+        //       if (textController.text.endsWith('?')) {
+        //         textController.text = textController.text
+        //             .substring(0, textController.text.length - 1);
+        //       } else {
+        //         textController.text = '${textController.text}?';
+        //       }
+        //     },
+        //     contentPadding: EdgeInsets.zero,
+        //     title: const Text('Quick Answer'),
+        //     secondary: const Icon(MdiIcons.lightningBolt),
+        //   ),
       ],
     );
   }
